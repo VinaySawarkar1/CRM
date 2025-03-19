@@ -12,6 +12,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import createMemoryStore from "memorystore";
 import session from "express-session";
+import { Store as SessionStore } from "express-session";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -100,7 +101,7 @@ export interface IStorage {
   getManufacturingForecastsByPeriod(month: string, year: string): Promise<ManufacturingForecast[]>;
 
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: SessionStore;
 }
 
 // Implementation for JSON file storage
@@ -113,7 +114,7 @@ export class JSONFileStorage implements IStorage {
   private employeeActivities: Map<number, EmployeeActivity>;
   private salesTargets: Map<number, SalesTarget>;
   private manufacturingForecasts: Map<number, ManufacturingForecast>;
-  sessionStore: session.SessionStore;
+  sessionStore: SessionStore;
   
   userIdCounter: number;
   leadIdCounter: number;
@@ -491,7 +492,14 @@ export class JSONFileStorage implements IStorage {
       ...insertOrder, 
       id, 
       createdAt,
-      status: insertOrder.status || "processing"
+      status: insertOrder.status || "processing",
+      poNumber: insertOrder.poNumber || null,
+      poDate: insertOrder.poDate || null,
+      address: insertOrder.address || null,
+      deliveryTime: insertOrder.deliveryTime || null,
+      contactPerson: insertOrder.contactPerson || null,
+      paymentTerms: insertOrder.paymentTerms || null,
+      poFile: insertOrder.poFile || null
     };
     this.orders.set(id, order);
     await this.saveOrders();
@@ -630,6 +638,153 @@ export class JSONFileStorage implements IStorage {
       await this.saveTasks();
     }
     return deleted;
+  }
+  
+  // Employee Activity methods
+  async getEmployeeActivity(id: number): Promise<EmployeeActivity | undefined> {
+    return this.employeeActivities.get(id);
+  }
+
+  async createEmployeeActivity(insertActivity: InsertEmployeeActivity): Promise<EmployeeActivity> {
+    const id = this.employeeActivityIdCounter++;
+    const createdAt = new Date();
+    const now = new Date();
+    // Ensure required fields have default values
+    const activity: EmployeeActivity = { 
+      ...insertActivity, 
+      id, 
+      createdAt,
+      date: insertActivity.date || now,
+      issues: insertActivity.issues || null,
+      notes: insertActivity.notes || null
+    };
+    this.employeeActivities.set(id, activity);
+    await this.saveEmployeeActivities();
+    return activity;
+  }
+
+  async updateEmployeeActivity(id: number, activityUpdate: Partial<InsertEmployeeActivity>): Promise<EmployeeActivity | undefined> {
+    const activity = this.employeeActivities.get(id);
+    if (!activity) {
+      return undefined;
+    }
+    
+    const updatedActivity = { ...activity, ...activityUpdate };
+    this.employeeActivities.set(id, updatedActivity);
+    await this.saveEmployeeActivities();
+    return updatedActivity;
+  }
+
+  async getAllEmployeeActivities(): Promise<EmployeeActivity[]> {
+    return Array.from(this.employeeActivities.values());
+  }
+
+  async deleteEmployeeActivity(id: number): Promise<boolean> {
+    const deleted = this.employeeActivities.delete(id);
+    if (deleted) {
+      await this.saveEmployeeActivities();
+    }
+    return deleted;
+  }
+  
+  // Sales Target methods
+  async getSalesTarget(id: number): Promise<SalesTarget | undefined> {
+    return this.salesTargets.get(id);
+  }
+
+  async createSalesTarget(insertTarget: InsertSalesTarget): Promise<SalesTarget> {
+    const id = this.salesTargetIdCounter++;
+    const createdAt = new Date();
+    // Ensure required fields have default values
+    const target: SalesTarget = { 
+      ...insertTarget, 
+      id, 
+      createdAt,
+      actualValue: insertTarget.actualValue ?? 0
+    };
+    this.salesTargets.set(id, target);
+    await this.saveSalesTargets();
+    return target;
+  }
+
+  async updateSalesTarget(id: number, targetUpdate: Partial<InsertSalesTarget>): Promise<SalesTarget | undefined> {
+    const target = this.salesTargets.get(id);
+    if (!target) {
+      return undefined;
+    }
+    
+    const updatedTarget = { ...target, ...targetUpdate };
+    this.salesTargets.set(id, updatedTarget);
+    await this.saveSalesTargets();
+    return updatedTarget;
+  }
+
+  async getAllSalesTargets(): Promise<SalesTarget[]> {
+    return Array.from(this.salesTargets.values());
+  }
+
+  async deleteSalesTarget(id: number): Promise<boolean> {
+    const deleted = this.salesTargets.delete(id);
+    if (deleted) {
+      await this.saveSalesTargets();
+    }
+    return deleted;
+  }
+  
+  async getSalesTargetsByPeriod(month: string, year: string): Promise<SalesTarget[]> {
+    return Array.from(this.salesTargets.values()).filter(
+      (target) => target.targetMonth === month && target.targetYear === year
+    );
+  }
+  
+  // Manufacturing Forecast methods
+  async getManufacturingForecast(id: number): Promise<ManufacturingForecast | undefined> {
+    return this.manufacturingForecasts.get(id);
+  }
+
+  async createManufacturingForecast(insertForecast: InsertManufacturingForecast): Promise<ManufacturingForecast> {
+    const id = this.manufacturingForecastIdCounter++;
+    const createdAt = new Date();
+    // Ensure required fields have default values
+    const forecast: ManufacturingForecast = { 
+      ...insertForecast, 
+      id, 
+      createdAt,
+      actualQuantity: insertForecast.actualQuantity ?? 0
+    };
+    this.manufacturingForecasts.set(id, forecast);
+    await this.saveManufacturingForecasts();
+    return forecast;
+  }
+
+  async updateManufacturingForecast(id: number, forecastUpdate: Partial<InsertManufacturingForecast>): Promise<ManufacturingForecast | undefined> {
+    const forecast = this.manufacturingForecasts.get(id);
+    if (!forecast) {
+      return undefined;
+    }
+    
+    const updatedForecast = { ...forecast, ...forecastUpdate };
+    this.manufacturingForecasts.set(id, updatedForecast);
+    await this.saveManufacturingForecasts();
+    return updatedForecast;
+  }
+
+  async getAllManufacturingForecasts(): Promise<ManufacturingForecast[]> {
+    return Array.from(this.manufacturingForecasts.values());
+  }
+
+  async deleteManufacturingForecast(id: number): Promise<boolean> {
+    const deleted = this.manufacturingForecasts.delete(id);
+    if (deleted) {
+      await this.saveManufacturingForecasts();
+    }
+    return deleted;
+  }
+  
+  async getManufacturingForecastsByPeriod(month: string, year: string): Promise<ManufacturingForecast[]> {
+    return Array.from(this.manufacturingForecasts.values()).filter(
+      (forecast) => forecast.forecastMonth === month && forecast.forecastYear === year
+    );
   }
 }
 

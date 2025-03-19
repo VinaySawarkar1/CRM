@@ -6,7 +6,10 @@ import {
   insertLeadSchema, 
   insertOrderSchema, 
   insertInventorySchema, 
-  insertTaskSchema 
+  insertTaskSchema,
+  insertEmployeeActivitySchema,
+  insertSalesTargetSchema,
+  insertManufacturingForecastSchema
 } from "@shared/schema";
 import { z } from "zod";
 
