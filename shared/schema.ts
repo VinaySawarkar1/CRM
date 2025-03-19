@@ -42,9 +42,22 @@ export const orders = pgTable("orders", {
   orderNumber: text("order_number").notNull().unique(),
   customerName: text("customer_name").notNull(),
   customerCompany: text("customer_company").notNull(),
+  poNumber: text("po_number"),
+  poDate: timestamp("po_date"),
+  address: text("address"),
+  calibrationCertificateInfo: text("calibration_certificate_info"),
+  calibrationFrequency: text("calibration_frequency"),
+  paymentTerms: text("payment_terms"),
+  otherTerms: text("other_terms"),
+  deliveryTime: text("delivery_time"),
   amount: integer("amount").notNull(),
   status: text("status").notNull().default("processing"),
   items: json("items").notNull(),
+  // New profit calculation fields
+  listPrice: integer("list_price"), // Selling price
+  purchasePrice: integer("purchase_price"),
+  profit: integer("profit"),
+  poFile: text("po_file"), // Reference to uploaded PO file
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -87,6 +100,54 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
   createdAt: true,
 });
 
+// Employee Activities schema
+export const employeeActivities = pgTable("employee_activities", {
+  id: serial("id").primaryKey(),
+  employeeName: text("employee_name").notNull(),
+  date: timestamp("date").defaultNow().notNull(),
+  activitiesPerformed: text("activities_performed").notNull(),
+  issues: text("issues"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertEmployeeActivitySchema = createInsertSchema(employeeActivities).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Sales Targets schema
+export const salesTargets = pgTable("sales_targets", {
+  id: serial("id").primaryKey(),
+  productName: text("product_name").notNull(),
+  targetMonth: text("target_month").notNull(),
+  targetYear: text("target_year").notNull(),
+  targetValue: integer("target_value").notNull(),
+  actualValue: integer("actual_value").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertSalesTargetSchema = createInsertSchema(salesTargets).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Manufacturing Forecast schema
+export const manufacturingForecasts = pgTable("manufacturing_forecasts", {
+  id: serial("id").primaryKey(),
+  productName: text("product_name").notNull(),
+  forecastMonth: text("forecast_month").notNull(),
+  forecastYear: text("forecast_year").notNull(),
+  forecastQuantity: integer("forecast_quantity").notNull(),
+  actualQuantity: integer("actual_quantity").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertManufacturingForecastSchema = createInsertSchema(manufacturingForecasts).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Type definitions
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -102,3 +163,12 @@ export type Inventory = typeof inventory.$inferSelect;
 
 export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type Task = typeof tasks.$inferSelect;
+
+export type InsertEmployeeActivity = z.infer<typeof insertEmployeeActivitySchema>;
+export type EmployeeActivity = typeof employeeActivities.$inferSelect;
+
+export type InsertSalesTarget = z.infer<typeof insertSalesTargetSchema>;
+export type SalesTarget = typeof salesTargets.$inferSelect;
+
+export type InsertManufacturingForecast = z.infer<typeof insertManufacturingForecastSchema>;
+export type ManufacturingForecast = typeof manufacturingForecasts.$inferSelect;

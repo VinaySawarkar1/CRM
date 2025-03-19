@@ -3,7 +3,10 @@ import {
   leads, type Lead, type InsertLead,
   orders, type Order, type InsertOrder,
   inventory, type Inventory, type InsertInventory,
-  tasks, type Task, type InsertTask
+  tasks, type Task, type InsertTask,
+  employeeActivities, type EmployeeActivity, type InsertEmployeeActivity,
+  salesTargets, type SalesTarget, type InsertSalesTarget,
+  manufacturingForecasts, type ManufacturingForecast, type InsertManufacturingForecast
 } from "@shared/schema";
 import fs from 'fs/promises';
 import path from 'path';
@@ -30,6 +33,9 @@ const LEAD_FILE = path.join(DATA_DIR, 'leads.json');
 const ORDER_FILE = path.join(DATA_DIR, 'orders.json');
 const INVENTORY_FILE = path.join(DATA_DIR, 'inventory.json');
 const TASK_FILE = path.join(DATA_DIR, 'tasks.json');
+const EMPLOYEE_ACTIVITY_FILE = path.join(DATA_DIR, 'employee_activities.json');
+const SALES_TARGET_FILE = path.join(DATA_DIR, 'sales_targets.json');
+const MANUFACTURING_FORECAST_FILE = path.join(DATA_DIR, 'manufacturing_forecasts.json');
 
 // Interface for all storage operations
 export interface IStorage {
@@ -70,6 +76,29 @@ export interface IStorage {
   getAllTasks(): Promise<Task[]>;
   deleteTask(id: number): Promise<boolean>;
 
+  // Employee Activity operations
+  getEmployeeActivity(id: number): Promise<EmployeeActivity | undefined>;
+  createEmployeeActivity(activity: InsertEmployeeActivity): Promise<EmployeeActivity>;
+  updateEmployeeActivity(id: number, activity: Partial<InsertEmployeeActivity>): Promise<EmployeeActivity | undefined>;
+  getAllEmployeeActivities(): Promise<EmployeeActivity[]>;
+  deleteEmployeeActivity(id: number): Promise<boolean>;
+
+  // Sales Target operations
+  getSalesTarget(id: number): Promise<SalesTarget | undefined>;
+  createSalesTarget(target: InsertSalesTarget): Promise<SalesTarget>;
+  updateSalesTarget(id: number, target: Partial<InsertSalesTarget>): Promise<SalesTarget | undefined>;
+  getAllSalesTargets(): Promise<SalesTarget[]>;
+  deleteSalesTarget(id: number): Promise<boolean>;
+  getSalesTargetsByPeriod(month: string, year: string): Promise<SalesTarget[]>;
+
+  // Manufacturing Forecast operations
+  getManufacturingForecast(id: number): Promise<ManufacturingForecast | undefined>;
+  createManufacturingForecast(forecast: InsertManufacturingForecast): Promise<ManufacturingForecast>;
+  updateManufacturingForecast(id: number, forecast: Partial<InsertManufacturingForecast>): Promise<ManufacturingForecast | undefined>;
+  getAllManufacturingForecasts(): Promise<ManufacturingForecast[]>;
+  deleteManufacturingForecast(id: number): Promise<boolean>;
+  getManufacturingForecastsByPeriod(month: string, year: string): Promise<ManufacturingForecast[]>;
+
   // Session store
   sessionStore: session.SessionStore;
 }
@@ -81,6 +110,9 @@ export class JSONFileStorage implements IStorage {
   private orders: Map<number, Order>;
   private inventory: Map<number, Inventory>;
   private tasks: Map<number, Task>;
+  private employeeActivities: Map<number, EmployeeActivity>;
+  private salesTargets: Map<number, SalesTarget>;
+  private manufacturingForecasts: Map<number, ManufacturingForecast>;
   sessionStore: session.SessionStore;
   
   userIdCounter: number;
@@ -88,6 +120,9 @@ export class JSONFileStorage implements IStorage {
   orderIdCounter: number;
   inventoryIdCounter: number;
   taskIdCounter: number;
+  employeeActivityIdCounter: number;
+  salesTargetIdCounter: number;
+  manufacturingForecastIdCounter: number;
 
   constructor() {
     this.users = new Map();
@@ -95,12 +130,18 @@ export class JSONFileStorage implements IStorage {
     this.orders = new Map();
     this.inventory = new Map();
     this.tasks = new Map();
+    this.employeeActivities = new Map();
+    this.salesTargets = new Map();
+    this.manufacturingForecasts = new Map();
     
     this.userIdCounter = 1;
     this.leadIdCounter = 1;
     this.orderIdCounter = 1;
     this.inventoryIdCounter = 1;
     this.taskIdCounter = 1;
+    this.employeeActivityIdCounter = 1;
+    this.salesTargetIdCounter = 1;
+    this.manufacturingForecastIdCounter = 1;
 
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
@@ -118,6 +159,99 @@ export class JSONFileStorage implements IStorage {
     await this.loadOrders();
     await this.loadInventory();
     await this.loadTasks();
+    await this.loadEmployeeActivities();
+    await this.loadSalesTargets();
+    await this.loadManufacturingForecasts();
+  }
+  
+  // Load employee activities from file
+  private async loadEmployeeActivities() {
+    try {
+      const data = await fs.readFile(EMPLOYEE_ACTIVITY_FILE, 'utf-8');
+      const activities = JSON.parse(data);
+      this.employeeActivities.clear();
+      
+      let maxId = 0;
+      activities.forEach((activity: EmployeeActivity) => {
+        this.employeeActivities.set(activity.id, activity);
+        maxId = Math.max(maxId, activity.id);
+      });
+      
+      this.employeeActivityIdCounter = maxId + 1;
+    } catch (error) {
+      // File doesn't exist or can't be read, using empty map
+      console.log('No employee activities file found, starting with empty data');
+    }
+  }
+
+  // Save employee activities to file
+  private async saveEmployeeActivities() {
+    try {
+      const data = JSON.stringify(Array.from(this.employeeActivities.values()), null, 2);
+      await fs.writeFile(EMPLOYEE_ACTIVITY_FILE, data, 'utf-8');
+    } catch (error) {
+      console.error('Error saving employee activities:', error);
+    }
+  }
+  
+  // Load sales targets from file
+  private async loadSalesTargets() {
+    try {
+      const data = await fs.readFile(SALES_TARGET_FILE, 'utf-8');
+      const targets = JSON.parse(data);
+      this.salesTargets.clear();
+      
+      let maxId = 0;
+      targets.forEach((target: SalesTarget) => {
+        this.salesTargets.set(target.id, target);
+        maxId = Math.max(maxId, target.id);
+      });
+      
+      this.salesTargetIdCounter = maxId + 1;
+    } catch (error) {
+      // File doesn't exist or can't be read, using empty map
+      console.log('No sales targets file found, starting with empty data');
+    }
+  }
+
+  // Save sales targets to file
+  private async saveSalesTargets() {
+    try {
+      const data = JSON.stringify(Array.from(this.salesTargets.values()), null, 2);
+      await fs.writeFile(SALES_TARGET_FILE, data, 'utf-8');
+    } catch (error) {
+      console.error('Error saving sales targets:', error);
+    }
+  }
+  
+  // Load manufacturing forecasts from file
+  private async loadManufacturingForecasts() {
+    try {
+      const data = await fs.readFile(MANUFACTURING_FORECAST_FILE, 'utf-8');
+      const forecasts = JSON.parse(data);
+      this.manufacturingForecasts.clear();
+      
+      let maxId = 0;
+      forecasts.forEach((forecast: ManufacturingForecast) => {
+        this.manufacturingForecasts.set(forecast.id, forecast);
+        maxId = Math.max(maxId, forecast.id);
+      });
+      
+      this.manufacturingForecastIdCounter = maxId + 1;
+    } catch (error) {
+      // File doesn't exist or can't be read, using empty map
+      console.log('No manufacturing forecasts file found, starting with empty data');
+    }
+  }
+
+  // Save manufacturing forecasts to file
+  private async saveManufacturingForecasts() {
+    try {
+      const data = JSON.stringify(Array.from(this.manufacturingForecasts.values()), null, 2);
+      await fs.writeFile(MANUFACTURING_FORECAST_FILE, data, 'utf-8');
+    } catch (error) {
+      console.error('Error saving manufacturing forecasts:', error);
+    }
   }
 
   // Load users from file
