@@ -1,3 +1,5 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "./hooks/use-auth";
 import { Switch, Route } from "wouter";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
@@ -8,6 +10,8 @@ import OrdersPage from "@/pages/orders-page";
 import InventoryPage from "@/pages/inventory-page";
 import TasksPage from "@/pages/tasks-page";
 import ToastNotification from "@/components/ui/toast-notification";
+
+const queryClient = new QueryClient();
 
 function Router() {
   return (
@@ -23,13 +27,13 @@ function Router() {
   );
 }
 
-function App() {
+export default function App() {
   return (
-    <>
-      <Router />
-      <ToastNotification />
-    </>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Router />
+        <ToastNotification />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
-
-export default App;
