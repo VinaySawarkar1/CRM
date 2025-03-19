@@ -22,10 +22,19 @@ async function hashPassword(password: string) {
 }
 
 async function comparePasswords(supplied: string, stored: string) {
+  console.log('Comparing passwords, stored hash format:', stored.includes('.') ? 'valid' : 'invalid');
   const [hashed, salt] = stored.split(".");
+  
+  if (!hashed || !salt) {
+    console.log('Password comparison failed: Invalid hash format');
+    return false;
+  }
+  
   const hashedBuf = Buffer.from(hashed, "hex");
   const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-  return timingSafeEqual(hashedBuf, suppliedBuf);
+  const result = timingSafeEqual(hashedBuf, suppliedBuf);
+  console.log('Password comparison result:', result ? 'match' : 'no match');
+  return result;
 }
 
 export function setupAuth(app: Express) {
@@ -71,36 +80,60 @@ export function setupAuth(app: Express) {
 
   app.post("/api/register", async (req, res, next) => {
     try {
+      console.log('Registration request received:', { ...req.body, password: '[HIDDEN]' });
+      
       const existingUser = await storage.getUserByUsername(req.body.username);
       if (existingUser) {
+        console.log('Registration failed: Username already exists');
         return res.status(400).json({ message: "Username already exists" });
       }
 
+      console.log('Creating new user...');
       const user = await storage.createUser({
         ...req.body,
         password: await hashPassword(req.body.password),
       });
+      console.log('User created:', { id: user.id, username: user.username });
 
       req.login(user, (err) => {
-        if (err) return next(err);
+        if (err) {
+          console.log('Login after registration failed:', err);
+          return next(err);
+        }
         // Return user without password
         const { password, ...userWithoutPassword } = user;
+        console.log('Registration successful, user logged in');
         res.status(201).json(userWithoutPassword);
       });
     } catch (err) {
+      console.error('Registration error:', err);
       next(err);
     }
   });
 
   app.post("/api/login", (req, res, next) => {
+    console.log('Login attempt for username:', req.body.username);
+    
     passport.authenticate("local", (err, user, info) => {
-      if (err) return next(err);
-      if (!user) return res.status(401).json({ message: "Invalid credentials" });
-
+      if (err) {
+        console.log('Login authentication error:', err);
+        return next(err);
+      }
+      
+      if (!user) {
+        console.log('Login failed: Invalid credentials');
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      console.log('User authenticated, creating session');
       req.login(user, (err) => {
-        if (err) return next(err);
+        if (err) {
+          console.log('Session creation error:', err);
+          return next(err);
+        }
         // Return user without password
         const { password, ...userWithoutPassword } = user;
+        console.log('Login successful for user:', userWithoutPassword.username);
         return res.status(200).json(userWithoutPassword);
       });
     })(req, res, next);

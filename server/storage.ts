@@ -283,7 +283,12 @@ export class JSONFileStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
+    // Ensure role has a default value if not provided
+    const user: User = { 
+      ...insertUser, 
+      id,
+      role: insertUser.role || "user" 
+    };
     this.users.set(id, user);
     await this.saveUsers();
     return user;
@@ -301,7 +306,14 @@ export class JSONFileStorage implements IStorage {
   async createLead(insertLead: InsertLead): Promise<Lead> {
     const id = this.leadIdCounter++;
     const createdAt = new Date();
-    const lead: Lead = { ...insertLead, id, createdAt };
+    // Ensure required fields have default values
+    const lead: Lead = { 
+      ...insertLead, 
+      id, 
+      createdAt,
+      status: insertLead.status || "new",
+      notes: insertLead.notes || null
+    };
     this.leads.set(id, lead);
     await this.saveLeads();
     return lead;
@@ -339,7 +351,13 @@ export class JSONFileStorage implements IStorage {
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
     const id = this.orderIdCounter++;
     const createdAt = new Date();
-    const order: Order = { ...insertOrder, id, createdAt };
+    // Ensure required fields have default values
+    const order: Order = { 
+      ...insertOrder, 
+      id, 
+      createdAt,
+      status: insertOrder.status || "processing"
+    };
     this.orders.set(id, order);
     await this.saveOrders();
     return order;
@@ -383,7 +401,15 @@ export class JSONFileStorage implements IStorage {
   async createInventoryItem(insertItem: InsertInventory): Promise<Inventory> {
     const id = this.inventoryIdCounter++;
     const createdAt = new Date();
-    const item: Inventory = { ...insertItem, id, createdAt };
+    // Ensure required fields have default values
+    const item: Inventory = { 
+      ...insertItem, 
+      id, 
+      createdAt,
+      description: insertItem.description ?? null,
+      quantity: insertItem.quantity ?? 0,
+      threshold: insertItem.threshold ?? 5
+    };
     this.inventory.set(id, item);
     await this.saveInventory();
     return item;
@@ -433,7 +459,15 @@ export class JSONFileStorage implements IStorage {
   async createTask(insertTask: InsertTask): Promise<Task> {
     const id = this.taskIdCounter++;
     const createdAt = new Date();
-    const task: Task = { ...insertTask, id, createdAt };
+    // Ensure required fields have default values
+    const task: Task = { 
+      ...insertTask, 
+      id, 
+      createdAt,
+      status: insertTask.status || "pending",
+      description: insertTask.description ?? null,
+      priority: insertTask.priority || "medium"
+    };
     this.tasks.set(id, task);
     await this.saveTasks();
     return task;
