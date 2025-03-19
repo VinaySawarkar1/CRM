@@ -51,22 +51,26 @@ export default function Sidebar({ className }: SidebarProps) {
           {navItems.map((item) => {
             const isActive = location === item.href;
             return (
-              <Link 
+              <div
                 key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
+                className="group"
               >
-                <a className={cn(
-                  "flex items-center px-4 py-3 text-white rounded-md group",
-                  isActive ? "bg-[#4B0000]" : "hover:bg-[#4B0000]"
-                )}>
-                  <item.icon className={cn(
-                    "mr-3 h-5 w-5",
-                    isActive ? "text-[#D4AF37]" : ""
-                  )} />
-                  <span>{item.label}</span>
-                </a>
-              </Link>
+                <Link 
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                >
+                  <div className={cn(
+                    "flex items-center px-4 py-3 text-white rounded-md group",
+                    isActive ? "bg-[#4B0000]" : "hover:bg-[#4B0000]"
+                  )}>
+                    <item.icon className={cn(
+                      "mr-3 h-5 w-5",
+                      isActive ? "text-[#D4AF37]" : ""
+                    )} />
+                    <span>{item.label}</span>
+                  </div>
+                </Link>
+              </div>
             );
           })}
         </nav>
