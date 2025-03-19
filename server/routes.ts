@@ -386,6 +386,289 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Employee Activity Routes
+  app.get("/api/employee-activities", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const activities = await storage.getAllEmployeeActivities();
+      res.json(activities);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/employee-activities", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+
+      const activityData = insertEmployeeActivitySchema.parse(req.body);
+      const activity = await storage.createEmployeeActivity(activityData);
+      res.status(201).json(activity);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.get("/api/employee-activities/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      const activity = await storage.getEmployeeActivity(id);
+      
+      if (!activity) {
+        return res.status(404).json({ message: "Employee activity not found" });
+      }
+      
+      res.json(activity);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put("/api/employee-activities/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      const activityData = insertEmployeeActivitySchema.partial().parse(req.body);
+      
+      const updatedActivity = await storage.updateEmployeeActivity(id, activityData);
+      
+      if (!updatedActivity) {
+        return res.status(404).json({ message: "Employee activity not found" });
+      }
+      
+      res.json(updatedActivity);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.delete("/api/employee-activities/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteEmployeeActivity(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Employee activity not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Sales Target Routes
+  app.get("/api/sales-targets", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const targets = await storage.getAllSalesTargets();
+      res.json(targets);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/sales-targets/period", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const { month, year } = req.query;
+      
+      if (!month || !year) {
+        return res.status(400).json({ message: "Month and year are required query parameters" });
+      }
+      
+      const targets = await storage.getSalesTargetsByPeriod(month as string, year as string);
+      res.json(targets);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/sales-targets", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+
+      const targetData = insertSalesTargetSchema.parse(req.body);
+      const target = await storage.createSalesTarget(targetData);
+      res.status(201).json(target);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.get("/api/sales-targets/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      const target = await storage.getSalesTarget(id);
+      
+      if (!target) {
+        return res.status(404).json({ message: "Sales target not found" });
+      }
+      
+      res.json(target);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put("/api/sales-targets/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      const targetData = insertSalesTargetSchema.partial().parse(req.body);
+      
+      const updatedTarget = await storage.updateSalesTarget(id, targetData);
+      
+      if (!updatedTarget) {
+        return res.status(404).json({ message: "Sales target not found" });
+      }
+      
+      res.json(updatedTarget);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.delete("/api/sales-targets/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteSalesTarget(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Sales target not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Manufacturing Forecast Routes
+  app.get("/api/manufacturing-forecasts", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const forecasts = await storage.getAllManufacturingForecasts();
+      res.json(forecasts);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/manufacturing-forecasts/period", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const { month, year } = req.query;
+      
+      if (!month || !year) {
+        return res.status(400).json({ message: "Month and year are required query parameters" });
+      }
+      
+      const forecasts = await storage.getManufacturingForecastsByPeriod(month as string, year as string);
+      res.json(forecasts);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/manufacturing-forecasts", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+
+      const forecastData = insertManufacturingForecastSchema.parse(req.body);
+      const forecast = await storage.createManufacturingForecast(forecastData);
+      res.status(201).json(forecast);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.get("/api/manufacturing-forecasts/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      const forecast = await storage.getManufacturingForecast(id);
+      
+      if (!forecast) {
+        return res.status(404).json({ message: "Manufacturing forecast not found" });
+      }
+      
+      res.json(forecast);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put("/api/manufacturing-forecasts/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      const forecastData = insertManufacturingForecastSchema.partial().parse(req.body);
+      
+      const updatedForecast = await storage.updateManufacturingForecast(id, forecastData);
+      
+      if (!updatedForecast) {
+        return res.status(404).json({ message: "Manufacturing forecast not found" });
+      }
+      
+      res.json(updatedForecast);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.delete("/api/manufacturing-forecasts/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteManufacturingForecast(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Manufacturing forecast not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Dashboard Stats
   app.get("/api/dashboard/stats", async (req, res, next) => {
     try {
@@ -396,6 +679,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const inventory = await storage.getAllInventoryItems();
       const lowStockItems = await storage.getLowStockItems();
       const tasks = await storage.getAllTasks();
+      const activities = await storage.getAllEmployeeActivities();
+      const salesTargets = await storage.getAllSalesTargets();
+      
+      // Get current month and year for filtering
+      const now = new Date();
+      const currentMonth = now.toLocaleString('default', { month: 'long' });
+      const currentYear = now.getFullYear().toString();
       
       const stats = {
         totalLeads: leads.length,
@@ -404,7 +694,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         pendingTasks: tasks.filter(t => t.status === 'pending').length,
         recentLeads: leads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5),
         recentOrders: orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5),
-        urgentTasks: tasks.filter(t => t.priority === 'high' && t.status === 'pending').length
+        urgentTasks: tasks.filter(t => t.priority === 'high' && t.status === 'pending').length,
+        recentActivities: activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5),
+        currentMonthSalesTargets: salesTargets.filter(t => t.targetMonth === currentMonth && t.targetYear === currentYear),
+        salesPerformance: {
+          target: salesTargets.filter(t => t.targetMonth === currentMonth && t.targetYear === currentYear)
+                             .reduce((total, target) => total + target.targetValue, 0),
+          actual: salesTargets.filter(t => t.targetMonth === currentMonth && t.targetYear === currentYear)
+                             .reduce((total, target) => total + (target.actualValue || 0), 0)
+        }
       };
       
       res.json(stats);

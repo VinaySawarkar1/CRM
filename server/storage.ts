@@ -497,8 +497,13 @@ export class JSONFileStorage implements IStorage {
       poDate: insertOrder.poDate || null,
       address: insertOrder.address || null,
       deliveryTime: insertOrder.deliveryTime || null,
-      contactPerson: insertOrder.contactPerson || null,
+      calibrationCertificateInfo: insertOrder.calibrationCertificateInfo || null,
+      calibrationFrequency: insertOrder.calibrationFrequency || null,
       paymentTerms: insertOrder.paymentTerms || null,
+      otherTerms: insertOrder.otherTerms || null,
+      listPrice: insertOrder.listPrice || null,
+      purchasePrice: insertOrder.purchasePrice || null,
+      profit: insertOrder.profit || null,
       poFile: insertOrder.poFile || null
     };
     this.orders.set(id, order);
