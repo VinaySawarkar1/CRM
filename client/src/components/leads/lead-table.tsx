@@ -53,6 +53,35 @@ export default function LeadTable({ leads, onEdit, onDelete, onConvertToOrder }:
         return 'bg-gray-100 text-gray-800';
     }
   };
+  
+  const getCategoryBadgeClass = (category: string) => {
+    switch (category) {
+      case 'industry':
+        return 'bg-blue-100 text-blue-800';
+      case 'calibration_labs':
+        return 'bg-green-100 text-green-800';
+      case 'vision_measuring_machine':
+        return 'bg-purple-100 text-purple-800';
+      case 'data_logger':
+        return 'bg-indigo-100 text-indigo-800';
+      case 'calibration_software':
+        return 'bg-teal-100 text-teal-800';
+      case 'meatest':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'finalization':
+        return 'bg-orange-100 text-orange-800';
+      case 'waiting_for_po':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+  
+  const formatCategoryLabel = (category: string) => {
+    return category.split('_').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+  };
 
   return (
     <div className="rounded-md border overflow-hidden">
@@ -62,6 +91,7 @@ export default function LeadTable({ leads, onEdit, onDelete, onConvertToOrder }:
             <TableHead>Name</TableHead>
             <TableHead>Company</TableHead>
             <TableHead>Email</TableHead>
+            <TableHead>Category</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Date Added</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -74,6 +104,11 @@ export default function LeadTable({ leads, onEdit, onDelete, onConvertToOrder }:
                 <TableCell className="font-medium">{lead.name}</TableCell>
                 <TableCell>{lead.company}</TableCell>
                 <TableCell>{lead.email}</TableCell>
+                <TableCell>
+                  <span className={`px-2 py-1 text-xs rounded-full ${getCategoryBadgeClass(lead.category)}`}>
+                    {formatCategoryLabel(lead.category)}
+                  </span>
+                </TableCell>
                 <TableCell>
                   <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadgeClass(lead.status)}`}>
                     {lead.status}

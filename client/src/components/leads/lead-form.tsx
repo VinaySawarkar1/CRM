@@ -188,7 +188,11 @@ export default function LeadForm({
                 <Textarea
                   placeholder="Add any relevant notes about this lead..."
                   className="resize-none h-24"
-                  {...field}
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  ref={field.ref}
+                  name={field.name}
                 />
               </FormControl>
               <FormMessage />

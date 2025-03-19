@@ -312,6 +312,7 @@ export class JSONFileStorage implements IStorage {
       id, 
       createdAt,
       status: insertLead.status || "new",
+      category: insertLead.category || "industry",
       notes: insertLead.notes || null
     };
     this.leads.set(id, lead);
