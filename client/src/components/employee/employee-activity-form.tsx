@@ -122,7 +122,8 @@ export default function EmployeeActivityForm({
                 <Textarea 
                   placeholder="Describe the activities performed" 
                   className="min-h-24"
-                  {...field} 
+                  {...field}
+                  value={field.value || ""}
                 />
               </FormControl>
               <FormMessage />
@@ -140,7 +141,8 @@ export default function EmployeeActivityForm({
                 <Textarea 
                   placeholder="Describe any issues encountered" 
                   className="min-h-20"
-                  {...field} 
+                  {...field}
+                  value={field.value || ""}
                 />
               </FormControl>
               <FormMessage />
@@ -158,7 +160,8 @@ export default function EmployeeActivityForm({
                 <Textarea 
                   placeholder="Any additional notes" 
                   className="min-h-20"
-                  {...field} 
+                  {...field}
+                  value={field.value || ""}
                 />
               </FormControl>
               <FormMessage />
