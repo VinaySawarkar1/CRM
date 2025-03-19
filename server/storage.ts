@@ -1,0 +1,468 @@
+import { 
+  users, type User, type InsertUser,
+  leads, type Lead, type InsertLead,
+  orders, type Order, type InsertOrder,
+  inventory, type Inventory, type InsertInventory,
+  tasks, type Task, type InsertTask
+} from "@shared/schema";
+import fs from 'fs/promises';
+import path from 'path';
+import createMemoryStore from "memorystore";
+import session from "express-session";
+
+const MemoryStore = createMemoryStore(session);
+
+// Directory for JSON storage
+const DATA_DIR = path.join(process.cwd(), 'data');
+
+// Ensure data directory exists
+async function ensureDataDir() {
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+  } catch (error) {
+    console.error('Error creating data directory:', error);
+  }
+}
+
+// Create file paths for each data type
+const USER_FILE = path.join(DATA_DIR, 'users.json');
+const LEAD_FILE = path.join(DATA_DIR, 'leads.json');
+const ORDER_FILE = path.join(DATA_DIR, 'orders.json');
+const INVENTORY_FILE = path.join(DATA_DIR, 'inventory.json');
+const TASK_FILE = path.join(DATA_DIR, 'tasks.json');
+
+// Interface for all storage operations
+export interface IStorage {
+  // User operations
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
+
+  // Lead operations
+  getLead(id: number): Promise<Lead | undefined>;
+  createLead(lead: InsertLead): Promise<Lead>;
+  updateLead(id: number, lead: Partial<InsertLead>): Promise<Lead | undefined>;
+  getAllLeads(): Promise<Lead[]>;
+  deleteLead(id: number): Promise<boolean>;
+
+  // Order operations
+  getOrder(id: number): Promise<Order | undefined>;
+  createOrder(order: InsertOrder): Promise<Order>;
+  updateOrder(id: number, order: Partial<InsertOrder>): Promise<Order | undefined>;
+  getAllOrders(): Promise<Order[]>;
+  deleteOrder(id: number): Promise<boolean>;
+  getOrderByNumber(orderNumber: string): Promise<Order | undefined>;
+
+  // Inventory operations
+  getInventoryItem(id: number): Promise<Inventory | undefined>;
+  createInventoryItem(item: InsertInventory): Promise<Inventory>;
+  updateInventoryItem(id: number, item: Partial<InsertInventory>): Promise<Inventory | undefined>;
+  getAllInventoryItems(): Promise<Inventory[]>;
+  deleteInventoryItem(id: number): Promise<boolean>;
+  getLowStockItems(): Promise<Inventory[]>;
+  getInventoryItemBySku(sku: string): Promise<Inventory | undefined>;
+
+  // Task operations
+  getTask(id: number): Promise<Task | undefined>;
+  createTask(task: InsertTask): Promise<Task>;
+  updateTask(id: number, task: Partial<InsertTask>): Promise<Task | undefined>;
+  getAllTasks(): Promise<Task[]>;
+  deleteTask(id: number): Promise<boolean>;
+
+  // Session store
+  sessionStore: session.SessionStore;
+}
+
+// Implementation for JSON file storage
+export class JSONFileStorage implements IStorage {
+  private users: Map<number, User>;
+  private leads: Map<number, Lead>;
+  private orders: Map<number, Order>;
+  private inventory: Map<number, Inventory>;
+  private tasks: Map<number, Task>;
+  sessionStore: session.SessionStore;
+  
+  userIdCounter: number;
+  leadIdCounter: number;
+  orderIdCounter: number;
+  inventoryIdCounter: number;
+  taskIdCounter: number;
+
+  constructor() {
+    this.users = new Map();
+    this.leads = new Map();
+    this.orders = new Map();
+    this.inventory = new Map();
+    this.tasks = new Map();
+    
+    this.userIdCounter = 1;
+    this.leadIdCounter = 1;
+    this.orderIdCounter = 1;
+    this.inventoryIdCounter = 1;
+    this.taskIdCounter = 1;
+
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    });
+
+    // Load data from files if they exist
+    this.loadData();
+  }
+
+  // Helper to load all data from JSON files
+  private async loadData() {
+    await ensureDataDir();
+    await this.loadUsers();
+    await this.loadLeads();
+    await this.loadOrders();
+    await this.loadInventory();
+    await this.loadTasks();
+  }
+
+  // Load users from file
+  private async loadUsers() {
+    try {
+      const data = await fs.readFile(USER_FILE, 'utf-8');
+      const users = JSON.parse(data);
+      this.users.clear();
+      
+      let maxId = 0;
+      users.forEach((user: User) => {
+        this.users.set(user.id, user);
+        maxId = Math.max(maxId, user.id);
+      });
+      
+      this.userIdCounter = maxId + 1;
+    } catch (error) {
+      // File doesn't exist or can't be read, using empty map
+      console.log('No users file found, starting with empty data');
+    }
+  }
+
+  // Save users to file
+  private async saveUsers() {
+    try {
+      const data = JSON.stringify(Array.from(this.users.values()), null, 2);
+      await fs.writeFile(USER_FILE, data, 'utf-8');
+    } catch (error) {
+      console.error('Error saving users:', error);
+    }
+  }
+
+  // Load leads from file
+  private async loadLeads() {
+    try {
+      const data = await fs.readFile(LEAD_FILE, 'utf-8');
+      const leads = JSON.parse(data);
+      this.leads.clear();
+      
+      let maxId = 0;
+      leads.forEach((lead: Lead) => {
+        this.leads.set(lead.id, lead);
+        maxId = Math.max(maxId, lead.id);
+      });
+      
+      this.leadIdCounter = maxId + 1;
+    } catch (error) {
+      // File doesn't exist or can't be read, using empty map
+      console.log('No leads file found, starting with empty data');
+    }
+  }
+
+  // Save leads to file
+  private async saveLeads() {
+    try {
+      const data = JSON.stringify(Array.from(this.leads.values()), null, 2);
+      await fs.writeFile(LEAD_FILE, data, 'utf-8');
+    } catch (error) {
+      console.error('Error saving leads:', error);
+    }
+  }
+
+  // Load orders from file
+  private async loadOrders() {
+    try {
+      const data = await fs.readFile(ORDER_FILE, 'utf-8');
+      const orders = JSON.parse(data);
+      this.orders.clear();
+      
+      let maxId = 0;
+      orders.forEach((order: Order) => {
+        this.orders.set(order.id, order);
+        maxId = Math.max(maxId, order.id);
+      });
+      
+      this.orderIdCounter = maxId + 1;
+    } catch (error) {
+      // File doesn't exist or can't be read, using empty map
+      console.log('No orders file found, starting with empty data');
+    }
+  }
+
+  // Save orders to file
+  private async saveOrders() {
+    try {
+      const data = JSON.stringify(Array.from(this.orders.values()), null, 2);
+      await fs.writeFile(ORDER_FILE, data, 'utf-8');
+    } catch (error) {
+      console.error('Error saving orders:', error);
+    }
+  }
+
+  // Load inventory from file
+  private async loadInventory() {
+    try {
+      const data = await fs.readFile(INVENTORY_FILE, 'utf-8');
+      const items = JSON.parse(data);
+      this.inventory.clear();
+      
+      let maxId = 0;
+      items.forEach((item: Inventory) => {
+        this.inventory.set(item.id, item);
+        maxId = Math.max(maxId, item.id);
+      });
+      
+      this.inventoryIdCounter = maxId + 1;
+    } catch (error) {
+      // File doesn't exist or can't be read, using empty map
+      console.log('No inventory file found, starting with empty data');
+    }
+  }
+
+  // Save inventory to file
+  private async saveInventory() {
+    try {
+      const data = JSON.stringify(Array.from(this.inventory.values()), null, 2);
+      await fs.writeFile(INVENTORY_FILE, data, 'utf-8');
+    } catch (error) {
+      console.error('Error saving inventory:', error);
+    }
+  }
+
+  // Load tasks from file
+  private async loadTasks() {
+    try {
+      const data = await fs.readFile(TASK_FILE, 'utf-8');
+      const tasks = JSON.parse(data);
+      this.tasks.clear();
+      
+      let maxId = 0;
+      tasks.forEach((task: Task) => {
+        this.tasks.set(task.id, task);
+        maxId = Math.max(maxId, task.id);
+      });
+      
+      this.taskIdCounter = maxId + 1;
+    } catch (error) {
+      // File doesn't exist or can't be read, using empty map
+      console.log('No tasks file found, starting with empty data');
+    }
+  }
+
+  // Save tasks to file
+  private async saveTasks() {
+    try {
+      const data = JSON.stringify(Array.from(this.tasks.values()), null, 2);
+      await fs.writeFile(TASK_FILE, data, 'utf-8');
+    } catch (error) {
+      console.error('Error saving tasks:', error);
+    }
+  }
+
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.username === username,
+    );
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.userIdCounter++;
+    const user: User = { ...insertUser, id };
+    this.users.set(id, user);
+    await this.saveUsers();
+    return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
+  // Lead methods
+  async getLead(id: number): Promise<Lead | undefined> {
+    return this.leads.get(id);
+  }
+
+  async createLead(insertLead: InsertLead): Promise<Lead> {
+    const id = this.leadIdCounter++;
+    const createdAt = new Date();
+    const lead: Lead = { ...insertLead, id, createdAt };
+    this.leads.set(id, lead);
+    await this.saveLeads();
+    return lead;
+  }
+
+  async updateLead(id: number, leadUpdate: Partial<InsertLead>): Promise<Lead | undefined> {
+    const lead = this.leads.get(id);
+    if (!lead) {
+      return undefined;
+    }
+    
+    const updatedLead = { ...lead, ...leadUpdate };
+    this.leads.set(id, updatedLead);
+    await this.saveLeads();
+    return updatedLead;
+  }
+
+  async getAllLeads(): Promise<Lead[]> {
+    return Array.from(this.leads.values());
+  }
+
+  async deleteLead(id: number): Promise<boolean> {
+    const deleted = this.leads.delete(id);
+    if (deleted) {
+      await this.saveLeads();
+    }
+    return deleted;
+  }
+
+  // Order methods
+  async getOrder(id: number): Promise<Order | undefined> {
+    return this.orders.get(id);
+  }
+
+  async createOrder(insertOrder: InsertOrder): Promise<Order> {
+    const id = this.orderIdCounter++;
+    const createdAt = new Date();
+    const order: Order = { ...insertOrder, id, createdAt };
+    this.orders.set(id, order);
+    await this.saveOrders();
+    return order;
+  }
+
+  async updateOrder(id: number, orderUpdate: Partial<InsertOrder>): Promise<Order | undefined> {
+    const order = this.orders.get(id);
+    if (!order) {
+      return undefined;
+    }
+    
+    const updatedOrder = { ...order, ...orderUpdate };
+    this.orders.set(id, updatedOrder);
+    await this.saveOrders();
+    return updatedOrder;
+  }
+
+  async getAllOrders(): Promise<Order[]> {
+    return Array.from(this.orders.values());
+  }
+
+  async deleteOrder(id: number): Promise<boolean> {
+    const deleted = this.orders.delete(id);
+    if (deleted) {
+      await this.saveOrders();
+    }
+    return deleted;
+  }
+
+  async getOrderByNumber(orderNumber: string): Promise<Order | undefined> {
+    return Array.from(this.orders.values()).find(
+      (order) => order.orderNumber === orderNumber,
+    );
+  }
+
+  // Inventory methods
+  async getInventoryItem(id: number): Promise<Inventory | undefined> {
+    return this.inventory.get(id);
+  }
+
+  async createInventoryItem(insertItem: InsertInventory): Promise<Inventory> {
+    const id = this.inventoryIdCounter++;
+    const createdAt = new Date();
+    const item: Inventory = { ...insertItem, id, createdAt };
+    this.inventory.set(id, item);
+    await this.saveInventory();
+    return item;
+  }
+
+  async updateInventoryItem(id: number, itemUpdate: Partial<InsertInventory>): Promise<Inventory | undefined> {
+    const item = this.inventory.get(id);
+    if (!item) {
+      return undefined;
+    }
+    
+    const updatedItem = { ...item, ...itemUpdate };
+    this.inventory.set(id, updatedItem);
+    await this.saveInventory();
+    return updatedItem;
+  }
+
+  async getAllInventoryItems(): Promise<Inventory[]> {
+    return Array.from(this.inventory.values());
+  }
+
+  async deleteInventoryItem(id: number): Promise<boolean> {
+    const deleted = this.inventory.delete(id);
+    if (deleted) {
+      await this.saveInventory();
+    }
+    return deleted;
+  }
+
+  async getLowStockItems(): Promise<Inventory[]> {
+    return Array.from(this.inventory.values()).filter(
+      (item) => item.quantity <= item.threshold
+    );
+  }
+
+  async getInventoryItemBySku(sku: string): Promise<Inventory | undefined> {
+    return Array.from(this.inventory.values()).find(
+      (item) => item.sku === sku
+    );
+  }
+
+  // Task methods
+  async getTask(id: number): Promise<Task | undefined> {
+    return this.tasks.get(id);
+  }
+
+  async createTask(insertTask: InsertTask): Promise<Task> {
+    const id = this.taskIdCounter++;
+    const createdAt = new Date();
+    const task: Task = { ...insertTask, id, createdAt };
+    this.tasks.set(id, task);
+    await this.saveTasks();
+    return task;
+  }
+
+  async updateTask(id: number, taskUpdate: Partial<InsertTask>): Promise<Task | undefined> {
+    const task = this.tasks.get(id);
+    if (!task) {
+      return undefined;
+    }
+    
+    const updatedTask = { ...task, ...taskUpdate };
+    this.tasks.set(id, updatedTask);
+    await this.saveTasks();
+    return updatedTask;
+  }
+
+  async getAllTasks(): Promise<Task[]> {
+    return Array.from(this.tasks.values());
+  }
+
+  async deleteTask(id: number): Promise<boolean> {
+    const deleted = this.tasks.delete(id);
+    if (deleted) {
+      await this.saveTasks();
+    }
+    return deleted;
+  }
+}
+
+// Using JSON file storage by default
+export const storage = new JSONFileStorage();
