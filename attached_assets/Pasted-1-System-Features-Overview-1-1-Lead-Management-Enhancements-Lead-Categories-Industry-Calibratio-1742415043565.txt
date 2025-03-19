@@ -1,0 +1,195 @@
+1. System Features Overview:
+1.1 Lead Management Enhancements:
+Lead Categories:
+
+Industry
+Calibration Labs
+Vision Measuring Machine
+Data Logger
+Calibration and Industry Software
+Meatest
+Finalization
+Waiting for PO
+UI: Filter or tabs for each category.
+
+1.2 Order Management Enhancements:
+Internal Orders:
+
+Fields: Company Name, PO Number, PO Date, Address, Name & Address for Calibration Certificate, Calibration Frequency, Payment Terms, Other Terms, Delivery Time, Amount, Instrument Name, Instrument Technical Details, Quantity.
+UI: Comprehensive form with validation.
+Purchase Order Upload:
+
+Upload customer PO files month-wise.
+File validation and history view.
+Profit Calculation:
+
+Fields: List Price (Selling Price) and Purchase Price for each order.
+Logic: Profit = (List Price - Purchase Price) × Quantity.
+UI: Display profit per order and summary in reports.
+Sales Report:
+
+Sales by:
+Week
+Month
+Quarter
+Year
+Graphs: Line and bar charts for sales trends.
+1.3 Inventory Management Enhancements:
+Production Capacity Calculation:
+
+Machines:
+Tape & Scale Calibrator
+Dial Calibration Tester
+Logic: Calculate how many machines can be manufactured based on available raw materials.
+Manufacturing Forecast:
+
+Forecast manufacturing needs monthly.
+UI: Editable forecast inputs with trend graphs.
+1.4 Employee Activity Tracking:
+Fields: Employee Name, Date, Activities Performed, Issues, Notes.
+UI: Entry form and history view.
+1.5 Task Management:
+Create, assign, and track tasks.
+Task Reminders: Real-time notifications for upcoming/overdue tasks.
+1.6 Sales Target Management:
+Monthly Targets:
+Instruments: 15 different products.
+Set monthly sales targets for each instrument.
+Target Tracking:
+Compare actual sales vs. targets in numbers and graphs.
+Graphs: Line and bar charts for target vs. actual sales.
+UI: Editable target input and progress tracking.
+1.7 Financial Year-Based Data Filtering:
+Filter data by:
+Month
+Quarter
+Week
+Year
+Apply filter across leads, orders, sales, tasks, inventory, and manufacturing forecast.
+1.8 Graphical Data Representation:
+Graphs for:
+Leads conversion.
+Orders (Profit, Sales trends).
+Inventory status.
+Employee activities.
+Manufacturing forecast.
+Sales target completion.
+Library: Use Chart.js or Recharts.
+1.9 Data Export:
+Export data (Leads, Orders, Inventory, Tasks, Manufacturing Forecast, Employee Activities, Sales, Targets) to Excel.
+Library: json2csv.
+2. Backend API Overview (Node.js with Express):
+Endpoints:
+
+/api/leads – CRUD and category filtering.
+/api/orders – CRUD with profit calculation logic.
+/api/order/internal – Internal order details.
+/api/order/upload-po – Upload and view customer POs by month.
+/api/sales/report – Sales reports (weekly, monthly, quarterly, yearly).
+/api/inventory/production-capacity – Calculate machine production capacity.
+/api/manufacturing-forecast – Manage forecasts.
+/api/employee-activities – Track employee activities.
+/api/tasks – Task management.
+/api/targets – Sales target CRUD and tracking.
+/api/data/export – Export data to Excel.
+/api/sales/target-progress – Sales target progress and graphs.
+Business Logic:
+
+Profit Calculation: (List Price - Purchase Price) × Quantity
+Production Capacity Logic: Based on raw material stock and BOM (Bill of Materials).
+Forecast Calculation: Based on past sales and production data.
+Sales Trend Calculation: Aggregated sales data by week, month, quarter, and year.
+3. Frontend Structure (React):
+Pages:
+
+Dashboard – Overview of all metrics.
+Leads – Categorized leads with filters.
+Orders – Internal order form, profit calculation, and PO upload.
+Inventory – Production capacity and stock management.
+Manufacturing Forecast – Monthly forecast and graphs.
+Employee Activities – Entry and history.
+Tasks – Create, assign, and track tasks.
+Sales Reports – Weekly, monthly, quarterly, and yearly sales with graphs.
+Sales Targets – Monthly target setting and progress tracking with graphs.
+Export Data – Export data in Excel.
+Graphs – Comprehensive data visualization.
+Components:
+
+Forms: Lead form, order form (with profit), PO upload, production forecast, employee activity entry, sales target entry.
+Graphs: Line and bar charts for sales, targets, and trends.
+Tables: For leads, orders, inventory items, and tasks.
+Modals: For editing existing entries.
+Notifications: Real-time alerts for low stock and tasks.
+4. Backend File Structure:
+pgsql
+Copy
+/backend
+  /routes
+    leads.js
+    orders.js
+    internalOrders.js
+    poUpload.js
+    salesReport.js
+    inventory.js
+    employeeActivities.js
+    tasks.js
+    targets.js
+    dataExport.js
+  /controllers
+    leadController.js
+    orderController.js
+    internalOrderController.js
+    poController.js
+    salesReportController.js
+    inventoryController.js
+    employeeActivityController.js
+    taskController.js
+    targetController.js
+    dataExportController.js
+  /data
+    leads.json
+    orders.json
+    internalOrders.json
+    poUploads.json
+    sales.json
+    inventory.json
+    employeeActivities.json
+    tasks.json
+    targets.json
+  server.js
+5. Frontend File Structure:
+bash
+Copy
+/frontend
+  /components
+    LeadForm.js
+    OrderForm.js
+    POUpload.js
+    SalesReport.js
+    ProductionCapacity.js
+    Forecast.js
+    EmployeeActivityForm.js
+    TaskForm.js
+    TargetForm.js
+    Graphs.js
+  /pages
+    Dashboard.js
+    LeadsPage.js
+    OrdersPage.js
+    InventoryPage.js
+    ForecastPage.js
+    EmployeeActivitiesPage.js
+    TasksPage.js
+    SalesReportPage.js
+    SalesTargetsPage.js
+    ExportDataPage.js
+    GraphsPage.js
+  /services
+    api.js
+  /styles
+    theme.css
+  App.js
+  index.js
+6. Expected Outcome:
+A robust and user-friendly RECKONIX system covering leads, orders, inventory, manufacturing, employee activities, tasks, sales, and targets with advanced reporting, forecasting, and export capabilities.
+
