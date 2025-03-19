@@ -9,7 +9,8 @@ import {
   CheckSquare, 
   BarChart, 
   Menu,
-  LogOut
+  LogOut,
+  UserCircle
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
@@ -30,6 +31,7 @@ export default function Sidebar({ className }: SidebarProps) {
     { icon: ShoppingCart, label: "Order Management", href: "/orders" },
     { icon: Package, label: "Inventory", href: "/inventory" },
     { icon: CheckSquare, label: "Task Management", href: "/tasks" },
+    { icon: UserCircle, label: "Employee Activities", href: "/employee-activities" },
     { icon: BarChart, label: "Reports", href: "/reports" },
   ];
   
