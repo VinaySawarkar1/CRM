@@ -1,0 +1,113 @@
+
+[
+  {
+    "id": 1,
+    "name": "Acme Industries",
+    "email": "contact@acme.com",
+    "phone": "123-456-7890",
+    "company": "Acme Corp",
+    "status": "new",
+    "category": "industry",
+    "notes": "Interested in calibration equipment",
+    "createdAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "TechLabs Solutions",
+    "email": "info@techlabs.com",
+    "phone": "234-567-8901",
+    "company": "TechLabs Inc",
+    "status": "contacted",
+    "category": "calibration_labs",
+    "notes": "Looking for complete lab setup",
+    "createdAt": "2024-01-16T11:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "Vision Systems",
+    "email": "sales@visionsys.com",
+    "phone": "345-678-9012",
+    "company": "Vision Systems Ltd",
+    "status": "qualified",
+    "category": "vision_measuring_machine",
+    "notes": "Need precision measuring equipment",
+    "createdAt": "2024-01-17T12:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "name": "DataTech Corp",
+    "email": "info@datatech.com",
+    "phone": "456-789-0123",
+    "company": "DataTech Solutions",
+    "status": "proposal",
+    "category": "data_logger",
+    "notes": "Interested in temperature logging solutions",
+    "createdAt": "2024-01-18T13:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "name": "CalSoft Industries",
+    "email": "sales@calsoft.com",
+    "phone": "567-890-1234",
+    "company": "CalSoft Ltd",
+    "status": "negotiation",
+    "category": "calibration_software",
+    "notes": "Looking for enterprise software solution",
+    "createdAt": "2024-01-19T14:00:00.000Z"
+  },
+  {
+    "id": 6,
+    "name": "Meatest Solutions",
+    "email": "info@meatest.com",
+    "phone": "678-901-2345",
+    "company": "Meatest Inc",
+    "status": "converted",
+    "category": "meatest",
+    "notes": "Requires calibration equipment",
+    "createdAt": "2024-01-20T15:00:00.000Z"
+  },
+  {
+    "id": 7,
+    "name": "Final Systems",
+    "email": "contact@finalsys.com",
+    "phone": "789-012-3456",
+    "company": "Final Systems Corp",
+    "status": "lost",
+    "category": "finalization",
+    "notes": "Budget constraints",
+    "createdAt": "2024-01-21T16:00:00.000Z"
+  },
+  {
+    "id": 8,
+    "name": "Precision Labs",
+    "email": "info@precisionlabs.com",
+    "phone": "890-123-4567",
+    "company": "Precision Labs Inc",
+    "status": "new",
+    "category": "waiting_for_po",
+    "notes": "Awaiting purchase order approval",
+    "createdAt": "2024-01-22T17:00:00.000Z"
+  },
+  {
+    "id": 9,
+    "name": "Global Calibration",
+    "email": "sales@globalcal.com",
+    "phone": "901-234-5678",
+    "company": "Global Calibration Ltd",
+    "status": "contacted",
+    "category": "industry",
+    "notes": "International client",
+    "createdAt": "2024-01-23T18:00:00.000Z"
+  },
+  {
+    "id": 10,
+    "name": "Smart Metrics",
+    "email": "info@smartmetrics.com",
+    "phone": "012-345-6789",
+    "company": "Smart Metrics Corp",
+    "status": "qualified",
+    "category": "vision_measuring_machine",
+    "notes": "Looking for smart measuring solutions",
+    "createdAt": "2024-01-24T19:00:00.000Z"
+  }
+]

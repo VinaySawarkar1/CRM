@@ -1,0 +1,93 @@
+
+[
+  {
+    "id": 1,
+    "orderNumber": "ORD-2024-001",
+    "customerName": "Acme Industries",
+    "status": "processing",
+    "total": 15000.00,
+    "items": [{"sku": "CAL-001", "quantity": 2}],
+    "createdAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "orderNumber": "ORD-2024-002",
+    "customerName": "TechLabs Solutions",
+    "status": "shipped",
+    "total": 25000.00,
+    "items": [{"sku": "VMM-001", "quantity": 1}],
+    "createdAt": "2024-01-16T11:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "orderNumber": "ORD-2024-003",
+    "customerName": "Vision Systems",
+    "status": "delivered",
+    "total": 18000.00,
+    "items": [{"sku": "DL-001", "quantity": 3}],
+    "createdAt": "2024-01-17T12:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "orderNumber": "ORD-2024-004",
+    "customerName": "DataTech Corp",
+    "status": "processing",
+    "total": 12000.00,
+    "items": [{"sku": "SW-001", "quantity": 1}],
+    "createdAt": "2024-01-18T13:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "orderNumber": "ORD-2024-005",
+    "customerName": "CalSoft Industries",
+    "status": "pending",
+    "total": 30000.00,
+    "items": [{"sku": "MT-001", "quantity": 2}],
+    "createdAt": "2024-01-19T14:00:00.000Z"
+  },
+  {
+    "id": 6,
+    "orderNumber": "ORD-2024-006",
+    "customerName": "Meatest Solutions",
+    "status": "shipped",
+    "total": 22000.00,
+    "items": [{"sku": "CAL-002", "quantity": 1}],
+    "createdAt": "2024-01-20T15:00:00.000Z"
+  },
+  {
+    "id": 7,
+    "orderNumber": "ORD-2024-007",
+    "customerName": "Final Systems",
+    "status": "delivered",
+    "total": 28000.00,
+    "items": [{"sku": "VMM-002", "quantity": 2}],
+    "createdAt": "2024-01-21T16:00:00.000Z"
+  },
+  {
+    "id": 8,
+    "orderNumber": "ORD-2024-008",
+    "customerName": "Precision Labs",
+    "status": "processing",
+    "total": 16000.00,
+    "items": [{"sku": "DL-002", "quantity": 4}],
+    "createdAt": "2024-01-22T17:00:00.000Z"
+  },
+  {
+    "id": 9,
+    "orderNumber": "ORD-2024-009",
+    "customerName": "Global Calibration",
+    "status": "pending",
+    "total": 35000.00,
+    "items": [{"sku": "SW-002", "quantity": 1}],
+    "createdAt": "2024-01-23T18:00:00.000Z"
+  },
+  {
+    "id": 10,
+    "orderNumber": "ORD-2024-010",
+    "customerName": "Smart Metrics",
+    "status": "processing",
+    "total": 20000.00,
+    "items": [{"sku": "MT-002", "quantity": 1}],
+    "createdAt": "2024-01-24T19:00:00.000Z"
+  }
+]

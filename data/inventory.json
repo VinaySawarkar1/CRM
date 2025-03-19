@@ -1,0 +1,103 @@
+
+[
+  {
+    "id": 1,
+    "name": "Calibration Kit Pro",
+    "sku": "CAL-001",
+    "description": "Professional calibration kit for industrial use",
+    "quantity": 15,
+    "threshold": 5,
+    "price": 7500.00,
+    "createdAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Vision Measuring System",
+    "sku": "VMM-001",
+    "description": "High-precision vision measuring machine",
+    "quantity": 8,
+    "threshold": 3,
+    "price": 25000.00,
+    "createdAt": "2024-01-16T11:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "Data Logger Basic",
+    "sku": "DL-001",
+    "description": "Basic data logging system",
+    "quantity": 25,
+    "threshold": 10,
+    "price": 6000.00,
+    "createdAt": "2024-01-17T12:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "name": "Calibration Software Suite",
+    "sku": "SW-001",
+    "description": "Enterprise calibration software package",
+    "quantity": 12,
+    "threshold": 5,
+    "price": 12000.00,
+    "createdAt": "2024-01-18T13:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "name": "Meatest Calibrator",
+    "sku": "MT-001",
+    "description": "Professional electrical calibrator",
+    "quantity": 10,
+    "threshold": 4,
+    "price": 15000.00,
+    "createdAt": "2024-01-19T14:00:00.000Z"
+  },
+  {
+    "id": 6,
+    "name": "Advanced Calibration Kit",
+    "sku": "CAL-002",
+    "description": "Advanced calibration system",
+    "quantity": 6,
+    "threshold": 3,
+    "price": 22000.00,
+    "createdAt": "2024-01-20T15:00:00.000Z"
+  },
+  {
+    "id": 7,
+    "name": "Precision VMM",
+    "sku": "VMM-002",
+    "description": "Ultra-precise vision measuring system",
+    "quantity": 4,
+    "threshold": 2,
+    "price": 14000.00,
+    "createdAt": "2024-01-21T16:00:00.000Z"
+  },
+  {
+    "id": 8,
+    "name": "Industrial Data Logger",
+    "sku": "DL-002",
+    "description": "Heavy-duty industrial data logger",
+    "quantity": 18,
+    "threshold": 8,
+    "price": 4000.00,
+    "createdAt": "2024-01-22T17:00:00.000Z"
+  },
+  {
+    "id": 9,
+    "name": "Enterprise Software Package",
+    "sku": "SW-002",
+    "description": "Complete enterprise software solution",
+    "quantity": 7,
+    "threshold": 3,
+    "price": 35000.00,
+    "createdAt": "2024-01-23T18:00:00.000Z"
+  },
+  {
+    "id": 10,
+    "name": "Meatest Advanced System",
+    "sku": "MT-002",
+    "description": "Advanced electrical measurement system",
+    "quantity": 5,
+    "threshold": 2,
+    "price": 20000.00,
+    "createdAt": "2024-01-24T19:00:00.000Z"
+  }
+]
