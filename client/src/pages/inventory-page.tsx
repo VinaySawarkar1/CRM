@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Plus, Loader2 } from "lucide-react";
+import ExcelImportExport from "@/components/common/ExcelImportExport";
 import { Input } from "@/components/ui/input";
 
 export default function InventoryPage() {
@@ -34,6 +35,8 @@ export default function InventoryPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
   const [currentItem, setCurrentItem] = useState<Inventory | null>(null);
 
   // Get all inventory items
@@ -140,6 +143,8 @@ export default function InventoryPage() {
     );
   });
 
+  const paginatedItems = (filteredItems || []).slice((page-1)*pageSize, page*pageSize);
+
   return (
     <Layout>
       <div className="py-6 px-4 sm:px-6 lg:px-8">
@@ -148,23 +153,26 @@ export default function InventoryPage() {
           subtitle="Manage and track your inventory items"
         />
 
-        {/* Search and Add */}
+        {/* Search, Import/Export and Add */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
           <div className="w-full sm:w-auto mb-4 sm:mb-0">
             <Input
               className="max-w-xs"
               placeholder="Search inventory..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
             />
           </div>
-          <Button 
-            onClick={() => setCreateDialogOpen(true)}
-            className="bg-[#800000] hover:bg-[#4B0000]"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add New Item
-          </Button>
+          <div className="flex items-center gap-3">
+            <ExcelImportExport entity="inventory" />
+            <Button 
+              onClick={() => setCreateDialogOpen(true)}
+              className="bg-[#800000] hover:bg-[#4B0000]"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Item
+            </Button>
+          </div>
         </div>
 
         {/* Inventory Table */}
@@ -177,11 +185,24 @@ export default function InventoryPage() {
             <p className="text-red-500">Error loading inventory: {(error as Error).message}</p>
           </div>
         ) : (
-          <InventoryTable
-            items={filteredItems || []}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <>
+            <InventoryTable
+              items={paginatedItems || []}
+              isLoading={isLoading}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+
+            {filteredItems && filteredItems.length > 0 && (
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-sm text-gray-600">Showing {(page-1)*pageSize + 1} - {Math.min(page*pageSize, filteredItems.length)} of {filteredItems.length}</div>
+                <div className="flex gap-2">
+                  <Button variant="outline" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Prev</Button>
+                  <Button variant="outline" disabled={page*pageSize >= filteredItems.length} onClick={() => setPage(p => p+1)}>Next</Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {/* Create Inventory Item Dialog */}

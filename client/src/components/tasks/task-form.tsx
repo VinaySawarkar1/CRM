@@ -97,6 +97,7 @@ export default function TaskForm({
                   placeholder="Detailed description of the task..."
                   className="resize-none h-24"
                   {...field}
+                  value={field.value ?? ''}
                 />
               </FormControl>
               <FormMessage />
@@ -203,7 +204,7 @@ export default function TaskForm({
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="in progress">In Progress</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
                     <SelectItem value="completed">Completed</SelectItem>
                   </SelectContent>
                 </Select>

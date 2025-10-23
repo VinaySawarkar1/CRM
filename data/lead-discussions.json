@@ -1,0 +1,123 @@
+[
+  {
+    "id": 1,
+    "leadId": 1,
+    "discussion": "Initial contact made with the prospect. They showed interest in our calibration services for their manufacturing unit. Discussed their current calibration needs and timeline.",
+    "discussionType": "call",
+    "outcome": "positive",
+    "nextAction": "Send detailed proposal with pricing by end of week",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-15T10:30:00.000Z"
+  },
+  {
+    "id": 2,
+    "leadId": 1,
+    "discussion": "Follow-up call completed. Prospect reviewed our proposal and had some questions about the calibration process. Explained our methodology and quality standards.",
+    "discussionType": "call",
+    "outcome": "neutral",
+    "nextAction": "Schedule technical presentation with their engineering team",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-18T14:15:00.000Z"
+  },
+  {
+    "id": 3,
+    "leadId": 1,
+    "discussion": "Technical presentation completed successfully. Engineering team was impressed with our capabilities and asked for references from similar industries.",
+    "discussionType": "meeting",
+    "outcome": "positive",
+    "nextAction": "Provide reference contacts and follow up in 1 week",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-22T11:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "leadId": 2,
+    "discussion": "First contact via email. Prospect inquired about vision measuring machines for their quality control department. Sent product catalog and specifications.",
+    "discussionType": "email",
+    "outcome": "neutral",
+    "nextAction": "Follow up with phone call to discuss requirements in detail",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-20T09:45:00.000Z"
+  },
+  {
+    "id": 5,
+    "leadId": 2,
+    "discussion": "Phone call completed. Discussed their specific requirements for vision measuring machines. They need equipment for measuring precision parts with accuracy up to 0.001mm.",
+    "discussionType": "call",
+    "outcome": "positive",
+    "nextAction": "Prepare customized quotation with technical specifications",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-21T16:20:00.000Z"
+  },
+  {
+    "id": 6,
+    "leadId": 3,
+    "discussion": "Initial meeting at their facility. They are looking for data logger solutions for environmental monitoring. Showed them our range of products and discussed their specific needs.",
+    "discussionType": "meeting",
+    "outcome": "positive",
+    "nextAction": "Send detailed proposal with multiple options",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-19T13:30:00.000Z"
+  },
+  {
+    "id": 7,
+    "leadId": 3,
+    "discussion": "Follow-up call to discuss proposal. They liked our solutions but have budget constraints. Discussed payment terms and financing options.",
+    "discussionType": "call",
+    "outcome": "neutral",
+    "nextAction": "Prepare revised proposal with flexible payment terms",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-23T10:15:00.000Z"
+  },
+  {
+    "id": 8,
+    "leadId": 4,
+    "discussion": "Cold call made to introduce our calibration software. They were not aware of our company but showed some interest in learning more about our solutions.",
+    "discussionType": "call",
+    "outcome": "neutral",
+    "nextAction": "Send introductory email with case studies and benefits",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-24T15:45:00.000Z"
+  },
+  {
+    "id": 9,
+    "leadId": 5,
+    "discussion": "Email inquiry received about Meatest equipment. They are a new calibration lab looking to expand their capabilities. Sent detailed information about our Meatest range.",
+    "discussionType": "email",
+    "outcome": "positive",
+    "nextAction": "Schedule online demonstration of Meatest equipment",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-25T08:30:00.000Z"
+  },
+  {
+    "id": 10,
+    "leadId": 5,
+    "discussion": "Online demonstration completed. They were very impressed with the accuracy and features of our Meatest equipment. Asked about delivery timeline and training.",
+    "discussionType": "meeting",
+    "outcome": "positive",
+    "nextAction": "Prepare quotation with delivery schedule and training package",
+    "nextFollowUpDate": null,
+    "createdBy": "admin",
+    "createdAt": "2024-01-26T12:00:00.000Z"
+  },
+  {
+    "id": 11,
+    "discussion": "strsrtgsdr",
+    "discussionType": "general",
+    "outcome": "neutral",
+    "nextAction": "adfdfbfdb",
+    "nextFollowUpDate": null,
+    "leadId": 12,
+    "createdBy": "admin",
+    "createdAt": "2025-08-08T14:11:25.462Z"
+  }
+]

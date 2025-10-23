@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "key": "industry",
+    "name": "Industry",
+    "isActive": true,
+    "createdAt": "2025-08-17T11:48:27.077Z"
+  },
+  {
+    "id": 2,
+    "key": "calibration_labs",
+    "name": "Calibration Labs",
+    "isActive": true,
+    "createdAt": "2025-08-17T11:48:27.077Z"
+  },
+  {
+    "id": 3,
+    "key": "vision_measuring_machine",
+    "name": "Vision Measuring Machine",
+    "isActive": true,
+    "createdAt": "2025-08-17T11:48:27.077Z"
+  },
+  {
+    "id": 4,
+    "key": "data_logger",
+    "name": "Data Logger",
+    "isActive": true,
+    "createdAt": "2025-08-17T11:48:27.077Z"
+  },
+  {
+    "id": 5,
+    "key": "calibration_software",
+    "name": "Calibration Software",
+    "isActive": true,
+    "createdAt": "2025-08-17T11:48:27.077Z"
+  },
+  {
+    "id": 6,
+    "key": "meatest",
+    "name": "Meatest",
+    "isActive": true,
+    "createdAt": "2025-08-17T11:48:27.077Z"
+  },
+  {
+    "id": 7,
+    "key": "finalization",
+    "name": "Finalization",
+    "isActive": true,
+    "createdAt": "2025-08-17T11:48:27.077Z"
+  },
+  {
+    "id": 8,
+    "key": "waiting_for_po",
+    "name": "Waiting for PO",
+    "isActive": true,
+    "createdAt": "2025-08-17T11:48:27.077Z"
+  },
+  {
+    "id": 11,
+    "key": "mail_campion",
+    "name": "Mail campion",
+    "isActive": true,
+    "createdAt": "2025-09-26T05:16:46.991Z"
+  },
+  {
+    "id": 12,
+    "key": "lost",
+    "name": "Lost",
+    "isActive": true,
+    "createdAt": "2025-09-27T04:55:36.075Z"
+  }
+]

@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    /* Reduce global scale to ~75% (12px base instead of 16px) */
+    font-size: 12px;
+  }
   * {
     @apply border-border;
   }
@@ -10,4 +14,53 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+}
+
+/* Custom scrollbars */
+.scrollbar-sidebar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #93c5fd transparent; /* thumb track */
+}
+.scrollbar-sidebar::-webkit-scrollbar {
+  width: 10px;
+}
+.scrollbar-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-sidebar::-webkit-scrollbar-thumb {
+  background-color: #93c5fd; /* blue-300 */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.scrollbar-sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: #60a5fa; /* blue-400 */
+}
+
+.scrollbar-content {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #cbd5e1 transparent; /* slate-300 */
+}
+.scrollbar-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-content::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* slate-300 */
+  border-radius: 9999px;
+}
+.scrollbar-content::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8; /* slate-400 */
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
 }

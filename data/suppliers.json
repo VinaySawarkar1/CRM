@@ -1,0 +1,72 @@
+[
+  {
+    "id": "sup-001",
+    "name": "ABC Manufacturing",
+    "contactPerson": "Rajesh Kumar",
+    "email": "rajesh@abcmfg.com",
+    "phone": "+91-9876543210",
+    "address": "123 Industrial Area, Mumbai, Maharashtra",
+    "gstNumber": "27AABCA1234A1Z5",
+    "paymentTerms": "30 days",
+    "rating": 4.5,
+    "category": "Steel",
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "sup-002",
+    "name": "SteelCorp Industries",
+    "contactPerson": "Priya Singh",
+    "email": "priya@steelcorp.com",
+    "phone": "+91-9876543211",
+    "address": "456 Steel Complex, Pune, Maharashtra",
+    "gstNumber": "27AASCI5678B2Z6",
+    "paymentTerms": "45 days",
+    "rating": 4.2,
+    "category": "Steel",
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "sup-003",
+    "name": "TechAutomation Ltd",
+    "contactPerson": "Amit Patel",
+    "email": "amit@techauto.com",
+    "phone": "+91-9876543212",
+    "address": "789 Tech Park, Bangalore, Karnataka",
+    "gstNumber": "29AATAL9012C3Z7",
+    "paymentTerms": "30 days",
+    "rating": 4.8,
+    "category": "Electronics",
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "sup-004",
+    "name": "ConveyorTech",
+    "contactPerson": "Meera Iyer",
+    "email": "meera@conveyortech.com",
+    "phone": "+91-9876543213",
+    "address": "321 Conveyor Road, Chennai, Tamil Nadu",
+    "gstNumber": "33AACON3456D4Z8",
+    "paymentTerms": "60 days",
+    "rating": 4.0,
+    "category": "Machinery",
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "sup-005",
+    "name": "WeldingPro Industries",
+    "contactPerson": "Suresh Reddy",
+    "email": "suresh@weldingpro.com",
+    "phone": "+91-9876543214",
+    "address": "654 Welding Street, Hyderabad, Telangana",
+    "gstNumber": "36AAWEL7890E5Z9",
+    "paymentTerms": "30 days",
+    "rating": 4.3,
+    "category": "Welding",
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  }
+] 

@@ -3,7 +3,24 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    
+    // Check if response is HTML (likely a login page redirect)
+    if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+      if (res.status === 401 || res.status === 403) {
+        throw new Error('Authentication required. Please log in.');
+      } else {
+        throw new Error(`Server returned HTML instead of JSON (${res.status}). This usually indicates an authentication or server error.`);
+      }
+    }
+    
+    // Try to parse as JSON for better error messages
+    try {
+      const jsonError = JSON.parse(text);
+      throw new Error(jsonError.message || `${res.status}: ${text}`);
+    } catch {
+      // If not JSON, throw the text as is
+      throw new Error(`${res.status}: ${text}`);
+    }
   }
 }
 

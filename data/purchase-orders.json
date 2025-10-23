@@ -1,0 +1,151 @@
+[
+  {
+    "id": "po-001",
+    "poNumber": "PO-2025-001",
+    "supplierId": "supp-001",
+    "supplierName": "SteelCorp Industries",
+    "supplierContact": "Ramesh Kumar",
+    "supplierPhone": "+91-9876543210",
+    "supplierEmail": "purchase@steelcorp.com",
+    "orderDate": "2024-01-20T00:00:00Z",
+    "expectedDelivery": "2024-01-27T00:00:00Z",
+    "status": "approved",
+    "totalAmount": 32500,
+    "currency": "INR",
+    "paymentTerms": "Net 30 days",
+    "notes": "Urgent requirement for ongoing project",
+    "approvedBy": "manager-001",
+    "approvedAt": "2024-01-20T14:30:00Z",
+    "items": [
+      {
+        "materialId": "rm-001",
+        "materialName": "Mild Steel Sheets",
+        "quantity": 500,
+        "unitPrice": 65,
+        "total": 32500,
+        "unit": "kg"
+      }
+    ],
+    "createdAt": "2024-01-20T10:00:00Z",
+    "updatedAt": "2024-01-20T14:30:00Z"
+  },
+  {
+    "id": "po-002",
+    "poNumber": "PO-2025-002",
+    "supplierId": "supp-002",
+    "supplierName": "AluTech Solutions",
+    "supplierContact": "Priya Sharma",
+    "supplierPhone": "+91-9876543211",
+    "supplierEmail": "orders@alutech.com",
+    "orderDate": "2024-01-22T00:00:00Z",
+    "expectedDelivery": "2024-01-27T00:00:00Z",
+    "status": "pending",
+    "totalAmount": 127500,
+    "currency": "INR",
+    "paymentTerms": "Net 45 days",
+    "notes": "For automation project",
+    "items": [
+      {
+        "materialId": "rm-002",
+        "materialName": "Aluminum Profiles",
+        "quantity": 150,
+        "unitPrice": 850,
+        "total": 127500,
+        "unit": "pieces"
+      }
+    ],
+    "createdAt": "2024-01-22T16:45:00Z",
+    "updatedAt": "2024-01-22T16:45:00Z"
+  },
+  {
+    "id": "po-003",
+    "poNumber": "PO-2025-003",
+    "supplierId": "supp-003",
+    "supplierName": "Hydraulic Systems Ltd",
+    "supplierContact": "Amit Patel",
+    "supplierPhone": "+91-9876543212",
+    "supplierEmail": "sales@hydraulic.com",
+    "orderDate": "2024-01-18T00:00:00Z",
+    "expectedDelivery": "2024-01-28T00:00:00Z",
+    "status": "ordered",
+    "totalAmount": 96000,
+    "currency": "INR",
+    "paymentTerms": "Net 30 days",
+    "notes": "For machinery maintenance",
+    "approvedBy": "manager-001",
+    "approvedAt": "2024-01-18T11:20:00Z",
+    "orderedAt": "2024-01-19T09:15:00Z",
+    "items": [
+      {
+        "materialId": "rm-003",
+        "materialName": "Hydraulic Pumps",
+        "quantity": 8,
+        "unitPrice": 12000,
+        "total": 96000,
+        "unit": "units"
+      }
+    ],
+    "createdAt": "2024-01-18T08:30:00Z",
+    "updatedAt": "2024-01-19T09:15:00Z"
+  },
+  {
+    "id": "po-004",
+    "poNumber": "PO-2025-004",
+    "supplierId": "supp-004",
+    "supplierName": "ElectroTech Industries",
+    "supplierContact": "Suresh Reddy",
+    "supplierPhone": "+91-9876543213",
+    "supplierEmail": "purchase@electrotech.com",
+    "orderDate": "2024-01-25T00:00:00Z",
+    "expectedDelivery": "2024-01-28T00:00:00Z",
+    "status": "draft",
+    "totalAmount": 62500,
+    "currency": "INR",
+    "paymentTerms": "Net 30 days",
+    "notes": "For new automation controller assembly",
+    "items": [
+      {
+        "materialId": "rm-004",
+        "materialName": "Electrical Components",
+        "quantity": 25,
+        "unitPrice": 2500,
+        "total": 62500,
+        "unit": "sets"
+      }
+    ],
+    "createdAt": "2024-01-25T14:20:00Z",
+    "updatedAt": "2024-01-25T14:20:00Z"
+  },
+  {
+    "id": "po-005",
+    "poNumber": "PO-2025-005",
+    "supplierId": "supp-005",
+    "supplierName": "WeldingPro Industries",
+    "supplierContact": "Meera Iyer",
+    "supplierPhone": "+91-9876543214",
+    "supplierEmail": "orders@weldingpro.com",
+    "orderDate": "2024-01-23T00:00:00Z",
+    "expectedDelivery": "2024-01-25T00:00:00Z",
+    "status": "received",
+    "totalAmount": 14400,
+    "currency": "INR",
+    "paymentTerms": "Net 15 days",
+    "notes": "For fabrication workshop",
+    "approvedBy": "manager-002",
+    "approvedAt": "2024-01-23T10:15:00Z",
+    "orderedAt": "2024-01-23T15:30:00Z",
+    "receivedAt": "2024-01-25T11:45:00Z",
+    "items": [
+      {
+        "materialId": "rm-005",
+        "materialName": "Welding Electrodes",
+        "quantity": 80,
+        "unitPrice": 180,
+        "total": 14400,
+        "unit": "kg"
+      }
+    ],
+    "createdAt": "2024-01-23T09:00:00Z",
+    "updatedAt": "2024-01-25T11:45:00Z"
+  }
+] 

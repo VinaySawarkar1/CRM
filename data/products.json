@@ -1,0 +1,107 @@
+[
+  {
+    "id": "prod-001",
+    "name": "Industrial Pump - Model A",
+    "description": "High-efficiency industrial water pump for manufacturing units",
+    "category": "Industrial Equipment",
+    "price": 45000,
+    "cost": 32000,
+    "stock": 15,
+    "minStock": 5,
+    "unit": "pieces",
+    "supplier": "ABC Manufacturing",
+    "gstRate": 18,
+    "hsnCode": "8413.70.10",
+    "specifications": {
+      "power": "5 HP",
+      "flowRate": "100 L/min",
+      "pressure": "50 PSI"
+    },
+    "createdAt": "2024-01-15T10:00:00Z",
+    "updatedAt": "2024-01-15T10:00:00Z"
+  },
+  {
+    "id": "prod-002",
+    "name": "Steel Fabrication Kit",
+    "description": "Complete steel fabrication kit for structural work",
+    "category": "Construction",
+    "price": 85000,
+    "cost": 65000,
+    "stock": 8,
+    "minStock": 3,
+    "unit": "kits",
+    "supplier": "SteelCorp Industries",
+    "gstRate": 18,
+    "hsnCode": "7308.90.00",
+    "specifications": {
+      "weight": "500 kg",
+      "dimensions": "2m x 1m x 0.5m",
+      "material": "Mild Steel"
+    },
+    "createdAt": "2024-01-10T14:30:00Z",
+    "updatedAt": "2024-01-10T14:30:00Z"
+  },
+  {
+    "id": "prod-003",
+    "name": "Automation Controller",
+    "description": "PLC-based automation controller for industrial processes",
+    "category": "Automation",
+    "price": 125000,
+    "cost": 95000,
+    "stock": 12,
+    "minStock": 4,
+    "unit": "units",
+    "supplier": "TechAutomation Ltd",
+    "gstRate": 18,
+    "hsnCode": "8537.10.00",
+    "specifications": {
+      "inputs": "16 digital, 8 analog",
+      "outputs": "12 digital, 4 analog",
+      "communication": "Ethernet, Modbus"
+    },
+    "createdAt": "2024-01-20T09:15:00Z",
+    "updatedAt": "2024-01-20T09:15:00Z"
+  },
+  {
+    "id": "prod-004",
+    "name": "Conveyor Belt System",
+    "description": "Heavy-duty conveyor belt system for material handling",
+    "category": "Material Handling",
+    "price": 75000,
+    "cost": 55000,
+    "stock": 6,
+    "minStock": 2,
+    "unit": "systems",
+    "supplier": "ConveyorTech",
+    "gstRate": 18,
+    "hsnCode": "8428.33.00",
+    "specifications": {
+      "length": "10 meters",
+      "width": "60 cm",
+      "capacity": "1000 kg/hour"
+    },
+    "createdAt": "2024-01-12T16:45:00Z",
+    "updatedAt": "2024-01-12T16:45:00Z"
+  },
+  {
+    "id": "prod-005",
+    "name": "Welding Machine - Professional",
+    "description": "Professional grade welding machine for industrial use",
+    "category": "Welding Equipment",
+    "price": 35000,
+    "cost": 25000,
+    "stock": 20,
+    "minStock": 8,
+    "unit": "machines",
+    "supplier": "WeldingPro Industries",
+    "gstRate": 18,
+    "hsnCode": "8515.31.00",
+    "specifications": {
+      "power": "400A",
+      "voltage": "220V/380V",
+      "dutyCycle": "60%"
+    },
+    "createdAt": "2024-01-18T11:20:00Z",
+    "updatedAt": "2024-01-18T11:20:00Z"
+  }
+] 

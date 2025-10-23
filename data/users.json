@@ -1,9 +1,22 @@
 [
   {
-    "username": "vinay",
-    "password": "533d352c02551c3bb9cc30d47b8c85df40bab42ad8e1d0bd808a63e4894b26c85ef875a3a81ef247c9dc2907d6c806ae32d5c76881de59e429c86bd53c4c7d8b.34f766dfcd4cee303c6da5d88a2b0179",
-    "name": "vinay sawarkar",
-    "role": "user",
+    "username": "admin",
+    "password": "9448f248f2c0ac80bbebfbddb9da7a2f00658e7f4ddbfec0263a98b5f4b612f276b0e905dc2c92698ae1720f37a277088b877e6b3185f6ed8e7256afc3336621.2eadacddc0a432bf908c31462141a7a4",
+    "name": "System Administrator",
+    "email": "admin@businessai.com",
+    "phone": "+91 98765 43210",
+    "role": "admin",
+    "department": "IT",
+    "isActive": true,
+    "lastLogin": null,
+    "createdAt": "2024-01-01T00:00:00.000Z",
     "id": 1
+  },
+  {
+    "username": "Mayuri",
+    "password": "02afb4de06cf91bd8033ab0dc488d221c482bd742d5b9d863ac31348b3b440a108e5386a5946492d6af1ae1d46db44652d8ebbb0f052ead6b7aa412bd06266d5.a217417c2c671eb78cb76e3db6a4cd31",
+    "name": "Mayuri Baywar",
+    "role": "user",
+    "id": 2
   }
 ]

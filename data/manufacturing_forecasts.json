@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "productId": "prod-001",
+    "productName": "Industrial Pump - Model A",
+    "forecastPeriod": "2024-02",
+    "forecastedQuantity": 25,
+    "actualQuantity": 0,
+    "accuracy": 0,
+    "confidence": 85,
+    "factors": ["seasonal_demand", "market_trends"],
+    "notes": "Expected increase due to monsoon season",
+    "createdAt": "2024-01-25T00:00:00Z",
+    "updatedAt": "2024-01-25T00:00:00Z"
+  },
+  {
+    "id": 2,
+    "productId": "prod-002",
+    "productName": "Steel Fabrication Kit",
+    "forecastPeriod": "2024-02",
+    "forecastedQuantity": 15,
+    "actualQuantity": 0,
+    "accuracy": 0,
+    "confidence": 78,
+    "factors": ["construction_boom", "infrastructure_projects"],
+    "notes": "High demand expected from construction sector",
+    "createdAt": "2024-01-25T00:00:00Z",
+    "updatedAt": "2024-01-25T00:00:00Z"
+  },
+  {
+    "id": 3,
+    "productId": "prod-003",
+    "productName": "Automation Controller",
+    "forecastPeriod": "2024-02",
+    "forecastedQuantity": 8,
+    "actualQuantity": 0,
+    "accuracy": 0,
+    "confidence": 92,
+    "factors": ["industry_automation", "technology_upgrade"],
+    "notes": "Growing demand for automation solutions",
+    "createdAt": "2024-01-25T00:00:00Z",
+    "updatedAt": "2024-01-25T00:00:00Z"
+  },
+  {
+    "id": 4,
+    "productId": "prod-004",
+    "productName": "Conveyor Belt System",
+    "forecastPeriod": "2024-02",
+    "forecastedQuantity": 12,
+    "actualQuantity": 0,
+    "accuracy": 0,
+    "confidence": 80,
+    "factors": ["warehouse_expansion", "logistics_growth"],
+    "notes": "E-commerce growth driving demand",
+    "createdAt": "2024-01-25T00:00:00Z",
+    "updatedAt": "2024-01-25T00:00:00Z"
+  },
+  {
+    "id": 5,
+    "productId": "prod-005",
+    "productName": "Welding Machine - Professional",
+    "forecastPeriod": "2024-02",
+    "forecastedQuantity": 30,
+    "actualQuantity": 0,
+    "accuracy": 0,
+    "confidence": 75,
+    "factors": ["manufacturing_growth", "skill_development"],
+    "notes": "Steady demand from manufacturing sector",
+    "createdAt": "2024-01-25T00:00:00Z",
+    "updatedAt": "2024-01-25T00:00:00Z"
+  }
+] 

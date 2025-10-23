@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Redirect } from "wouter";
+import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -32,6 +32,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("login");
   
   const loginForm = useForm<LoginFormValues>({
@@ -63,8 +64,14 @@ export default function AuthPage() {
   };
 
   // If user is already logged in, redirect to home
+  useEffect(() => {
+    if (user) {
+      setLocation("/");
+    }
+  }, [user, setLocation]);
+
   if (user) {
-    return <Redirect to="/" />;
+    return null;
   }
 
   return (
@@ -73,12 +80,12 @@ export default function AuthPage() {
       <div className="hidden md:flex md:w-1/2 bg-[#800000] text-white p-8 flex-col justify-center">
         <div className="max-w-md mx-auto space-y-8">
           <div className="text-center">
-            <h1 className="cinzel text-4xl font-bold tracking-wider">RECKONIX</h1>
+            <h1 className="cinzel text-4xl font-bold tracking-wider">Business AI</h1>
             <p className="mt-2 text-sm tracking-widest font-semibold">TEST. MEASURE. CALIBRATE.</p>
           </div>
           
           <div className="space-y-4">
-            <p className="text-lg">Welcome to the RECKONIX Management System</p>
+                          <p className="text-lg">Welcome to Business AI</p>
             <p>
               Our comprehensive platform allows you to:
             </p>
@@ -98,12 +105,12 @@ export default function AuthPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <div className="md:hidden text-center mb-4">
-              <h1 className="cinzel text-2xl font-bold tracking-wider text-[#800000]">RECKONIX</h1>
+              <h1 className="cinzel text-2xl font-bold tracking-wider text-[#800000]">Business AI</h1>
               <p className="text-xs tracking-widest font-semibold text-[#D4AF37]">TEST. MEASURE. CALIBRATE.</p>
             </div>
             <CardTitle className="text-2xl text-center">Authentication</CardTitle>
             <CardDescription className="text-center">
-              Sign in to access the RECKONIX management system
+                              Sign in to access Business AI
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -228,7 +235,7 @@ export default function AuthPage() {
           </CardContent>
           <CardFooter className="flex flex-col">
             <p className="text-xs text-center text-gray-600 mt-2">
-              By signing in, you agree to RECKONIX's Terms of Service and Privacy Policy.
+                              By signing in, you agree to Business AI's Terms of Service and Privacy Policy.
             </p>
           </CardFooter>
         </Card>

@@ -104,10 +104,8 @@ export default function OrderForm({
   // Helper to recalculate the total order amount
   const recalculateTotal = () => {
     const items = form.getValues("items") || [];
-    const total = items.reduce((sum, item) => {
-      return sum + item.price * item.quantity;
-    }, 0);
-    setValue("amount", total);
+    const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+    setValue("amount", subtotal);
   };
 
   // When an inventory item is selected, populate its details
@@ -139,10 +137,12 @@ export default function OrderForm({
 
   // Format currency
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    const num = amount || 0;
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
-    }).format(amount / 100);
+      currency: 'INR',
+      minimumFractionDigits: 2
+    }).format(num);
   };
 
   return (

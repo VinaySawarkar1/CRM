@@ -66,7 +66,20 @@ export default function OrdersPage() {
   // Create order mutation
   const createOrder = useMutation({
     mutationFn: async (data: any) => {
-      const res = await apiRequest("POST", "/api/orders", data);
+      const subtotalNum = (Array.isArray(data.items) ? data.items : []).reduce((s: number, it: any) => s + (Number(it.price)||0) * (Number(it.quantity)||0), 0);
+      const taxAmountNum = 0;
+      const payload = {
+        orderNumber: data.orderNumber,
+        customerId: data.customerId ?? null,
+        customerName: data.customerName,
+        customerCompany: data.customerCompany,
+        items: data.items,
+        subtotal: subtotalNum.toFixed(2),
+        taxAmount: taxAmountNum.toFixed(2),
+        totalAmount: (subtotalNum + taxAmountNum).toFixed(2),
+        status: data.status || 'processing'
+      };
+      const res = await apiRequest("POST", "/api/orders", payload);
       return res.json();
     },
     onSuccess: () => {
@@ -90,7 +103,18 @@ export default function OrdersPage() {
   // Update order mutation
   const updateOrder = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const res = await apiRequest("PUT", `/api/orders/${id}`, data);
+      const subtotalNum = (Array.isArray(data.items) ? data.items : []).reduce((s: number, it: any) => s + (Number(it.price)||0) * (Number(it.quantity)||0), 0);
+      const taxAmountNum = 0;
+      const payload = {
+        customerName: data.customerName,
+        customerCompany: data.customerCompany,
+        items: data.items,
+        subtotal: subtotalNum.toFixed(2),
+        taxAmount: taxAmountNum.toFixed(2),
+        totalAmount: (subtotalNum + taxAmountNum).toFixed(2),
+        status: data.status
+      };
+      const res = await apiRequest("PUT", `/api/orders/${id}`, payload);
       return res.json();
     },
     onSuccess: () => {
@@ -150,6 +174,48 @@ export default function OrdersPage() {
     setDetailsDialogOpen(true);
   };
 
+  const handlePrintInternalOrder = (order: Order) => {
+    // Open internal order PDF in new tab
+    window.open(`/api/orders/${order.id}/print-internal`, '_blank');
+  };
+
+  const handleGenerateInvoice = (order: Order) => {
+    if (confirm("Generate invoice for this order?")) {
+      // Make API call to generate invoice from order
+      fetch(`/api/orders/${order.id}/generate-invoice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          toast({
+            title: "Success",
+            description: "Invoice generated from order successfully.",
+          });
+          // Refresh orders list
+          queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+        } else {
+          throw new Error(data.message || 'Failed to generate invoice from order');
+        }
+      })
+      .catch(error => {
+        toast({
+          title: "Error",
+          description: `Failed to generate invoice from order: ${error.message}`,
+          variant: "destructive",
+        });
+      });
+    }
+  };
+
+  const handleGenerateDeliveryChallan = (order: Order) => {
+    // Open delivery challan PDF in new tab
+    window.open(`/api/orders/${order.id}/delivery-challan`, '_blank');
+  };
+
   // Filter orders based on search query
   const filteredOrders = orders?.filter(order => {
     if (!searchQuery) return true;
@@ -163,11 +229,13 @@ export default function OrdersPage() {
   });
 
   // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+  const formatCurrency = (amount: number | string) => {
+    const num = typeof amount === 'string' ? parseFloat(amount) : amount || 0;
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
-    }).format(amount / 100);
+      currency: 'INR',
+      minimumFractionDigits: 2,
+    }).format(num);
   };
 
   // Status badge class
@@ -227,9 +295,13 @@ export default function OrdersPage() {
         ) : (
           <OrderTable
             orders={filteredOrders || []}
+            isLoading={isLoading}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onViewDetails={handleViewDetails}
+            onPrintInternalOrder={handlePrintInternalOrder}
+            onGenerateInvoice={handleGenerateInvoice}
+            onGenerateDeliveryChallan={handleGenerateDeliveryChallan}
           />
         )}
 

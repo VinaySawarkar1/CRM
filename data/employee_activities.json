@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "employeeId": "emp-001",
+    "employeeName": "Rahul Sharma",
+    "activityType": "lead_followup",
+    "description": "Followed up with Acme Industries regarding quotation",
+    "startTime": "2024-01-25T09:00:00Z",
+    "endTime": "2024-01-25T10:30:00Z",
+    "duration": 90,
+    "status": "completed",
+    "notes": "Customer showed interest in automation controller",
+    "createdAt": "2024-01-25T09:00:00Z",
+    "updatedAt": "2024-01-25T10:30:00Z"
+  },
+  {
+    "id": 2,
+    "employeeId": "emp-002",
+    "employeeName": "Priya Patel",
+    "activityType": "site_visit",
+    "description": "Site visit to SteelWorks Manufacturing",
+    "startTime": "2024-01-25T11:00:00Z",
+    "endTime": "2024-01-25T14:00:00Z",
+    "duration": 180,
+    "status": "completed",
+    "notes": "Assessed requirements for steel fabrication equipment",
+    "createdAt": "2024-01-25T11:00:00Z",
+    "updatedAt": "2024-01-25T14:00:00Z"
+  },
+  {
+    "id": 3,
+    "employeeId": "emp-003",
+    "employeeName": "Amit Kumar",
+    "activityType": "quotation_preparation",
+    "description": "Prepared quotation for ConveyorPro Solutions",
+    "startTime": "2024-01-25T15:00:00Z",
+    "endTime": "2024-01-25T16:30:00Z",
+    "duration": 90,
+    "status": "completed",
+    "notes": "Generated detailed quote for conveyor belt system",
+    "createdAt": "2024-01-25T15:00:00Z",
+    "updatedAt": "2024-01-25T16:30:00Z"
+  },
+  {
+    "id": 4,
+    "employeeId": "emp-001",
+    "employeeName": "Rahul Sharma",
+    "activityType": "meeting",
+    "description": "Client meeting with Tech Industries Ltd",
+    "startTime": "2024-01-25T17:00:00Z",
+    "endTime": "2024-01-25T18:00:00Z",
+    "duration": 60,
+    "status": "completed",
+    "notes": "Discussed automation project requirements",
+    "createdAt": "2024-01-25T17:00:00Z",
+    "updatedAt": "2024-01-25T18:00:00Z"
+  },
+  {
+    "id": 5,
+    "employeeId": "emp-002",
+    "employeeName": "Priya Patel",
+    "activityType": "order_processing",
+    "description": "Processed order for WeldingCorp Industries",
+    "startTime": "2024-01-25T19:00:00Z",
+    "endTime": "2024-01-25T20:00:00Z",
+    "duration": 60,
+    "status": "completed",
+    "notes": "Order confirmed and sent to production",
+    "createdAt": "2024-01-25T19:00:00Z",
+    "updatedAt": "2024-01-25T20:00:00Z"
+  }
+] 

@@ -6,7 +6,9 @@ import { Lead } from "@shared/schema";
 import Layout from "@/components/layout";
 import PageHeader from "@/components/page-header";
 import LeadTable from "@/components/leads/lead-table";
+import LeadCategoriesManager from "@/components/leads/lead-categories-manager";
 import LeadForm from "@/components/leads/lead-form";
+import LeadDetailsDialog from "@/components/leads/lead-details-dialog";
 import { Button } from "@/components/ui/button";
 import { 
   Dialog,
@@ -32,9 +34,10 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import OrderForm from "@/components/orders/order-form";
-import { Plus, Loader2, Filter } from "lucide-react";
+import { Plus, Loader2, Filter, UserPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import ExcelImportExport from "@/components/common/ExcelImportExport";
 
 export default function LeadsPage() {
   const { toast } = useToast();
@@ -42,21 +45,19 @@ export default function LeadsPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [categoryManagerOpen, setCategoryManagerOpen] = useState(false);
+  const [timeFilter, setTimeFilter] = useState<string>("all");
+  const [page, setPage] = useState<number>(1);
+  const pageSize = 20;
   const [currentLead, setCurrentLead] = useState<Lead | null>(null);
   
-  // Categories mapping for display
-  const categoryLabels: Record<string, string> = {
-    "industry": "Industry",
-    "calibration_labs": "Calibration Labs",
-    "vision_measuring_machine": "Vision Measuring Machine",
-    "data_logger": "Data Logger",
-    "calibration_software": "Calibration Software",
-    "meatest": "Meatest",
-    "finalization": "Finalization",
-    "waiting_for_po": "Waiting for PO"
-  };
+  // Dynamic categories from API
+  const { data: allCategories = [] } = useQuery<any[]>({ queryKey: ["/api/lead-categories"] });
+  const activeCategories = allCategories.filter(c => c.isActive);
+  const categoryLabels: Record<string, string> = Object.fromEntries(activeCategories.map((c: any) => [c.key, c.name]));
 
   // Get all leads
   const {
@@ -175,6 +176,22 @@ export default function LeadsPage() {
     },
   });
 
+  // Convert to customer mutation
+  const convertToCustomer = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("POST", `/api/leads/${id}/convert-to-customer`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/leads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers"] });
+      toast({ title: "Converted", description: "Lead converted to customer." });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: `Failed to convert: ${error.message}`, variant: "destructive" });
+    },
+  });
+
   const handleEdit = (lead: Lead) => {
     setCurrentLead(lead);
     setEditDialogOpen(true);
@@ -192,6 +209,21 @@ export default function LeadsPage() {
     setCurrentLead(lead);
     setConvertDialogOpen(true);
   };
+
+  const handleCreateQuotation = (lead: Lead) => {
+    // Navigate to quotations page with lead data
+    window.location.href = `/quotations/new?leadId=${lead.id}`;
+  };
+
+  const handleViewDetails = (lead: Lead) => {
+    setCurrentLead(lead);
+    setDetailsDialogOpen(true);
+  };
+
+  const handleConvertToCustomer = (lead: Lead) => {
+    convertToCustomer.mutate(lead.id);
+  };
+
 
   // Calculate category counts
   const getCategoryCounts = () => {
@@ -211,12 +243,40 @@ export default function LeadsPage() {
   
   const categoryCounts = getCategoryCounts();
   
-  // Filter leads based on search query and selected category
+  // Filter leads based on search query, selected category and time window
+  const withinTimeWindow = (createdAt: any) => {
+    if (timeFilter === 'all') return true;
+    const d = new Date(createdAt);
+    const now = new Date();
+    if (timeFilter === 'day') {
+      return d.toDateString() === now.toDateString();
+    }
+    if (timeFilter === 'week') {
+      const start = new Date(now);
+      start.setDate(now.getDate() - 7);
+      return d >= start && d <= now;
+    }
+    if (timeFilter === 'month') {
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    }
+    if (timeFilter === 'quarter') {
+      const q = Math.floor(now.getMonth() / 3);
+      const qStart = new Date(now.getFullYear(), q * 3, 1);
+      const qEnd = new Date(now.getFullYear(), q * 3 + 3, 0, 23, 59, 59, 999);
+      return d >= qStart && d <= qEnd;
+    }
+    if (timeFilter === 'year') {
+      return d.getFullYear() === now.getFullYear();
+    }
+    return true;
+  };
+
   const filteredLeads = leads?.filter(lead => {
     // Category filter
     if (selectedCategory !== "all" && lead.category !== selectedCategory) {
       return false;
     }
+    if (!withinTimeWindow((lead as any).createdAt)) return false;
     
     // Search query filter
     if (!searchQuery) return true;
@@ -237,23 +297,41 @@ export default function LeadsPage() {
           subtitle="Manage and track potential client leads"
         />
 
-        {/* Search and Add */}
+        {/* Search, Import/Export and Add */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
           <div className="w-full sm:w-auto mb-4 sm:mb-0">
-            <Input
-              className="max-w-xs"
-              placeholder="Search leads..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <div className="flex gap-3">
+              <Input
+                className="max-w-xs"
+                placeholder="Search leads..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <select
+                value={timeFilter}
+                onChange={(e) => { setTimeFilter(e.target.value); setPage(1); }}
+                className="h-10 border rounded px-2 text-sm"
+              >
+                <option value="all">All time</option>
+                <option value="day">Today</option>
+                <option value="week">This week</option>
+                <option value="month">This month</option>
+                <option value="quarter">This quarter</option>
+                <option value="year">This year</option>
+              </select>
+            </div>
           </div>
-          <Button 
-            onClick={() => setCreateDialogOpen(true)}
-            className="bg-[#800000] hover:bg-[#4B0000]"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add New Lead
-          </Button>
+          <div className="flex items-center gap-3">
+            <ExcelImportExport entity="leads" />
+            <Button 
+              onClick={() => setCreateDialogOpen(true)}
+              className="bg-[#800000] hover:bg-[#4B0000]"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Lead
+            </Button>
+            <Button variant="outline" onClick={() => setCategoryManagerOpen(true)}>Manage Categories</Button>
+          </div>
         </div>
 
         {/* Category Tabs */}
@@ -283,10 +361,14 @@ export default function LeadsPage() {
                 </div>
               ) : filteredLeads && filteredLeads.length > 0 ? (
                 <LeadTable
-                  leads={filteredLeads}
+                  leads={filteredLeads.slice((page-1)*pageSize, page*pageSize)}
+                  isLoading={isLoading}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   onConvertToOrder={handleConvertToOrder}
+                  onCreateQuotation={handleCreateQuotation}
+                  onViewDetails={handleViewDetails}
+                  onConvertToCustomer={handleConvertToCustomer}
                 />
               ) : (
                 <div className="text-center py-12 border rounded-md bg-gray-50">
@@ -302,11 +384,20 @@ export default function LeadsPage() {
               )}
             </TabsContent>
           </Tabs>
+          {filteredLeads && filteredLeads.length > 0 && (
+            <div className="flex items-center justify-between mt-4">
+              <div className="text-sm text-gray-600">Showing {(page-1)*pageSize + 1} - {Math.min(page*pageSize, filteredLeads.length)} of {filteredLeads.length}</div>
+              <div className="flex gap-2">
+                <Button variant="outline" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Prev</Button>
+                <Button variant="outline" disabled={page*pageSize >= filteredLeads.length} onClick={() => setPage(p => p+1)}>Next</Button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Create Lead Dialog */}
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="sm:max-w-[1200px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Lead</DialogTitle>
               <DialogDescription>
@@ -323,11 +414,11 @@ export default function LeadsPage() {
 
         {/* Edit Lead Dialog */}
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="sm:max-w-[1200px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Lead</DialogTitle>
               <DialogDescription>
-                Update the lead information.
+              Update the lead information.
               </DialogDescription>
             </DialogHeader>
             {currentLead && (
@@ -386,6 +477,14 @@ export default function LeadsPage() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Lead Details Dialog */}
+        <LeadDetailsDialog
+          lead={currentLead}
+          open={detailsDialogOpen}
+          onOpenChange={setDetailsDialogOpen}
+        />
+        <LeadCategoriesManager open={categoryManagerOpen} onOpenChange={setCategoryManagerOpen} onChanged={() => {}} />
       </div>
     </Layout>
   );

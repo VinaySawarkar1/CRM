@@ -39,7 +39,7 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || 'reckonix-app-secret',
+    secret: process.env.SESSION_SECRET || 'business-ai-app-secret',
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
@@ -60,6 +60,8 @@ export function setupAuth(app: Express) {
         if (!user || !(await comparePasswords(password, user.password))) {
           return done(null, false);
         } else {
+          // Only allow active (approved) users
+          if (user.isActive === false) return done(null, false);
           return done(null, user);
         }
       } catch (err) {
@@ -91,20 +93,13 @@ export function setupAuth(app: Express) {
       console.log('Creating new user...');
       const user = await storage.createUser({
         ...req.body,
+        // New users are inactive until approved
+        isActive: false,
         password: await hashPassword(req.body.password),
       });
-      console.log('User created:', { id: user.id, username: user.username });
-
-      req.login(user, (err) => {
-        if (err) {
-          console.log('Login after registration failed:', err);
-          return next(err);
-        }
-        // Return user without password
-        const { password, ...userWithoutPassword } = user;
-        console.log('Registration successful, user logged in');
-        res.status(201).json(userWithoutPassword);
-      });
+      console.log('User created (inactive):', { id: user.id, username: user.username });
+      // Do not auto-login inactive users
+      res.status(201).json({ message: 'Registration successful. Await admin approval.', userId: user.id });
     } catch (err) {
       console.error('Registration error:', err);
       next(err);

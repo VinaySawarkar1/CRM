@@ -1,0 +1,245 @@
+[
+  {
+    "id": "job-001",
+    "jobNumber": "JOB-2025-001",
+    "productName": "Industrial Pump - Model A",
+    "quantity": 2,
+    "status": "in-assembly",
+    "assignedTo": "worker-001",
+    "workerName": "Ramesh Kumar",
+    "startDate": "2024-01-20T08:00:00Z",
+    "estimatedCompletion": "2024-01-25T17:00:00Z",
+    "actualCompletion": null,
+    "priority": "high",
+    "materials": [
+      {
+        "materialId": "rm-001",
+        "materialName": "Mild Steel Sheets",
+        "required": 100,
+        "allocated": 100,
+        "available": 500,
+        "unit": "kg"
+      },
+      {
+        "materialId": "rm-003",
+        "materialName": "Hydraulic Pumps",
+        "required": 2,
+        "allocated": 2,
+        "available": 8,
+        "unit": "units"
+      }
+    ],
+    "qualityChecks": [
+      {
+        "checkId": "qc-001",
+        "checkName": "Pressure Test",
+        "status": "pending",
+        "assignedTo": "qa-001"
+      },
+      {
+        "checkId": "qc-002",
+        "checkName": "Leak Test",
+        "status": "pending",
+        "assignedTo": "qa-001"
+      }
+    ],
+    "notes": "Customer requires urgent delivery",
+    "createdAt": "2024-01-20T07:30:00Z",
+    "updatedAt": "2024-01-22T14:15:00Z"
+  },
+  {
+    "id": "job-002",
+    "jobNumber": "JOB-2025-002",
+    "productName": "Steel Fabrication Kit",
+    "quantity": 1,
+    "status": "qa",
+    "assignedTo": "worker-002",
+    "workerName": "Priya Sharma",
+    "startDate": "2024-01-18T09:00:00Z",
+    "estimatedCompletion": "2024-01-23T17:00:00Z",
+    "actualCompletion": null,
+    "priority": "medium",
+    "materials": [
+      {
+        "materialId": "rm-001",
+        "materialName": "Mild Steel Sheets",
+        "required": 500,
+        "allocated": 500,
+        "available": 500,
+        "unit": "kg"
+      },
+      {
+        "materialId": "rm-005",
+        "materialName": "Welding Electrodes",
+        "required": 20,
+        "allocated": 20,
+        "available": 80,
+        "unit": "kg"
+      }
+    ],
+    "qualityChecks": [
+      {
+        "checkId": "qc-003",
+        "checkName": "Dimensional Check",
+        "status": "completed",
+        "assignedTo": "qa-002",
+        "completedAt": "2024-01-22T16:30:00Z"
+      },
+      {
+        "checkId": "qc-004",
+        "checkName": "Weld Quality Check",
+        "status": "in_progress",
+        "assignedTo": "qa-002"
+      }
+    ],
+    "notes": "Standard fabrication work",
+    "createdAt": "2024-01-18T08:30:00Z",
+    "updatedAt": "2024-01-22T16:30:00Z"
+  },
+  {
+    "id": "job-003",
+    "jobNumber": "JOB-2025-003",
+    "productName": "Automation Controller",
+    "quantity": 1,
+    "status": "started",
+    "assignedTo": "worker-003",
+    "workerName": "Amit Patel",
+    "startDate": "2024-01-21T10:00:00Z",
+    "estimatedCompletion": "2024-01-28T17:00:00Z",
+    "actualCompletion": null,
+    "priority": "high",
+    "materials": [
+      {
+        "materialId": "rm-004",
+        "materialName": "Electrical Components",
+        "required": 1,
+        "allocated": 1,
+        "available": 25,
+        "unit": "sets"
+      },
+      {
+        "materialId": "rm-002",
+        "materialName": "Aluminum Profiles",
+        "required": 4,
+        "allocated": 4,
+        "available": 150,
+        "unit": "pieces"
+      }
+    ],
+    "qualityChecks": [
+      {
+        "checkId": "qc-005",
+        "checkName": "Electrical Safety Test",
+        "status": "pending",
+        "assignedTo": "qa-003"
+      },
+      {
+        "checkId": "qc-006",
+        "checkName": "Functionality Test",
+        "status": "pending",
+        "assignedTo": "qa-003"
+      }
+    ],
+    "notes": "Custom automation requirements",
+    "createdAt": "2024-01-21T09:30:00Z",
+    "updatedAt": "2024-01-21T10:00:00Z"
+  },
+  {
+    "id": "job-004",
+    "jobNumber": "JOB-2025-004",
+    "productName": "Conveyor Belt System",
+    "quantity": 1,
+    "status": "packed",
+    "assignedTo": "worker-001",
+    "workerName": "Ramesh Kumar",
+    "startDate": "2024-01-15T08:00:00Z",
+    "estimatedCompletion": "2024-01-20T17:00:00Z",
+    "actualCompletion": "2024-01-20T16:30:00Z",
+    "priority": "medium",
+    "materials": [
+      {
+        "materialId": "rm-001",
+        "materialName": "Mild Steel Sheets",
+        "required": 200,
+        "allocated": 200,
+        "available": 500,
+        "unit": "kg"
+      },
+      {
+        "materialId": "rm-003",
+        "materialName": "Hydraulic Pumps",
+        "required": 1,
+        "allocated": 1,
+        "available": 8,
+        "unit": "units"
+      }
+    ],
+    "qualityChecks": [
+      {
+        "checkId": "qc-007",
+        "checkName": "Belt Tension Test",
+        "status": "completed",
+        "assignedTo": "qa-001",
+        "completedAt": "2024-01-20T15:45:00Z"
+      },
+      {
+        "checkId": "qc-008",
+        "checkName": "Motor Function Test",
+        "status": "completed",
+        "assignedTo": "qa-001",
+        "completedAt": "2024-01-20T16:15:00Z"
+      }
+    ],
+    "notes": "Ready for shipping",
+    "createdAt": "2024-01-15T07:30:00Z",
+    "updatedAt": "2024-01-20T16:30:00Z"
+  },
+  {
+    "id": "job-005",
+    "jobNumber": "JOB-2025-005",
+    "productName": "Welding Machine - Professional",
+    "quantity": 3,
+    "status": "pending",
+    "assignedTo": null,
+    "workerName": null,
+    "startDate": null,
+    "estimatedCompletion": "2024-01-30T17:00:00Z",
+    "actualCompletion": null,
+    "priority": "low",
+    "materials": [
+      {
+        "materialId": "rm-001",
+        "materialName": "Mild Steel Sheets",
+        "required": 150,
+        "allocated": 0,
+        "available": 500,
+        "unit": "kg"
+      },
+      {
+        "materialId": "rm-005",
+        "materialName": "Welding Electrodes",
+        "required": 10,
+        "allocated": 0,
+        "available": 80,
+        "unit": "kg"
+      }
+    ],
+    "qualityChecks": [
+      {
+        "checkId": "qc-009",
+        "checkName": "Welding Current Test",
+        "status": "pending",
+        "assignedTo": "qa-002"
+      },
+      {
+        "checkId": "qc-010",
+        "checkName": "Safety Features Test",
+        "status": "pending",
+        "assignedTo": "qa-002"
+      }
+    ],
+    "notes": "Awaiting material allocation",
+    "createdAt": "2024-01-22T14:00:00Z",
+    "updatedAt": "2024-01-22T14:00:00Z"
+  }
+] 

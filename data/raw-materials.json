@@ -1,0 +1,97 @@
+[
+  {
+    "id": "rm-001",
+    "name": "Mild Steel Sheets",
+    "description": "3mm thick mild steel sheets for fabrication",
+    "currentStock": 500,
+    "minStock": 200,
+    "unit": "kg",
+    "supplier": "SteelCorp Industries",
+    "lastOrderDate": "2024-01-10T00:00:00Z",
+    "leadTime": 7,
+    "unitPrice": 65,
+    "category": "Steel",
+    "location": "Warehouse A",
+    "specifications": {
+      "thickness": "3mm",
+      "grade": "IS 2062",
+      "size": "6ft x 4ft"
+    }
+  },
+  {
+    "id": "rm-002",
+    "name": "Aluminum Profiles",
+    "description": "Industrial aluminum profiles for automation",
+    "currentStock": 150,
+    "minStock": 100,
+    "unit": "pieces",
+    "supplier": "AluTech Solutions",
+    "lastOrderDate": "2024-01-15T00:00:00Z",
+    "leadTime": 5,
+    "unitPrice": 850,
+    "category": "Aluminum",
+    "location": "Warehouse B",
+    "specifications": {
+      "length": "6 meters",
+      "profile": "40x40mm",
+      "grade": "6063-T6"
+    }
+  },
+  {
+    "id": "rm-003",
+    "name": "Hydraulic Pumps",
+    "description": "High-pressure hydraulic pumps for machinery",
+    "currentStock": 8,
+    "minStock": 5,
+    "unit": "units",
+    "supplier": "Hydraulic Systems Ltd",
+    "lastOrderDate": "2024-01-08T00:00:00Z",
+    "leadTime": 10,
+    "unitPrice": 12000,
+    "category": "Hydraulics",
+    "location": "Warehouse A",
+    "specifications": {
+      "pressure": "300 bar",
+      "flow": "50 L/min",
+      "power": "7.5 HP"
+    }
+  },
+  {
+    "id": "rm-004",
+    "name": "Electrical Components",
+    "description": "PLC modules and electrical components",
+    "currentStock": 25,
+    "minStock": 15,
+    "unit": "sets",
+    "supplier": "ElectroTech Industries",
+    "lastOrderDate": "2024-01-12T00:00:00Z",
+    "leadTime": 3,
+    "unitPrice": 2500,
+    "category": "Electronics",
+    "location": "Warehouse C",
+    "specifications": {
+      "voltage": "24V DC",
+      "current": "2A",
+      "protection": "IP65"
+    }
+  },
+  {
+    "id": "rm-005",
+    "name": "Welding Electrodes",
+    "description": "E6013 welding electrodes for steel fabrication",
+    "currentStock": 80,
+    "minStock": 50,
+    "unit": "kg",
+    "supplier": "WeldingPro Industries",
+    "lastOrderDate": "2024-01-05T00:00:00Z",
+    "leadTime": 2,
+    "unitPrice": 180,
+    "category": "Welding",
+    "location": "Warehouse B",
+    "specifications": {
+      "diameter": "3.2mm",
+      "coating": "E6013",
+      "current": "80-130A"
+    }
+  }
+] 
