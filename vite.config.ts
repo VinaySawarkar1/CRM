@@ -1,8 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import themePlugin from "@replit/vite-plugin-shadcn-theme-json";
 import path, { dirname } from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,16 +9,21 @@ const __dirname = dirname(__filename);
 export default defineConfig({
   plugins: [
     react(),
-    runtimeErrorOverlay(),
-    themePlugin(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-        ]
-      : []),
+    // Only include Replit plugins in development, not in production
+    ...(process.env.NODE_ENV !== "production" ? [
+      // These will only be loaded if available (development only)
+      ...(await Promise.allSettled([
+        import("@replit/vite-plugin-runtime-error-modal").then(m => m.default()),
+        import("@replit/vite-plugin-shadcn-theme-json").then(m => m.default()),
+        ...(process.env.REPL_ID !== undefined ? [
+          import("@replit/vite-plugin-cartographer").then(m => m.cartographer())
+        ] : [])
+      ]).then(results => 
+        results
+          .filter(result => result.status === 'fulfilled')
+          .map(result => (result as PromiseFulfilledResult<any>).value)
+      ))
+    ] : []),
   ],
   resolve: {
     alias: {
