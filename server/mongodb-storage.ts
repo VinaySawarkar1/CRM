@@ -62,6 +62,12 @@ export interface IStorage {
   updateLeadDiscussion(id: number, discussion: Partial<InsertLeadDiscussion>): Promise<LeadDiscussion | undefined>;
   deleteLeadDiscussion(id: number): Promise<boolean>;
 
+  // Lead Category operations
+  getAllLeadCategories(): Promise<LeadCategory[]>;
+  createLeadCategory(c: InsertLeadCategory): Promise<LeadCategory>;
+  updateLeadCategory(id: number, c: Partial<InsertLeadCategory>): Promise<LeadCategory | undefined>;
+  deleteLeadCategory(id: number): Promise<boolean>;
+
   // Quotation operations
   getQuotation(id: number): Promise<Quotation | undefined>;
   createQuotation(quotation: InsertQuotation): Promise<Quotation>;
@@ -383,8 +389,8 @@ export class MongoDBStorage implements IStorage {
 
   // Lead operations
   async getLead(id: number): Promise<Lead | undefined> {
-    const result = await this.collections.leads.findOne({ _id: this.convertToObjectId(id) });
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Lead : undefined;
+    const result = await this.collections.leads.findOne({ id });
+    return result ? { ...result, id: result.id } as Lead : undefined;
   }
 
   async createLead(lead: InsertLead): Promise<Lead> {
@@ -404,7 +410,7 @@ export class MongoDBStorage implements IStorage {
 
   async updateLead(id: number, leadUpdate: Partial<InsertLead>): Promise<Lead | undefined> {
     const result = await this.collections.leads.findOneAndUpdate(
-      { _id: this.convertToObjectId(id) },
+      { id },
       { 
         $set: { 
           ...leadUpdate, 
@@ -414,19 +420,67 @@ export class MongoDBStorage implements IStorage {
       { returnDocument: 'after' }
     );
     
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Lead : undefined;
+    return result ? { ...result, id: result.id } as Lead : undefined;
   }
 
   async getAllLeads(): Promise<Lead[]> {
     const results = await this.collections.leads.find().toArray();
-    return results.map(lead => ({
-      ...lead,
-      id: this.convertToNumberId(lead._id),
-    })) as Lead[];
+    return results.map(lead => {
+      const { _id, ...leadData } = lead;
+      return {
+        ...leadData,
+        id: lead.id,
+      } as Lead;
+    });
   }
 
   async deleteLead(id: number): Promise<boolean> {
-    const result = await this.collections.leads.deleteOne({ _id: this.convertToObjectId(id) });
+    const result = await this.collections.leads.deleteOne({ id });
+    return result.deletedCount > 0;
+  }
+
+  // Lead Category operations
+  async getAllLeadCategories(): Promise<LeadCategory[]> {
+    const results = await this.collections.leadCategories.find().toArray();
+    return results.map(category => {
+      const { _id, ...categoryData } = category;
+      return {
+        ...categoryData,
+        id: category.id,
+      } as LeadCategory;
+    });
+  }
+
+  async createLeadCategory(category: InsertLeadCategory): Promise<LeadCategory> {
+    const result = await this.collections.leadCategories.insertOne({
+      ...category,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    
+    return {
+      ...category,
+      id: result.insertedId.toString(),
+    } as LeadCategory;
+  }
+
+  async updateLeadCategory(id: number, categoryUpdate: Partial<InsertLeadCategory>): Promise<LeadCategory | undefined> {
+    const result = await this.collections.leadCategories.findOneAndUpdate(
+      { id },
+      { 
+        $set: { 
+          ...categoryUpdate, 
+          updatedAt: new Date() 
+        } 
+      },
+      { returnDocument: 'after' }
+    );
+    
+    return result ? { ...result, id: result.id } as LeadCategory : undefined;
+  }
+
+  async deleteLeadCategory(id: number): Promise<boolean> {
+    const result = await this.collections.leadCategories.deleteOne({ id });
     return result.deletedCount > 0;
   }
 
