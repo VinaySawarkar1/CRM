@@ -9,8 +9,8 @@ export const config = {
   DB_NAME: 'business_ai',
   
   // Server settings
-  PORT: process.env.PORT || 3000,
-  HOST: process.env.HOST || '127.0.0.1',
+  PORT: process.env.PORT || 10000,
+  HOST: process.env.HOST || '0.0.0.0',
   
   // Session settings
   SESSION_SECRET: process.env.SESSION_SECRET || 'business-ai-app-secret',

@@ -65,8 +65,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // In production (Railway), bind to the provided PORT on 0.0.0.0
-  const port = Number(process.env.PORT || 3001);
+  // In production (Render), bind to the provided PORT on 0.0.0.0
+  const port = Number(process.env.PORT || 10000);
   const host = process.env.HOST || "0.0.0.0";
   server.listen({
     port,
