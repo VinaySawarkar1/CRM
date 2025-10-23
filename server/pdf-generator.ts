@@ -74,6 +74,39 @@ class PDFGenerator {
     return this.numberToWords(Math.floor(num / 10000000)) + ' Crore ' + this.numberToWords(num % 10000000);
   }
 
+  // Get Puppeteer launch options optimized for Render
+  private getPuppeteerOptions(): puppeteer.LaunchOptions {
+    const isProduction = process.env.NODE_ENV === 'production';
+    
+    if (isProduction) {
+      // Render-specific configuration
+      return {
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--no-zygote',
+          '--single-process',
+          '--disable-gpu',
+          '--disable-web-security',
+          '--disable-features=VizDisplayCompositor'
+        ],
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        timeout: 30000
+      };
+    } else {
+      // Development configuration
+      return {
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        timeout: 30000
+      };
+    }
+  }
+
   // Simple, reliable PDF generation for quotations
     async generateQuotationPDF(quotation: any, printConfig?: PrintConfig): Promise<Buffer> {
     let tempBrowser: puppeteer.Browser | null = null;
@@ -137,10 +170,7 @@ class PDFGenerator {
       });
       
       // Create a simple, fresh browser instance
-      tempBrowser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      });
+      tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
       
       // Create page
       page = await tempBrowser.newPage();
@@ -254,7 +284,7 @@ class PDFGenerator {
         totalAmount: typeof quotation.totalAmount === 'string' ? parseFloat(quotation.totalAmount) : (quotation.totalAmount || 0)
       });
 
-      tempBrowser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+      tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
       page = await tempBrowser.newPage();
       await page.setContent(html, { waitUntil: 'domcontentloaded' });
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -306,7 +336,7 @@ class PDFGenerator {
         },
         items: this.parseItems(data.items)
       });
-      tempBrowser = await puppeteer.launch({ headless: true, args: ['--no-sandbox','--disable-setuid-sandbox'] });
+      tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
       page = await tempBrowser.newPage();
       await page.setContent(html, { waitUntil: 'domcontentloaded' });
       await new Promise(r => setTimeout(r, 500));
@@ -343,7 +373,7 @@ class PDFGenerator {
         },
         items: this.parseItems(order.items)
       });
-      tempBrowser = await puppeteer.launch({ headless: true, args: ['--no-sandbox','--disable-setuid-sandbox'] });
+      tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
       page = await tempBrowser.newPage();
       await page.setContent(html, { waitUntil: 'domcontentloaded' });
       await new Promise(r => setTimeout(r, 500));
@@ -422,10 +452,7 @@ class PDFGenerator {
       });
 
       // Launch browser and generate PDF
-      tempBrowser = await puppeteer.launch({ 
-        headless: true, 
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] 
-      });
+      tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
       page = await tempBrowser.newPage();
       await page.setContent(html, { waitUntil: 'domcontentloaded' });
       await new Promise(r => setTimeout(r, 500));
