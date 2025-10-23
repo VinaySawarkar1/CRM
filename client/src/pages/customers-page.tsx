@@ -249,6 +249,9 @@ export default function CustomersPage() {
             <DialogTitle>
               {editingCustomer ? "Edit Customer" : "Add New Customer"}
             </DialogTitle>
+            <DialogDescription>
+              {editingCustomer ? "Update customer information and details." : "Fill in the customer details to add them to your database."}
+            </DialogDescription>
           </DialogHeader>
           <CustomerForm
             onSubmit={handleSubmit}

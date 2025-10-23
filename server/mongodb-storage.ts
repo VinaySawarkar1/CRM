@@ -279,6 +279,11 @@ export class MongoDBStorage implements IStorage {
   // Helper method to convert MongoDB ObjectId to number ID
   private convertToNumberId(id: any): number {
     if (typeof id === 'string') {
+      // If it's a MongoDB ObjectId string, extract numeric part
+      if (id.length === 24) {
+        // Try to find a numeric ID field in the document
+        return parseInt(id.substring(18, 24), 16) || parseInt(id.substring(0, 8), 16);
+      }
       return parseInt(id);
     }
     return id;
@@ -286,30 +291,34 @@ export class MongoDBStorage implements IStorage {
 
   // Helper method to convert number ID to MongoDB ObjectId
   private convertToObjectId(id: number): ObjectId {
-    return new ObjectId(id.toString().padStart(24, '0'));
+    // For MongoDB, we need to find documents by their numeric ID field
+    // Since MongoDB uses ObjectId but we need to find by numeric ID
+    // We'll use a different approach - find by the 'id' field instead of '_id'
+    throw new Error('Use findById instead of convertToObjectId');
   }
 
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    const result = await this.collections.users.findOne({ _id: this.convertToObjectId(id) });
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as User : undefined;
+    const result = await this.collections.users.findOne({ id });
+    return result ? { ...result, id: result.id } as User : undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     const result = await this.collections.users.findOne({ username });
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as User : undefined;
+    return result ? { ...result, id: result.id } as User : undefined;
   }
 
   async createUser(user: InsertUser): Promise<User> {
     const result = await this.collections.users.insertOne({
       ...user,
+      id: user.id || Date.now(), // Use provided ID or generate one
       createdAt: new Date(),
       updatedAt: new Date(),
     });
     
     return {
       ...user,
-      id: this.convertToNumberId(result.insertedId),
+      id: user.id || Date.now(),
       createdAt: new Date(),
       updatedAt: new Date(),
     } as User;
@@ -319,14 +328,14 @@ export class MongoDBStorage implements IStorage {
     const results = await this.collections.users.find().toArray();
     return results.map(user => ({
       ...user,
-      id: this.convertToNumberId(user._id),
+      id: user.id,
     })) as User[];
   }
 
   // Customer operations
   async getCustomer(id: number): Promise<Customer | undefined> {
-    const result = await this.collections.customers.findOne({ _id: this.convertToObjectId(id) });
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Customer : undefined;
+    const result = await this.collections.customers.findOne({ id });
+    return result ? { ...result, id: result.id } as Customer : undefined;
   }
 
   async createCustomer(customer: InsertCustomer): Promise<Customer> {
@@ -464,13 +473,13 @@ export class MongoDBStorage implements IStorage {
 
   // Quotation operations
   async getQuotation(id: number): Promise<Quotation | undefined> {
-    const result = await this.collections.quotations.findOne({ _id: this.convertToObjectId(id) });
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Quotation : undefined;
+    const result = await this.collections.quotations.findOne({ id });
+    return result ? { ...result, id: result.id } as Quotation : undefined;
   }
 
   async getQuotationByObjectId(objectId: string): Promise<Quotation | undefined> {
     const result = await this.collections.quotations.findOne({ _id: new ObjectId(objectId) });
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Quotation : undefined;
+    return result ? { ...result, id: result.id } as Quotation : undefined;
   }
 
   async updateQuotationByObjectId(objectId: string, quotationUpdate: Partial<InsertQuotation>): Promise<Quotation | undefined> {
@@ -520,14 +529,17 @@ export class MongoDBStorage implements IStorage {
 
   async getAllQuotations(): Promise<Quotation[]> {
     const results = await this.collections.quotations.find().toArray();
-    return results.map(quotation => ({
-      ...quotation,
-      id: this.convertToNumberId(quotation._id),
-    })) as Quotation[];
+    return results.map(quotation => {
+      const { _id, ...quotationData } = quotation;
+      return {
+        ...quotationData,
+        id: quotation.id, // Use the numeric ID field
+      } as Quotation;
+    });
   }
 
   async deleteQuotation(id: number): Promise<boolean> {
-    const result = await this.collections.quotations.deleteOne({ _id: this.convertToObjectId(id) });
+    const result = await this.collections.quotations.deleteOne({ id });
     return result.deletedCount > 0;
   }
 
