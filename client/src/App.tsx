@@ -2,6 +2,9 @@ import { Switch, Route } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { applyTheme, getThemeConfig } from "@/lib/theme-fallback";
+import { useEffect } from "react";
 import AuthPage from "@/pages/auth-page";
 import DashboardPage from "@/pages/dashboard-page";
 import LeadsPage from "@/pages/leads-page";
@@ -28,39 +31,47 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { queryClient } from "./lib/queryClient";
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Switch>
-          <Route path="/auth" component={AuthPage} />
-          <ProtectedRoute path="/" component={DashboardPage} />
-          <ProtectedRoute path="/leads" component={LeadsPage} />
-          <ProtectedRoute path="/orders" component={OrdersPage} />
-          <ProtectedRoute path="/inventory" component={InventoryPage} />
-          <ProtectedRoute path="/tasks" component={TasksPage} />
-          <ProtectedRoute path="/employee-activities" component={EmployeeActivitiesPage} />
-          <ProtectedRoute path="/reports" component={ReportsPage} />
-          <ProtectedRoute path="/customers" component={CustomersPage} />
-          <ProtectedRoute path="/quotations" component={QuotationsPage} />
-          <ProtectedRoute path="/quotations/new" component={QuotationFormPage} />
-          <ProtectedRoute path="/quotations/edit/:id" component={QuotationFormPage} />
-          <ProtectedRoute path="/proforma/new" component={ProformaFormPage} />
-          <ProtectedRoute path="/proforma/edit/:id" component={ProformaFormPage} />
-          <ProtectedRoute path="/invoices" component={InvoicesPage} />
-          <ProtectedRoute path="/payments" component={PaymentsPage} />
-          <ProtectedRoute path="/purchase-orders" component={PurchaseOrdersPage} />
-          <ProtectedRoute path="/purchase-orders/new" component={PurchaseOrderFormPage} />
-          <ProtectedRoute path="/purchase-orders/edit/:id" component={PurchaseOrderFormPage} />
-          <ProtectedRoute path="/sales-targets" component={SalesTargetsPage} />
-          <ProtectedRoute path="/manufacturing" component={ManufacturingPage} />
-          <ProtectedRoute path="/settings" component={SettingsPage} />
-          <ProtectedRoute path="/users" component={UsersPage} />
+  // Apply theme on app load
+  useEffect(() => {
+    const theme = getThemeConfig();
+    applyTheme(theme);
+  }, []);
 
-          <Route component={NotFoundPage} />
-        </Switch>
-        <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Switch>
+            <Route path="/auth" component={AuthPage} />
+            <ProtectedRoute path="/" component={DashboardPage} />
+            <ProtectedRoute path="/leads" component={LeadsPage} />
+            <ProtectedRoute path="/orders" component={OrdersPage} />
+            <ProtectedRoute path="/inventory" component={InventoryPage} />
+            <ProtectedRoute path="/tasks" component={TasksPage} />
+            <ProtectedRoute path="/employee-activities" component={EmployeeActivitiesPage} />
+            <ProtectedRoute path="/reports" component={ReportsPage} />
+            <ProtectedRoute path="/customers" component={CustomersPage} />
+            <ProtectedRoute path="/quotations" component={QuotationsPage} />
+            <ProtectedRoute path="/quotations/new" component={QuotationFormPage} />
+            <ProtectedRoute path="/quotations/edit/:id" component={QuotationFormPage} />
+            <ProtectedRoute path="/proforma/new" component={ProformaFormPage} />
+            <ProtectedRoute path="/proforma/edit/:id" component={ProformaFormPage} />
+            <ProtectedRoute path="/invoices" component={InvoicesPage} />
+            <ProtectedRoute path="/payments" component={PaymentsPage} />
+            <ProtectedRoute path="/purchase-orders" component={PurchaseOrdersPage} />
+            <ProtectedRoute path="/purchase-orders/new" component={PurchaseOrderFormPage} />
+            <ProtectedRoute path="/purchase-orders/edit/:id" component={PurchaseOrderFormPage} />
+            <ProtectedRoute path="/sales-targets" component={SalesTargetsPage} />
+            <ProtectedRoute path="/manufacturing" component={ManufacturingPage} />
+            <ProtectedRoute path="/settings" component={SettingsPage} />
+            <ProtectedRoute path="/users" component={UsersPage} />
+
+            <Route component={NotFoundPage} />
+          </Switch>
+          <Toaster />
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
