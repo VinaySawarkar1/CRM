@@ -514,7 +514,7 @@ export class MongoDBStorage implements IStorage {
 
   async updateQuotation(id: number, quotationUpdate: Partial<InsertQuotation>): Promise<Quotation | undefined> {
     const result = await this.collections.quotations.findOneAndUpdate(
-      { _id: this.convertToObjectId(id) },
+      { id },
       { 
         $set: { 
           ...quotationUpdate, 
@@ -524,7 +524,7 @@ export class MongoDBStorage implements IStorage {
       { returnDocument: 'after' }
     );
     
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Quotation : undefined;
+    return result ? { ...result, id: result.id } as Quotation : undefined;
   }
 
   async getAllQuotations(): Promise<Quotation[]> {
