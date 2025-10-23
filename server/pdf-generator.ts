@@ -79,7 +79,31 @@ class PDFGenerator {
     const isProduction = process.env.NODE_ENV === 'production';
     
     if (isProduction) {
-      // Render-specific configuration
+      // Render-specific configuration with multiple fallback paths
+      const possiblePaths = [
+        '/usr/bin/chromium-browser',
+        '/usr/bin/chromium',
+        '/usr/bin/google-chrome',
+        '/usr/bin/google-chrome-stable',
+        '/opt/google/chrome/chrome',
+        '/opt/chromium/chromium'
+      ];
+      
+      // Find the first available Chrome/Chromium executable
+      let executablePath: string | undefined;
+      try {
+        const fs = require('fs');
+        for (const path of possiblePaths) {
+          if (fs.existsSync(path)) {
+            executablePath = path;
+            console.log(`Found Chrome/Chromium at: ${path}`);
+            break;
+          }
+        }
+      } catch (error) {
+        console.warn('Could not check Chrome/Chromium paths:', error);
+      }
+      
       return {
         headless: true,
         args: [
@@ -92,10 +116,18 @@ class PDFGenerator {
           '--single-process',
           '--disable-gpu',
           '--disable-web-security',
-          '--disable-features=VizDisplayCompositor'
+          '--disable-features=VizDisplayCompositor',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--disable-field-trial-config',
+          '--disable-ipc-flooding-protection',
+          '--memory-pressure-off',
+          '--max_old_space_size=4096'
         ],
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-        timeout: 30000
+        executablePath: executablePath || process.env.PUPPETEER_EXECUTABLE_PATH,
+        timeout: 60000,
+        protocolTimeout: 60000
       };
     } else {
       // Development configuration
@@ -104,6 +136,30 @@ class PDFGenerator {
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
         timeout: 30000
       };
+    }
+  }
+
+  // Fallback PDF generation using html-pdf-node (no Chrome required)
+  private async generatePDFFallback(html: string): Promise<Buffer> {
+    try {
+      const htmlPdfNode = require('html-pdf-node');
+      const options = {
+        format: 'A4',
+        margin: {
+          top: '5mm',
+          right: '5mm',
+          bottom: '5mm',
+          left: '5mm'
+        },
+        printBackground: true
+      };
+      
+      const pdfBuffer = await htmlPdfNode.generatePdf({ content: html }, options);
+      console.log('PDF generated using html-pdf-node fallback');
+      return pdfBuffer;
+    } catch (error) {
+      console.error('Fallback PDF generation failed:', error);
+      throw new Error('PDF generation failed: No Chrome/Chromium available and fallback failed');
     }
   }
 
@@ -169,32 +225,48 @@ class PDFGenerator {
         printConfig: printConfig
       });
       
-      // Create a simple, fresh browser instance
-      tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
-      
-      // Create page
-      page = await tempBrowser.newPage();
-      
-      // Set content directly
-      await page.setContent(html, { waitUntil: 'domcontentloaded' });
-      
-      // Wait a bit for content to settle
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Generate PDF
-      const pdfBuffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          top: '5mm',
-          right: '5mm',
-          bottom: '5mm',
-          left: '5mm'
-        }
-      });
+      // Try Puppeteer first, fallback to html-pdf-node if it fails
+      try {
+        // Create a simple, fresh browser instance
+        tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
+        
+        // Create page
+        page = await tempBrowser.newPage();
+        
+        // Set content directly
+        await page.setContent(html, { waitUntil: 'domcontentloaded' });
+        
+        // Wait a bit for content to settle
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Generate PDF
+        const pdfBuffer = await page.pdf({
+          format: 'A4',
+          printBackground: true,
+          margin: {
+            top: '5mm',
+            right: '5mm',
+            bottom: '5mm',
+            left: '5mm'
+          }
+        });
 
-      console.log('Quotation PDF generated successfully');
-      return Buffer.from(pdfBuffer);
+        console.log('Quotation PDF generated successfully with Puppeteer');
+        return Buffer.from(pdfBuffer);
+      } catch (puppeteerError) {
+        console.warn('Puppeteer failed, trying fallback method:', puppeteerError);
+        
+        // Clean up Puppeteer resources
+        if (page) {
+          try { await page.close(); } catch {}
+        }
+        if (tempBrowser) {
+          try { await tempBrowser.close(); } catch {}
+        }
+        
+        // Use fallback method
+        return await this.generatePDFFallback(html);
+      }
       
     } catch (error) {
       console.error('Quotation PDF generation failed:', error);
