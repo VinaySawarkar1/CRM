@@ -1,4 +1,6 @@
 import * as puppeteer from 'puppeteer';
+import * as fs from 'fs';
+import * as htmlPdfNode from 'html-pdf-node';
 import {
   quotationTemplate,
   proformaTemplate,
@@ -92,7 +94,6 @@ class PDFGenerator {
       // Find the first available Chrome/Chromium executable
       let executablePath: string | undefined;
       try {
-        const fs = require('fs');
         for (const path of possiblePaths) {
           if (fs.existsSync(path)) {
             executablePath = path;
@@ -142,7 +143,6 @@ class PDFGenerator {
   // Fallback PDF generation using html-pdf-node (no Chrome required)
   private async generatePDFFallback(html: string): Promise<Buffer> {
     try {
-      const htmlPdfNode = require('html-pdf-node');
       const options = {
         format: 'A4',
         margin: {
