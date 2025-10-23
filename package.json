@@ -11,7 +11,8 @@
     "db:push": "drizzle-kit push",
     "import-data": "node import-excel.cjs",
     "import-excel": "node import-excel.cjs",
-    "clean:leads-unknown": "node scripts/clean-leads-unknown.cjs"
+    "clean:leads-unknown": "node scripts/clean-leads-unknown.cjs",
+    "migrate:mongodb": "node migrate-to-mongodb.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
