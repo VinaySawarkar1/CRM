@@ -29,15 +29,17 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import OrderForm from "@/components/orders/order-form";
-import { Plus, Loader2, Filter, UserPlus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import ExcelImportExport from "@/components/common/ExcelImportExport";
 
 export default function LeadsPage() {
@@ -378,40 +380,81 @@ export default function LeadsPage() {
           </div>
         </div>
 
-        {/* Category Tabs - Always visible */}
-        <div className="mb-6">
-          <Tabs defaultValue="all" value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList className="mb-4 overflow-x-auto flex flex-nowrap pb-1 scrollbar-hide w-full">
-              <TabsTrigger value="all" className="whitespace-nowrap">
-                All Leads
-                <Badge variant="outline" className="ml-2 bg-gray-100">{categoryCounts.all || 0}</Badge>
-              </TabsTrigger>
-              {Object.keys(categoryLabels || {}).length > 0 ? Object.entries(categoryLabels).map(([value, label]) => (
-                <TabsTrigger key={value} value={value} className="whitespace-nowrap">
-                  {label}
-                  <Badge variant="outline" className="ml-2 bg-gray-100">{categoryCounts[value] || 0}</Badge>
-                </TabsTrigger>
-              )) : null}
-            </TabsList>
-          </Tabs>
-        </div>
+        {/* Category and Source Filters - Dropdown style */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <Label htmlFor="category-filter" className="text-sm font-medium mb-2 block">
+              Filter by Category
+              {selectedCategory !== "all" && (
+                <span className="ml-2 text-xs text-gray-500">
+                  ({categoryCounts[selectedCategory] || 0} leads)
+                </span>
+              )}
+            </Label>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger id="category-filter" className="w-full">
+                <SelectValue placeholder="Select category">
+                  {selectedCategory === "all" 
+                    ? `All Leads`
+                    : categoryLabels[selectedCategory] || 'All Leads'
+                  }
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  <div className="flex items-center justify-between w-full">
+                    <span>All Leads</span>
+                    <Badge variant="outline" className="ml-2 bg-gray-100">{categoryCounts.all || 0}</Badge>
+                  </div>
+                </SelectItem>
+                {Object.keys(categoryLabels || {}).length > 0 && Object.entries(categoryLabels).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    <div className="flex items-center justify-between w-full">
+                      <span>{label}</span>
+                      <Badge variant="outline" className="ml-2 bg-gray-100">{categoryCounts[value] || 0}</Badge>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Source Filter Tabs - Always visible */}
-        <div className="mb-6">
-          <Tabs defaultValue="all" value={selectedSource} onValueChange={setSelectedSource}>
-            <TabsList className="mb-4 overflow-x-auto flex flex-nowrap pb-1 scrollbar-hide w-full">
-              <TabsTrigger value="all" className="whitespace-nowrap">
-                All Sources
-                <Badge variant="outline" className="ml-2 bg-gray-100">{sourceCounts.all || 0}</Badge>
-              </TabsTrigger>
-              {Object.keys(sourceLabels || {}).length > 0 ? Object.entries(sourceLabels).map(([value, label]) => (
-                <TabsTrigger key={value} value={value} className="whitespace-nowrap">
-                  {label}
-                  <Badge variant="outline" className="ml-2 bg-gray-100">{sourceCounts[value] || 0}</Badge>
-                </TabsTrigger>
-              )) : null}
-            </TabsList>
-          </Tabs>
+          <div className="flex-1">
+            <Label htmlFor="source-filter" className="text-sm font-medium mb-2 block">
+              Filter by Source
+              {selectedSource !== "all" && (
+                <span className="ml-2 text-xs text-gray-500">
+                  ({sourceCounts[selectedSource] || 0} leads)
+                </span>
+              )}
+            </Label>
+            <Select value={selectedSource} onValueChange={setSelectedSource}>
+              <SelectTrigger id="source-filter" className="w-full">
+                <SelectValue placeholder="Select source">
+                  {selectedSource === "all"
+                    ? `All Sources`
+                    : sourceLabels[selectedSource] || 'All Sources'
+                  }
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  <div className="flex items-center justify-between w-full">
+                    <span>All Sources</span>
+                    <Badge variant="outline" className="ml-2 bg-gray-100">{sourceCounts.all || 0}</Badge>
+                  </div>
+                </SelectItem>
+                {Object.keys(sourceLabels || {}).length > 0 && Object.entries(sourceLabels).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    <div className="flex items-center justify-between w-full">
+                      <span>{label}</span>
+                      <Badge variant="outline" className="ml-2 bg-gray-100">{sourceCounts[value] || 0}</Badge>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Leads Content */}
