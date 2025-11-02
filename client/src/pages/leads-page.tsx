@@ -58,15 +58,27 @@ export default function LeadsPage() {
   const pageSize = 20;
   const [currentLead, setCurrentLead] = useState<Lead | null>(null);
   
-  // Dynamic categories from API
-  const { data: allCategories = [] } = useQuery<any[]>({ queryKey: ["/api/lead-categories"] });
-  const activeCategories = allCategories.filter(c => c.isActive);
-  const categoryLabels: Record<string, string> = Object.fromEntries(activeCategories.map((c: any) => [c.key, c.name]));
+  // Dynamic categories from API with error handling
+  const { data: allCategories = [], error: categoriesError } = useQuery<any[]>({ 
+    queryKey: ["/api/lead-categories"],
+    retry: 2,
+    retryDelay: 1000,
+  });
+  const activeCategories = Array.isArray(allCategories) ? allCategories.filter(c => c && c.isActive) : [];
+  const categoryLabels: Record<string, string> = activeCategories.length > 0 
+    ? Object.fromEntries(activeCategories.map((c: any) => [c?.key || '', c?.name || '']).filter(([key]) => key))
+    : {};
 
-  // Dynamic sources from API
-  const { data: allSources = [] } = useQuery<any[]>({ queryKey: ["/api/lead-sources"] });
-  const activeSources = allSources.filter(s => s.isActive);
-  const sourceLabels: Record<string, string> = Object.fromEntries(activeSources.map((s: any) => [s.key, s.name]));
+  // Dynamic sources from API with error handling
+  const { data: allSources = [], error: sourcesError } = useQuery<any[]>({ 
+    queryKey: ["/api/lead-sources"],
+    retry: 2,
+    retryDelay: 1000,
+  });
+  const activeSources = Array.isArray(allSources) ? allSources.filter(s => s && s.isActive) : [];
+  const sourceLabels: Record<string, string> = activeSources.length > 0
+    ? Object.fromEntries(activeSources.map((s: any) => [s?.key || '', s?.name || '']).filter(([key]) => key))
+    : {};
 
   // Get all leads
   const {
@@ -366,38 +378,38 @@ export default function LeadsPage() {
           </div>
         </div>
 
-        {/* Category Tabs */}
+        {/* Category Tabs - Always visible */}
         <div className="mb-6">
           <Tabs defaultValue="all" value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList className="mb-4 overflow-x-auto flex flex-nowrap pb-1 scrollbar-hide">
+            <TabsList className="mb-4 overflow-x-auto flex flex-nowrap pb-1 scrollbar-hide w-full">
               <TabsTrigger value="all" className="whitespace-nowrap">
                 All Leads
                 <Badge variant="outline" className="ml-2 bg-gray-100">{categoryCounts.all || 0}</Badge>
               </TabsTrigger>
-              {Object.entries(categoryLabels).map(([value, label]) => (
+              {Object.keys(categoryLabels || {}).length > 0 ? Object.entries(categoryLabels).map(([value, label]) => (
                 <TabsTrigger key={value} value={value} className="whitespace-nowrap">
                   {label}
                   <Badge variant="outline" className="ml-2 bg-gray-100">{categoryCounts[value] || 0}</Badge>
                 </TabsTrigger>
-              ))}
+              )) : null}
             </TabsList>
           </Tabs>
         </div>
 
-        {/* Source Filter Tabs */}
+        {/* Source Filter Tabs - Always visible */}
         <div className="mb-6">
           <Tabs defaultValue="all" value={selectedSource} onValueChange={setSelectedSource}>
-            <TabsList className="mb-4 overflow-x-auto flex flex-nowrap pb-1 scrollbar-hide">
+            <TabsList className="mb-4 overflow-x-auto flex flex-nowrap pb-1 scrollbar-hide w-full">
               <TabsTrigger value="all" className="whitespace-nowrap">
                 All Sources
                 <Badge variant="outline" className="ml-2 bg-gray-100">{sourceCounts.all || 0}</Badge>
               </TabsTrigger>
-              {Object.entries(sourceLabels).map(([value, label]) => (
+              {Object.keys(sourceLabels || {}).length > 0 ? Object.entries(sourceLabels).map(([value, label]) => (
                 <TabsTrigger key={value} value={value} className="whitespace-nowrap">
                   {label}
                   <Badge variant="outline" className="ml-2 bg-gray-100">{sourceCounts[value] || 0}</Badge>
                 </TabsTrigger>
-              ))}
+              )) : null}
             </TabsList>
           </Tabs>
         </div>
