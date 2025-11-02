@@ -2,7 +2,7 @@
 // This ensures consistent UI across local, Replit, and Render deployments
 export const defaultTheme = {
   variant: "professional",
-  primary: "hsl(221, 83%, 53%)", // Blue-600 for Cortex AI branding
+  primary: "hsl(221, 83%, 53%)", // Blue-600 for BizSuite branding
   appearance: "light",
   radius: 0.5
 };

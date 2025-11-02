@@ -66,18 +66,37 @@ export default function OrdersPage() {
   // Create order mutation
   const createOrder = useMutation({
     mutationFn: async (data: any) => {
-      const subtotalNum = (Array.isArray(data.items) ? data.items : []).reduce((s: number, it: any) => s + (Number(it.price)||0) * (Number(it.quantity)||0), 0);
-      const taxAmountNum = 0;
+      const items = Array.isArray(data.items) ? data.items : [];
+      const subtotalNum = items.reduce((s: number, it: any) => {
+        const price = typeof it.price === 'string' ? parseFloat(it.price.replace(/[^0-9.-]/g, '')) : Number(it.price || 0);
+        const quantity = Number(it.quantity || 0);
+        return s + (price * quantity);
+      }, 0);
+      const taxAmountNum = typeof data.taxAmount === 'number' ? data.taxAmount : parseFloat(String(data.taxAmount || 0));
+      const totalAmountNum = subtotalNum + taxAmountNum;
+      
       const payload = {
-        orderNumber: data.orderNumber,
+        orderNumber: data.orderNumber || `ORD-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
         customerId: data.customerId ?? null,
-        customerName: data.customerName,
-        customerCompany: data.customerCompany,
-        items: data.items,
+        customerName: data.customerName || '',
+        customerCompany: data.customerCompany || '',
+        items: items.map((it: any) => ({
+          sku: it.sku || '',
+          name: it.name || '',
+          quantity: Number(it.quantity || 1),
+          price: typeof it.price === 'string' ? parseFloat(it.price.replace(/[^0-9.-]/g, '')) : Number(it.price || 0),
+        })),
         subtotal: subtotalNum.toFixed(2),
         taxAmount: taxAmountNum.toFixed(2),
-        totalAmount: (subtotalNum + taxAmountNum).toFixed(2),
-        status: data.status || 'processing'
+        totalAmount: totalAmountNum.toFixed(2),
+        status: data.status || 'processing',
+        address: data.address || null,
+        city: data.city || null,
+        state: data.state || null,
+        country: data.country || 'India',
+        pincode: data.pincode || null,
+        gstNumber: data.gstNumber || null,
+        panNumber: data.panNumber || null,
       };
       const res = await apiRequest("POST", "/api/orders", payload);
       return res.json();
@@ -103,16 +122,35 @@ export default function OrdersPage() {
   // Update order mutation
   const updateOrder = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const subtotalNum = (Array.isArray(data.items) ? data.items : []).reduce((s: number, it: any) => s + (Number(it.price)||0) * (Number(it.quantity)||0), 0);
-      const taxAmountNum = 0;
+      const items = Array.isArray(data.items) ? data.items : [];
+      const subtotalNum = items.reduce((s: number, it: any) => {
+        const price = typeof it.price === 'string' ? parseFloat(it.price.replace(/[^0-9.-]/g, '')) : Number(it.price || 0);
+        const quantity = Number(it.quantity || 0);
+        return s + (price * quantity);
+      }, 0);
+      const taxAmountNum = typeof data.taxAmount === 'number' ? data.taxAmount : parseFloat(String(data.taxAmount || 0));
+      const totalAmountNum = subtotalNum + taxAmountNum;
+      
       const payload = {
-        customerName: data.customerName,
-        customerCompany: data.customerCompany,
-        items: data.items,
+        customerName: data.customerName || '',
+        customerCompany: data.customerCompany || '',
+        items: items.map((it: any) => ({
+          sku: it.sku || '',
+          name: it.name || '',
+          quantity: Number(it.quantity || 1),
+          price: typeof it.price === 'string' ? parseFloat(it.price.replace(/[^0-9.-]/g, '')) : Number(it.price || 0),
+        })),
         subtotal: subtotalNum.toFixed(2),
         taxAmount: taxAmountNum.toFixed(2),
-        totalAmount: (subtotalNum + taxAmountNum).toFixed(2),
-        status: data.status
+        totalAmount: totalAmountNum.toFixed(2),
+        status: data.status || 'processing',
+        address: data.address || null,
+        city: data.city || null,
+        state: data.state || null,
+        country: data.country || 'India',
+        pincode: data.pincode || null,
+        gstNumber: data.gstNumber || null,
+        panNumber: data.panNumber || null,
       };
       const res = await apiRequest("PUT", `/api/orders/${id}`, payload);
       return res.json();
@@ -179,35 +217,35 @@ export default function OrdersPage() {
     window.open(`/api/orders/${order.id}/print-internal`, '_blank');
   };
 
+  const generateInvoiceMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("POST", `/api/orders/${id}/generate-invoice`);
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ message: "Failed to generate invoice" }));
+        throw new Error(error.message || "Failed to generate invoice");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
+      toast({
+        title: "Success",
+        description: "Invoice generated from order successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: `Failed to generate invoice: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleGenerateInvoice = (order: Order) => {
     if (confirm("Generate invoice for this order?")) {
-      // Make API call to generate invoice from order
-      fetch(`/api/orders/${order.id}/generate-invoice`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          toast({
-            title: "Success",
-            description: "Invoice generated from order successfully.",
-          });
-          // Refresh orders list
-          queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-        } else {
-          throw new Error(data.message || 'Failed to generate invoice from order');
-        }
-      })
-      .catch(error => {
-        toast({
-          title: "Error",
-          description: `Failed to generate invoice from order: ${error.message}`,
-          variant: "destructive",
-        });
-      });
+      generateInvoiceMutation.mutate(order.id);
     }
   };
 
@@ -384,6 +422,9 @@ export default function OrdersPage() {
                   <X className="h-4 w-4" />
                 </Button>
               </div>
+              <DialogDescription>
+                View detailed information about this order
+              </DialogDescription>
             </DialogHeader>
             
             {currentOrder && (
@@ -411,7 +452,7 @@ export default function OrdersPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm font-medium">Total Amount:</span>
-                      <span className="text-sm font-bold">{formatCurrency(currentOrder.amount)}</span>
+                      <span className="text-sm font-bold">{formatCurrency(currentOrder.totalAmount || currentOrder.amount || 0)}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -456,21 +497,27 @@ export default function OrdersPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {Array.isArray(currentOrder.items) && currentOrder.items.map((item: any, index: number) => (
+                          {Array.isArray(currentOrder.items) && currentOrder.items.length > 0 ? currentOrder.items.map((item: any, index: number) => (
                             <tr key={index}>
                               <td className="px-4 py-2 text-sm">
-                                <div>{item.name}</div>
-                                <div className="text-xs text-gray-500">{item.sku}</div>
+                                <div>{item.name || 'Unnamed Item'}</div>
+                                {item.sku && <div className="text-xs text-gray-500">{item.sku}</div>}
                               </td>
-                              <td className="px-4 py-2 text-sm">{item.quantity}</td>
+                              <td className="px-4 py-2 text-sm">{item.quantity || 0}</td>
                               <td className="px-4 py-2 text-sm text-right">
-                                {formatCurrency(item.price)}
+                                {formatCurrency(item.price || 0)}
                               </td>
                               <td className="px-4 py-2 text-sm font-medium text-right">
-                                {formatCurrency(item.price * item.quantity)}
+                                {formatCurrency((item.price || 0) * (item.quantity || 0))}
                               </td>
                             </tr>
-                          ))}
+                          )) : (
+                            <tr>
+                              <td colSpan={4} className="px-4 py-2 text-sm text-center text-gray-500">
+                                No items in this order
+                              </td>
+                            </tr>
+                          )}
                         </tbody>
                         <tfoot className="bg-gray-50">
                           <tr>
@@ -478,7 +525,7 @@ export default function OrdersPage() {
                               Total:
                             </td>
                             <td className="px-4 py-2 text-sm font-bold text-right">
-                              {formatCurrency(currentOrder.amount)}
+                              {formatCurrency(currentOrder.totalAmount || currentOrder.amount || 0)}
                             </td>
                           </tr>
                         </tfoot>

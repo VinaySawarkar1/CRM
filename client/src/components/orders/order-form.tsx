@@ -37,7 +37,9 @@ const orderFormSchema = insertOrderSchema.extend({
   orderNumber: z.string().min(3, "Order number is required"),
   status: z.string().min(1, "Status is required"),
   items: z.array(orderItemSchema),
-  amount: z.number().min(0, "Amount must be a positive number"),
+  subtotal: z.number().min(0, "Subtotal must be a positive number").optional(),
+  taxAmount: z.number().min(0, "Tax amount must be a positive number").optional(),
+  totalAmount: z.number().min(0, "Total amount must be a positive number"),
 });
 
 type OrderFormValues = z.infer<typeof orderFormSchema>;
@@ -58,7 +60,9 @@ export default function OrderForm({
     customerCompany: "",
     status: "processing",
     items: [],
-    amount: 0,
+    subtotal: 0,
+    taxAmount: 0,
+    totalAmount: 0,
   },
   onSubmit,
   isSubmitting,
@@ -72,7 +76,25 @@ export default function OrderForm({
       setValue("customerName", leadData.name);
       setValue("customerCompany", leadData.company);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leadData]);
+  
+  // Initialize form values from defaultValues and recalculate totals
+  useEffect(() => {
+    if (defaultValues && Object.keys(defaultValues).length > 0 && mode === "edit") {
+      Object.entries(defaultValues).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          setValue(key as any, value);
+        }
+      });
+      // Recalculate totals when defaultValues change
+      const timer = setTimeout(() => {
+        recalculateTotal();
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues, mode]);
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
@@ -89,6 +111,7 @@ export default function OrderForm({
       ...currentItems,
       { sku: "", name: "", quantity: 1, price: 0 },
     ]);
+    setTimeout(() => recalculateTotal(), 50);
   };
 
   // Helper to remove an item from the order
@@ -104,8 +127,16 @@ export default function OrderForm({
   // Helper to recalculate the total order amount
   const recalculateTotal = () => {
     const items = form.getValues("items") || [];
-    const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
-    setValue("amount", subtotal);
+    const subtotal = items.reduce((sum, item) => {
+      const price = typeof item.price === 'number' ? item.price : parseFloat(String(item.price || 0));
+      const quantity = typeof item.quantity === 'number' ? item.quantity : parseInt(String(item.quantity || 0));
+      return sum + (price * quantity);
+    }, 0);
+    const taxAmount = parseFloat(String(form.getValues("taxAmount") || 0));
+    const totalAmount = subtotal + taxAmount;
+    setValue("subtotal", subtotal);
+    setValue("taxAmount", taxAmount);
+    setValue("totalAmount", totalAmount);
   };
 
   // When an inventory item is selected, populate its details
@@ -113,11 +144,12 @@ export default function OrderForm({
     const item = inventoryItems.find(i => i.sku === sku);
     if (item) {
       const currentItems = [...form.getValues("items")];
+      const itemPrice = typeof item.price === 'number' ? item.price : parseFloat(String(item.price || 0));
       currentItems[index] = {
         ...currentItems[index],
-        sku: item.sku,
-        name: item.name,
-        price: item.price,
+        sku: item.sku || '',
+        name: item.name || '',
+        price: itemPrice,
       };
       setValue("items", currentItems);
       recalculateTotal();
@@ -125,11 +157,24 @@ export default function OrderForm({
   };
 
   // When quantity changes, update the total
-  const handleQuantityChange = (quantity: number, index: number) => {
+  const handleQuantityChange = (quantity: number | string, index: number) => {
+    const qty = typeof quantity === 'string' ? parseInt(quantity) || 1 : quantity;
     const currentItems = [...form.getValues("items")];
     currentItems[index] = {
       ...currentItems[index],
-      quantity,
+      quantity: Math.max(1, qty),
+    };
+    setValue("items", currentItems);
+    recalculateTotal();
+  };
+
+  // When price changes manually, update the total
+  const handlePriceChange = (price: number | string, index: number) => {
+    const priceNum = typeof price === 'string' ? parseFloat(price) || 0 : price;
+    const currentItems = [...form.getValues("items")];
+    currentItems[index] = {
+      ...currentItems[index],
+      price: Math.max(0, priceNum),
     };
     setValue("items", currentItems);
     recalculateTotal();
@@ -192,30 +237,57 @@ export default function OrderForm({
           />
         </div>
 
-        <FormField
-          control={control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Order Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Order Status</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select order status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="processing">Processing</SelectItem>
+                    <SelectItem value="shipped">Shipped</SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={control}
+            name="taxAmount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tax Amount (₹)</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select order status" />
-                  </SelectTrigger>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    {...field}
+                    value={field.value || 0}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value) || 0;
+                      field.onChange(value);
+                      recalculateTotal();
+                    }}
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="processing">Processing</SelectItem>
-                  <SelectItem value="shipped">Shipped</SelectItem>
-                  <SelectItem value="delivered">Delivered</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="space-y-4">
           <div className="flex justify-between items-center">
@@ -244,7 +316,7 @@ export default function OrderForm({
                   <FormLabel>Item SKU</FormLabel>
                   <Select
                     onValueChange={(value) => handleSkuSelect(value, index)}
-                    value={item.sku}
+                    value={item.sku || ""}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -268,19 +340,21 @@ export default function OrderForm({
                   <Input
                     type="number"
                     min="1"
-                    value={item.quantity}
-                    onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1, index)}
+                    value={item.quantity || 1}
+                    onChange={(e) => handleQuantityChange(e.target.value, index)}
                   />
                 </FormItem>
               </div>
               
               <div className="col-span-2">
                 <FormItem>
-                  <FormLabel>Price</FormLabel>
+                  <FormLabel>Price (₹)</FormLabel>
                   <Input
-                    type="text"
-                    value={formatCurrency(item.price)}
-                    disabled
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={item.price || 0}
+                    onChange={(e) => handlePriceChange(e.target.value, index)}
                   />
                 </FormItem>
               </div>
@@ -290,8 +364,9 @@ export default function OrderForm({
                   <FormLabel>Subtotal</FormLabel>
                   <Input
                     type="text"
-                    value={formatCurrency(item.price * item.quantity)}
+                    value={formatCurrency((item.price || 0) * (item.quantity || 0))}
                     disabled
+                    readOnly
                   />
                 </FormItem>
               </div>
@@ -311,10 +386,24 @@ export default function OrderForm({
           ))}
         </div>
 
-        <div className="flex justify-between items-center border-t pt-4">
-          <div className="text-lg font-medium">Total Amount:</div>
-          <div className="text-xl font-bold">
-            {formatCurrency(watch("amount") || 0)}
+        <div className="space-y-2 border-t pt-4">
+          <div className="flex justify-between items-center">
+            <div className="text-sm font-medium text-gray-600">Subtotal:</div>
+            <div className="text-sm font-semibold">
+              {formatCurrency(watch("subtotal") || 0)}
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="text-sm font-medium text-gray-600">Tax Amount:</div>
+            <div className="text-sm font-semibold">
+              {formatCurrency(watch("taxAmount") || 0)}
+            </div>
+          </div>
+          <div className="flex justify-between items-center border-t pt-2">
+            <div className="text-lg font-medium">Total Amount:</div>
+            <div className="text-xl font-bold">
+              {formatCurrency(watch("totalAmount") || 0)}
+            </div>
           </div>
         </div>
 

@@ -51,12 +51,24 @@ export default defineConfig(async () => {
       emptyOutDir: true,
     },
     server: {
-      host: '0.0.0.0',
+      host: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
       port: 3001,
       strictPort: true,
-      hmr: {
-        host: '0.0.0.0',
-        port: 3001,
+      hmr: false, // Temporarily disable HMR to stop continuous refresh
+      watch: {
+        ignored: [
+          '**/data/**',
+          '**/dist/**',
+          '**/node_modules/**',
+          '**/.git/**',
+          '**/scripts/**',
+          '**/*.cjs',
+          '**/*.js',
+          '**/client/index.html',
+        ],
+      },
+      fs: {
+        strict: false,
       },
     },
   };

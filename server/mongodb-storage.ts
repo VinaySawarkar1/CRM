@@ -656,56 +656,87 @@ export class MongoDBStorage implements IStorage {
 
   // Order operations
   async getOrder(id: number): Promise<Order | undefined> {
-    const result = await this.collections.orders.findOne({ _id: this.convertToObjectId(id) });
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Order : undefined;
+    const result = await this.collections.orders.findOne({ id });
+    if (!result) return undefined;
+    const { _id, ...orderData } = result;
+    return {
+      ...orderData,
+      id: this.convertToNumberId(result.id || result._id),
+    } as Order;
   }
 
   async createOrder(order: InsertOrder): Promise<Order> {
-    const result = await this.collections.orders.insertOne({
+    // Get the next ID
+    const allOrders = await this.getAllOrders();
+    const maxId = allOrders.length > 0 ? Math.max(...allOrders.map(o => typeof o.id === 'number' ? o.id : parseInt(String(o.id)) || 0)) : 0;
+    const nextId = maxId + 1;
+    
+    const orderData = {
       ...order,
+      id: nextId,
+      orderNumber: order.orderNumber || `ORD-${new Date().getFullYear()}-${nextId}`,
+      customerName: order.customerName || '',
+      customerCompany: order.customerCompany || '',
+      status: order.status || "processing",
+      items: Array.isArray(order.items) ? order.items : [],
+      subtotal: order.subtotal || "0",
+      taxAmount: order.taxAmount || "0",
+      totalAmount: order.totalAmount || order.subtotal || "0",
       createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    };
+    
+    const result = await this.collections.orders.insertOne(orderData);
     
     return {
-      ...order,
-      id: this.convertToNumberId(result.insertedId),
+      ...orderData,
+      id: nextId,
       createdAt: new Date(),
-      updatedAt: new Date(),
     } as Order;
   }
 
   async updateOrder(id: number, orderUpdate: Partial<InsertOrder>): Promise<Order | undefined> {
     const result = await this.collections.orders.findOneAndUpdate(
-      { _id: this.convertToObjectId(id) },
+      { id },
       { 
         $set: { 
-          ...orderUpdate, 
-          updatedAt: new Date() 
+          ...orderUpdate,
         } 
       },
       { returnDocument: 'after' }
     );
     
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Order : undefined;
+    if (!result) return undefined;
+    const { _id, ...orderData } = result;
+    return {
+      ...orderData,
+      id: this.convertToNumberId(result.id || result._id),
+    } as Order;
   }
 
   async getAllOrders(): Promise<Order[]> {
     const results = await this.collections.orders.find().toArray();
-    return results.map(order => ({
-      ...order,
-      id: this.convertToNumberId(order._id),
-    })) as Order[];
+    return results.map(order => {
+      const { _id, ...orderData } = order;
+      return {
+        ...orderData,
+        id: this.convertToNumberId(order.id || order._id),
+      };
+    }) as Order[];
   }
 
   async deleteOrder(id: number): Promise<boolean> {
-    const result = await this.collections.orders.deleteOne({ _id: this.convertToObjectId(id) });
+    const result = await this.collections.orders.deleteOne({ id });
     return result.deletedCount > 0;
   }
 
   async getOrderByNumber(orderNumber: string): Promise<Order | undefined> {
     const result = await this.collections.orders.findOne({ orderNumber });
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Order : undefined;
+    if (!result) return undefined;
+    const { _id, ...orderData } = result;
+    return {
+      ...orderData,
+      id: this.convertToNumberId(result.id || result._id),
+    } as Order;
   }
 
   // Inventory operations

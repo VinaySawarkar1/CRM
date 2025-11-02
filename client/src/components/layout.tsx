@@ -59,7 +59,7 @@ export default function Layout({ children }: LayoutProps) {
                   C
                 </div>
                 <span className="hidden sm:block text-base font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Cortex AI
+                  BizSuite
                 </span>
               </div>
             </Link>

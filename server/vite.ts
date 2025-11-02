@@ -6,8 +6,7 @@ import { createServer as createViteServer, createLogger } from "vite";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import { type Server } from "http";
-import viteConfig from "../vite.config";
-import { nanoid } from "nanoid";
+import viteConfigFn from "../vite.config";
 
 const viteLogger = createLogger();
 
@@ -23,19 +22,20 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
+  const isProduction = process.env.NODE_ENV === 'production';
   const serverOptions = {
     middlewareMode: true,
-    hmr: { 
-      server,
-      host: '0.0.0.0',
-      port: 3001,
-    },
+    hmr: false, // Disable HMR to prevent continuous refresh loop
     allowedHosts: true,
-    host: '0.0.0.0',
+    host: isProduction ? '0.0.0.0' : 'localhost',
   };
 
+  // Resolve vite config (it's a function that needs to be awaited)
+  const resolvedViteConfig = typeof viteConfigFn === 'function' ? await viteConfigFn() : viteConfigFn;
+  
   const vite = await createViteServer({
-    ...viteConfig,
+    ...resolvedViteConfig,
+    root: resolvedViteConfig.root || path.resolve(__dirname, "..", "client"),
     configFile: false,
     customLogger: {
       ...viteLogger,
@@ -49,6 +49,10 @@ export async function setupVite(app: Express, server: Server) {
   });
 
   app.use(vite.middlewares);
+  
+  // Cache for template stats to avoid unnecessary reloads
+  let templateStats: { mtime: number; size: number } | null = null;
+  
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
 
@@ -60,12 +64,18 @@ export async function setupVite(app: Express, server: Server) {
         "index.html",
       );
 
-      // always reload the index.html file from disk incase it changes
-      let template = await fs.promises.readFile(clientTemplate, "utf-8");
-      template = template.replace(
-        `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid()}"`,
-      );
+      // Check if template file has actually changed
+      const stats = await fs.promises.stat(clientTemplate);
+      const needsReload = !templateStats || 
+        stats.mtimeMs !== templateStats.mtime || 
+        stats.size !== templateStats.size;
+
+      if (needsReload) {
+        templateStats = { mtime: stats.mtimeMs, size: stats.size };
+      }
+
+      // Read template and transform - let Vite handle caching
+      const template = await fs.promises.readFile(clientTemplate, "utf-8");
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {

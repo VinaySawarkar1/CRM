@@ -1707,7 +1707,7 @@ export default function QuotationForm({
                   <Label htmlFor="branch">Branch</Label>
                   <Input
                     id="branch"
-                    value="Cortex AI - Maharashtra (27ABGFR0875B1ZA)"
+                    value="BizSuite - Maharashtra (27ABGFR0875B1ZA)"
                     readOnly
                     className="bg-gray-50"
                   />

@@ -264,7 +264,7 @@ class PDFGenerator {
       // Generate HTML content using the template
       const html = quotationTemplate({
         company: {
-          name: companySettings?.name || "Cortex AI",
+          name: companySettings?.name || "BizSuite",
           address: companySettings?.address || "",
           phone: companySettings?.phone || "",
           email: companySettings?.email || "",
@@ -388,7 +388,7 @@ class PDFGenerator {
 
       const html = proformaTemplate({
         company: {
-          name: companySettings?.name || "Cortex AI",
+          name: companySettings?.name || "BizSuite",
           address: companySettings?.address || "",
           phone: companySettings?.phone || "",
           email: companySettings?.email || "",
@@ -472,7 +472,7 @@ class PDFGenerator {
 
       const html = invoiceTemplate({
         company: {
-          name: companySettings?.name || "Cortex AI",
+          name: companySettings?.name || "BizSuite",
           address: companySettings?.address || "",
           phone: companySettings?.phone || "",
           email: companySettings?.email || "",
@@ -547,7 +547,7 @@ class PDFGenerator {
       const companySettings = await storage.getCompanySettings();
       const html = deliveryChallanTemplate({
         company: {
-          name: companySettings?.name || "Cortex AI",
+          name: companySettings?.name || "BizSuite",
           address: companySettings?.address || "",
           phone: companySettings?.phone || "",
           email: companySettings?.email || "",
@@ -588,7 +588,7 @@ class PDFGenerator {
       const companySettings = await storage.getCompanySettings();
       const html = jobOrderTemplate({
         company: {
-          name: companySettings?.name || "Cortex AI",
+          name: companySettings?.name || "BizSuite",
           address: companySettings?.address || "",
           phone: companySettings?.phone || "",
           email: companySettings?.email || "",

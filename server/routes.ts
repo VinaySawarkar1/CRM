@@ -953,13 +953,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/orders/:id", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'orders:update', 'orders')) return res.status(403).json({ message: 'Forbidden' });
+      
       const id = parseInt(req.params.id);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid order ID" });
+      
+      // Validate update data (partial schema)
+      const orderData = insertOrderSchema.partial().parse(req.body);
       const storage = getStorage();
-      const updated = await storage.updateOrder(id, req.body);
+      const updated = await storage.updateOrder(id, orderData);
       if (!updated) return res.status(404).json({ message: "Order not found" });
       res.json(updated);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
       next(error);
     }
   });

@@ -142,7 +142,7 @@ export default function Sidebar({ className }: SidebarProps) {
           </div>
           <div className="min-w-0">
             <h1 className="text-base font-bold text-gray-900 truncate bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Cortex AI
+              BizSuite
             </h1>
             <p className="text-[11px] text-gray-500 font-medium">Business Suite</p>
           </div>
@@ -215,7 +215,7 @@ export default function Sidebar({ className }: SidebarProps) {
       {/* Footer */}
       <div className="p-5 border-t border-gray-100/50 bg-gradient-to-t from-white to-blue-50/20 flex-shrink-0">
         <div className="text-xs text-gray-500 text-center font-medium">
-          © 2025 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">Cortex AI</span>
+          © 2025 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">BizSuite</span>
         </div>
       </div>
     </div>

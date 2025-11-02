@@ -87,13 +87,13 @@ export default function AuthPage() {
               </div>
             </div>
             <h1 className="text-5xl font-bold tracking-wider mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-              Cortex AI
-            </h1>
-            <p className="mt-2 text-sm tracking-widest font-semibold text-blue-100">Cortex AI Business Suite</p>
+            BizSuite
+          </h1>
+          <p className="mt-2 text-sm tracking-widest font-semibold text-blue-100">BizSuite</p>
           </div>
           
           <div className="space-y-4 glass-dark p-6 rounded-2xl backdrop-blur-md">
-            <p className="text-xl font-semibold">Welcome to Cortex AI</p>
+            <p className="text-xl font-semibold">Welcome to BizSuite</p>
             <p className="text-blue-100">
               Our comprehensive platform allows you to:
             </p>
@@ -128,8 +128,8 @@ export default function AuthPage() {
               <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
                 <span className="text-2xl font-bold text-white">C</span>
               </div>
-              <h1 className="text-3xl font-bold tracking-wider bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Cortex AI</h1>
-              <p className="text-xs tracking-widest font-semibold text-gray-500 mt-1">Cortex AI Business Suite</p>
+              <h1 className="text-3xl font-bold tracking-wider bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">BizSuite</h1>
+              <p className="text-xs tracking-widest font-semibold text-gray-500 mt-1">BizSuite</p>
             </div>
             <CardTitle className="text-3xl text-center font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Welcome Back

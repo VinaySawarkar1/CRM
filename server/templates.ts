@@ -366,7 +366,7 @@ export function quotationTemplate(data: DocBase & {
       <table class="header-table">
         <tr>
           <td class="company-cell">
-            <div class="company-name">${company.name ?? "Cortex AI"}</div>
+            <div class="company-name">${company.name ?? "BizSuite"}</div>
             <div class="company-addr">
               ${company.address || ""}<br/>
               ${company.phone ? `Mobile Number: ${company.phone}<br/>` : ""}
@@ -379,7 +379,7 @@ export function quotationTemplate(data: DocBase & {
             <div class="logo-box">
               ${company.logo ? 
                 `<img src="${company.logo}" alt="Company Logo" class="company-logo" />` : 
-                `<div class="logo-title">${company.name ?? "Cortex AI"}™</div>
+                `<div class="logo-title">${company.name ?? "BizSuite"}™</div>
                  <div class="logo-tag">TEST. MEASURE. CALIBRATE.</div>`
               }
             </div>
@@ -524,7 +524,7 @@ export function quotationTemplate(data: DocBase & {
           <td>
             <div class="signature">
               <div class="line"></div>
-              <div><strong>For, ${company.name ?? "Cortex AI"}</strong></div>
+              <div><strong>For, ${company.name ?? "BizSuite"}</strong></div>
               <div>Authorised Signatory</div>
             </div>
           </td>
@@ -761,7 +761,7 @@ export function proformaTemplate(data: DocBase & {
       <table class="header-table">
         <tr>
           <td class="company-cell">
-            <div class="company-name">${company.name ?? "Cortex AI"}</div>
+            <div class="company-name">${company.name ?? "BizSuite"}</div>
             <div class="company-addr">
               ${company.address || ""}<br/>
               ${company.phone ? `Mobile Number: ${company.phone}<br/>` : ""}
@@ -774,7 +774,7 @@ export function proformaTemplate(data: DocBase & {
             <div class="logo-box">
               ${company.logo ? 
                 `<img src="${company.logo}" alt="Company Logo" class="company-logo" />` : 
-                `<div class="logo-title">${company.name ?? "Cortex AI"}™</div>
+                `<div class="logo-title">${company.name ?? "BizSuite"}™</div>
                  <div class="logo-tag">TEST. MEASURE. CALIBRATE.</div>`
               }
             </div>
@@ -1355,7 +1355,7 @@ export function purchaseOrderTemplate(data: DocBase & {
       <table class="header-table">
         <tr>
           <td class="company-cell">
-            <div class="company-name">${company.name ?? "Cortex AI"}</div>
+            <div class="company-name">${company.name ?? "BizSuite"}</div>
             <div class="company-addr">${company.address ?? ""}</div>
             ${company.phone ? `<div class="company-addr">Phone: ${company.phone}</div>` : ''}
             ${company.email ? `<div class="company-addr">Email: ${company.email}</div>` : ''}
@@ -1365,8 +1365,8 @@ export function purchaseOrderTemplate(data: DocBase & {
             ${company.logo ? `<img src="${company.logo}" alt="Company Logo" class="company-logo" />` : `
               <div class="logo-box">
                 <div>
-                  <div class="logo-title">${(company.name ?? "Cortex AI").substring(0, 1)}</div>
-                  <div class="logo-tag">${(company.name ?? "Cortex AI").split(' ').map(w => w[0]).join('')}</div>
+                  <div class="logo-title">${(company.name ?? "BizSuite").substring(0, 1)}</div>
+                  <div class="logo-tag">${(company.name ?? "BizSuite").split(' ').map(w => w[0]).join('')}</div>
                 </div>
               </div>
             `}
@@ -1397,7 +1397,7 @@ export function purchaseOrderTemplate(data: DocBase & {
           </td>
           <td>
             <div class="addr-title">OUR DETAILS</div>
-            <div><strong>Company:</strong> ${company.name ?? "Cortex AI"}</div>
+            <div><strong>Company:</strong> ${company.name ?? "BizSuite"}</div>
             <div><strong>Address:</strong> ${company.address ?? ""}</div>
             ${company.phone ? `<div><strong>Phone:</strong> ${company.phone}</div>` : ''}
             ${company.email ? `<div><strong>Email:</strong> ${company.email}</div>` : ''}
@@ -1529,7 +1529,7 @@ export function purchaseOrderTemplate(data: DocBase & {
           <td>
             <div class="signature">
               <div class="line"></div>
-              <div><strong>For, ${company.name ?? "Cortex AI"}</strong></div>
+              <div><strong>For, ${company.name ?? "BizSuite"}</strong></div>
               <div>Authorised Signatory</div>
             </div>
           </td>

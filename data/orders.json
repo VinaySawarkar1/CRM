@@ -6,39 +6,21 @@
     "customerCompany": "RK Technologies",
     "items": [
       {
-        "description": "Micrometer Holding Stand / Comparator Stand\n\nMake : Reckonix\nLength : 1000 mm\nBase : 500mm * 200 mm\nWith Micrometer holding fixture and Indicator holding fixture",
-        "hsnSac": "",
+        "sku": "DL-002",
+        "name": "Industrial Data Logger",
         "quantity": 1,
-        "unit": "no.s",
-        "rate": "27800",
-        "discount": "700",
-        "taxable": "22922",
-        "cgst": "2439",
-        "sgst": "2439",
-        "amount": "27800",
-        "leadTime": "",
-        "igst": "0",
-        "discountType": "amount"
+        "price": 4000
       },
       {
-        "description": "Freight Charges",
-        "hsnSac": "",
+        "sku": "MT-002",
+        "name": "Meatest Advanced System",
         "quantity": 1,
-        "unit": "no.s",
-        "rate": "1200",
-        "discount": "0",
-        "taxable": "984",
-        "cgst": "108",
-        "sgst": "108",
-        "amount": "1200",
-        "leadTime": "",
-        "igst": "0",
-        "discountType": "amount"
+        "price": 20000
       }
     ],
-    "subtotal": "29000",
-    "taxAmount": "5094",
-    "totalAmount": "34094",
+    "subtotal": "24000.00",
+    "taxAmount": "5094.00",
+    "totalAmount": "29094.00",
     "status": "processing",
     "id": 18,
     "createdAt": "2025-08-16T05:05:44.674Z",
@@ -53,7 +35,13 @@
     "listPrice": null,
     "purchasePrice": null,
     "profit": null,
-    "poFile": null
+    "poFile": null,
+    "city": null,
+    "state": null,
+    "country": "India",
+    "pincode": null,
+    "gstNumber": null,
+    "panNumber": null
   },
   {
     "orderNumber": "ORD-1759124676170",

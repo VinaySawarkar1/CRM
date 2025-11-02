@@ -152,7 +152,7 @@ export default function OrderTable({
                 </TableCell>
                 <TableCell>
                   <div className="text-gray-900 font-semibold">
-                    {formatCurrency(order.totalAmount)}
+                    {formatCurrency(order.totalAmount || (order as any).amount || 0)}
                   </div>
                 </TableCell>
                 <TableCell>
