@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1,
+    "key": "website",
+    "name": "Website",
+    "isActive": true,
+    "createdAt": "2025-11-02T10:37:42.506Z"
+  },
+  {
+    "id": 2,
+    "key": "referral",
+    "name": "Referral",
+    "isActive": true,
+    "createdAt": "2025-11-02T10:37:42.506Z"
+  },
+  {
+    "id": 3,
+    "key": "social_media",
+    "name": "Social Media",
+    "isActive": true,
+    "createdAt": "2025-11-02T10:37:42.506Z"
+  },
+  {
+    "id": 4,
+    "key": "email_campaign",
+    "name": "Email Campaign",
+    "isActive": true,
+    "createdAt": "2025-11-02T10:37:42.506Z"
+  },
+  {
+    "id": 5,
+    "key": "cold_call",
+    "name": "Cold Call",
+    "isActive": true,
+    "createdAt": "2025-11-02T10:37:42.506Z"
+  },
+  {
+    "id": 6,
+    "key": "trade_show",
+    "name": "Trade Show",
+    "isActive": true,
+    "createdAt": "2025-11-02T10:37:42.506Z"
+  },
+  {
+    "id": 8,
+    "key": "online_ad",
+    "name": "Online Advertisement",
+    "isActive": true,
+    "createdAt": "2025-11-02T10:37:42.506Z"
+  },
+  {
+    "id": 9,
+    "key": "other",
+    "name": "Other",
+    "isActive": true,
+    "createdAt": "2025-11-02T10:37:42.506Z"
+  },
+  {
+    "id": 10,
+    "key": "india_mart",
+    "name": "India Mart",
+    "isActive": true,
+    "createdAt": "2025-11-02T11:19:57.578Z"
+  }
+]

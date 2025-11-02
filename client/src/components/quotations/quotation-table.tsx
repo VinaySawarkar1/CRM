@@ -227,32 +227,100 @@ export default function QuotationTable({
           </DialogHeader>
           {active && (
             <div className="grid grid-cols-2 gap-3">
-              <Button onClick={(e) => { e.stopPropagation(); mode === 'proforma' ? setLocation(`/proforma/edit/${active.id}`) : onEdit(active); setActive(null); }}><Edit className="h-4 w-4 mr-2" />Edit</Button>
+              <Button 
+                variant="outline" 
+                className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                onClick={(e) => { e.stopPropagation(); mode === 'proforma' ? setLocation(`/proforma/edit/${active.id}`) : onEdit(active); setActive(null); }}
+              >
+                <Edit className="h-4 w-4 mr-2" />Edit
+              </Button>
               {onCopy && (
-                <Button onClick={(e) => { e.stopPropagation(); onCopy(active); setActive(null); }}><Copy className="h-4 w-4 mr-2" />Copy</Button>
+                <Button 
+                  variant="outline" 
+                  className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                  onClick={(e) => { e.stopPropagation(); onCopy(active); setActive(null); }}
+                >
+                  <Copy className="h-4 w-4 mr-2" />Copy
+                </Button>
               )}
               {mode === 'proforma' && onCopyProforma && (
-                <Button onClick={(e) => { e.stopPropagation(); onCopyProforma(active); setActive(null); }}><Copy className="h-4 w-4 mr-2" />Copy</Button>
+                <Button 
+                  variant="outline" 
+                  className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                  onClick={(e) => { e.stopPropagation(); onCopyProforma(active); setActive(null); }}
+                >
+                  <Copy className="h-4 w-4 mr-2" />Copy
+                </Button>
               )}
               {mode !== 'proforma' ? (
-                <Button onClick={(e) => { e.stopPropagation(); onGeneratePDF(active.id); setActive(null); }}><Download className="h-4 w-4 mr-2" />Download PDF</Button>
+                <Button 
+                  variant="outline" 
+                  className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                  onClick={(e) => { e.stopPropagation(); onGeneratePDF(active.id); setActive(null); }}
+                >
+                  <Download className="h-4 w-4 mr-2" />Download PDF
+                </Button>
               ) : (
-                <Button onClick={(e) => { e.stopPropagation(); window.open(`/api/proformas/${active.id}/download-pdf`, '_blank'); setActive(null); }}><Download className="h-4 w-4 mr-2" />Download Proforma</Button>
+                <Button 
+                  variant="outline" 
+                  className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                  onClick={(e) => { e.stopPropagation(); window.open(`/api/proformas/${active.id}/download-pdf`, '_blank'); setActive(null); }}
+                >
+                  <Download className="h-4 w-4 mr-2" />Download Proforma
+                </Button>
               )}
               {mode !== 'proforma' ? (
-                <Button onClick={(e) => { e.stopPropagation(); onPrint(active.id); setActive(null); }}><Printer className="h-4 w-4 mr-2" />Print</Button>
+                <Button 
+                  variant="outline" 
+                  className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                  onClick={(e) => { e.stopPropagation(); onPrint(active.id); setActive(null); }}
+                >
+                  <Printer className="h-4 w-4 mr-2" />Print
+                </Button>
               ) : (
-                <Button onClick={(e) => { e.stopPropagation(); window.open(`/api/proformas/${active.id}/download-pdf`, '_blank'); setActive(null); }}><Printer className="h-4 w-4 mr-2" />Print Proforma</Button>
+                <Button 
+                  variant="outline" 
+                  className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                  onClick={(e) => { e.stopPropagation(); window.open(`/api/proformas/${active.id}/download-pdf`, '_blank'); setActive(null); }}
+                >
+                  <Printer className="h-4 w-4 mr-2" />Print Proforma
+                </Button>
               )}
               {mode !== 'proforma' && (
-                <Button onClick={(e) => { e.stopPropagation(); onGenerateProformaInvoice(active.id); setActive(null); }}><FileCheck className="h-4 w-4 mr-2" />Proforma Invoice</Button>
+                <Button 
+                  variant="outline" 
+                  className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                  onClick={(e) => { e.stopPropagation(); onGenerateProformaInvoice(active.id); setActive(null); }}
+                >
+                  <FileCheck className="h-4 w-4 mr-2" />Proforma Invoice
+                </Button>
               )}
-              <Button onClick={(e) => { e.stopPropagation(); onGenerateDeliveryChallan(active.id); setActive(null); }}><Truck className="h-4 w-4 mr-2" />Delivery Challan</Button>
-              <Button onClick={(e) => { e.stopPropagation(); onConvertToOrder(active.id); setActive(null); }}><ShoppingCart className="h-4 w-4 mr-2" />Convert to Order</Button>
+              <Button 
+                variant="outline" 
+                className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                onClick={(e) => { e.stopPropagation(); onGenerateDeliveryChallan(active.id); setActive(null); }}
+              >
+                <Truck className="h-4 w-4 mr-2" />Delivery Challan
+              </Button>
+              <Button 
+                variant="outline" 
+                className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                onClick={(e) => { e.stopPropagation(); onConvertToOrder(active.id); setActive(null); }}
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" />Convert to Order
+              </Button>
               {mode !== 'proforma' && (
-                <Button onClick={(e) => { e.stopPropagation(); onConvertToInvoice(active.id); setActive(null); }}><FileText className="h-4 w-4 mr-2" />Convert to Invoice</Button>
+                <Button 
+                  variant="outline" 
+                  className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                  onClick={(e) => { e.stopPropagation(); onConvertToInvoice(active.id); setActive(null); }}
+                >
+                  <FileText className="h-4 w-4 mr-2" />Convert to Invoice
+                </Button>
               )}
-              <Button variant="destructive" onClick={(e) => { e.stopPropagation(); onDelete(active.id); setActive(null); }}><Trash className="h-4 w-4 mr-2" />Delete</Button>
+              <Button variant="destructive" onClick={(e) => { e.stopPropagation(); onDelete(active.id); setActive(null); }}>
+                <Trash className="h-4 w-4 mr-2" />Delete
+              </Button>
             </div>
           )}
         </DialogContent>

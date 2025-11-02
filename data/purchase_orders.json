@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "poNumber": "PO-2025-9542",
+    "supplierId": 1,
+    "supplierName": "Rajesh Kumar",
+    "supplierCompany": "Tech Solutions Inc.",
+    "supplierTitle": "",
+    "supplierAddress": "",
+    "supplierCity": "Bangalore",
+    "supplierState": "Karnataka",
+    "supplierCountry": "India",
+    "supplierPincode": "560001",
+    "supplierGstin": "29ABCDE1234F1Z5",
+    "supplierPan": "ABCDE1234F",
+    "supplierPhone": "+91-9876543210",
+    "supplierEmail": "contact@techsolutions.com",
+    "orderDate": "2025-11-01",
+    "expectedDelivery": "2025-11-08",
+    "items": [
+      {
+        "description": "Vision Measuring System",
+        "quantity": 1,
+        "unit": "pcs",
+        "unitPrice": 88,
+        "amount": 88
+      }
+    ],
+    "subtotal": 88,
+    "taxAmount": 15.84,
+    "totalAmount": 103.84,
+    "status": "draft",
+    "notes": "",
+    "terms": [
+      "Delivery Time",
+      "Payment Terms",
+      "Warranty",
+      "Installation & Commissioning"
+    ],
+    "createdAt": "2025-11-01T19:18:32.404Z",
+    "id": 1
+  }
+]

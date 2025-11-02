@@ -11,8 +11,11 @@ import {
   insertQuotationSchema, 
   insertOrderSchema,
   insertInvoiceSchema,
+  insertPaymentSchema,
+  insertSalesTargetSchema,
   insertLeadDiscussionSchema,
-  insertLeadCategorySchema
+  insertLeadCategorySchema,
+  insertLeadSourceSchema
 } from "@shared/schema";
 import { pdfGenerator } from "./pdf-generator";
 import type { Request, Response } from "express";
@@ -399,15 +402,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) { next(error); }
   });
 
+  // Lead Sources Routes
+  app.get("/api/lead-sources", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const storage = getStorage();
+      const list = await storage.getAllLeadSources();
+      res.json(list);
+    } catch (error) { next(error); }
+  });
+
+  app.post("/api/lead-sources", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const payload = insertLeadSourceSchema.partial().parse(req.body);
+      const key = payload.key || (payload.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+      if (!payload.name || !key) return res.status(400).json({ message: "name is required" });
+      const created = await getStorage().createLeadSource({ key, name: payload.name, isActive: payload.isActive ?? true });
+      res.status(201).json(created);
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Validation error", errors: error.errors });
+      next(error);
+    }
+  });
+
+  app.put("/api/lead-sources/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid source ID" });
+      const updates = insertLeadSourceSchema.partial().parse(req.body);
+      const updated = await getStorage().updateLeadSource(id, updates);
+      if (!updated) return res.status(404).json({ message: "Lead source not found" });
+      res.json(updated);
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Validation error", errors: error.errors });
+      next(error);
+    }
+  });
+
+  app.delete("/api/lead-sources/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid source ID" });
+      const deleted = await getStorage().deleteLeadSource(id);
+      if (!deleted) return res.status(404).json({ message: "Lead source not found" });
+      res.json({ success: true });
+    } catch (error) { next(error); }
+  });
+
   app.post("/api/leads/:leadId/discussions", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       
       const leadId = parseInt(req.params.leadId);
-      const discussionData = insertLeadDiscussionSchema.parse(req.body);
-      discussionData.leadId = leadId;
+      const user = req.user as any;
       
+      // Get user details to set createdBy
       const storage = getStorage();
+      const userDetails = await storage.getUser(user.id);
+      const createdBy = userDetails?.name || userDetails?.username || `User ${user.id}`;
+      
+      const discussionData = insertLeadDiscussionSchema.parse({
+        ...req.body,
+        leadId: leadId,
+        createdBy: createdBy,
+      });
+      
       const discussion = await storage.createLeadDiscussion(discussionData);
       res.status(201).json(discussion);
     } catch (error) {
@@ -1385,6 +1447,411 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Data import failed", 
         error: error instanceof Error ? error.message : 'Unknown error' 
       });
+    }
+  });
+
+  // Invoice Management Routes
+  app.get("/api/invoices", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated?.()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'invoices:view', 'invoices')) return res.status(403).json({ message: 'Forbidden' });
+      
+      const storage = getStorage();
+      const invoices = await storage.getAllInvoices();
+      res.json(invoices);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/invoices/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid invoice ID" });
+      }
+      
+      const storage = getStorage();
+      const invoice = await storage.getInvoice(id);
+      
+      if (!invoice) {
+        return res.status(404).json({ message: "Invoice not found" });
+      }
+      
+      res.json(invoice);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/invoices", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'invoices:create', 'invoices')) return res.status(403).json({ message: 'Forbidden' });
+
+      const invoiceData = insertInvoiceSchema.parse(req.body);
+      const storage = getStorage();
+      const invoice = await storage.createInvoice(invoiceData);
+      res.status(201).json(invoice);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.put("/api/invoices/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid invoice ID" });
+      }
+      
+      const storage = getStorage();
+      const updated = await storage.updateInvoice(id, req.body);
+      
+      if (!updated) {
+        return res.status(404).json({ message: "Invoice not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.delete("/api/invoices/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'invoices:delete', 'invoices')) return res.status(403).json({ message: 'Forbidden' });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid invoice ID" });
+      }
+      
+      const storage = getStorage();
+      const deleted = await storage.deleteInvoice(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Invoice not found" });
+      }
+      
+      res.json({ message: "Invoice deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Generate Invoice PDF
+  app.get("/api/invoices/:id/download-pdf", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated?.()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid invoice ID" });
+      }
+      
+      const storage = getStorage();
+      const invoice = await storage.getInvoice(id);
+      
+      if (!invoice) {
+        return res.status(404).json({ message: "Invoice not found" });
+      }
+      
+      console.log('Generating Invoice PDF for invoice:', id);
+      const pdfBuffer = await pdfGenerator.generateInvoicePDF(invoice);
+      console.log('Invoice PDF generated, buffer size:', pdfBuffer.length);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="invoice-${invoice.invoiceNumber}.pdf"`);
+      res.setHeader('Content-Length', pdfBuffer.length.toString());
+      
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.error('Invoice PDF generation failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ message: `Invoice PDF generation failed: ${errorMessage}` });
+    }
+  });
+
+  // Payment Management Routes
+  app.get("/api/payments", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated?.()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'payments:view', 'payments')) return res.status(403).json({ message: 'Forbidden' });
+      
+      const storage = getStorage();
+      const payments = await storage.getAllPayments();
+      // Transform payments to include customerName
+      const paymentsWithCustomer = await Promise.all(payments.map(async (payment: any) => {
+        if (payment.customerId) {
+          const customer = await storage.getCustomer(payment.customerId);
+          return {
+            ...payment,
+            customerName: customer?.name || 'Unknown Customer',
+            receivedAmount: payment.amount || "0"
+          };
+        }
+        return {
+          ...payment,
+          customerName: 'Unknown Customer',
+          receivedAmount: payment.amount || "0"
+        };
+      }));
+      res.json(paymentsWithCustomer);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/payments/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid payment ID" });
+      }
+      
+      const storage = getStorage();
+      const payment = await storage.getPayment(id);
+      
+      if (!payment) {
+        return res.status(404).json({ message: "Payment not found" });
+      }
+      
+      res.json(payment);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/payments", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'payments:create', 'payments')) return res.status(403).json({ message: 'Forbidden' });
+
+      const paymentData = insertPaymentSchema.parse(req.body);
+      const storage = getStorage();
+      const payment = await storage.createPayment(paymentData);
+      res.status(201).json(payment);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.put("/api/payments/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid payment ID" });
+      }
+      
+      const storage = getStorage();
+      const updated = await storage.updatePayment(id, req.body);
+      
+      if (!updated) {
+        return res.status(404).json({ message: "Payment not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.delete("/api/payments/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'payments:delete', 'payments')) return res.status(403).json({ message: 'Forbidden' });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid payment ID" });
+      }
+      
+      const storage = getStorage();
+      const deleted = await storage.deletePayment(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Payment not found" });
+      }
+      
+      res.json({ message: "Payment deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Sales Targets Management Routes
+  app.get("/api/sales-targets", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated?.()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'sales-targets:view', 'sales-targets')) return res.status(403).json({ message: 'Forbidden' });
+      
+      const storage = getStorage();
+      const targets = await storage.getAllSalesTargets();
+      // Transform targets to match frontend expectations
+      const transformedTargets = await Promise.all(targets.map(async (target: any) => {
+        let assignedToName = 'Unassigned';
+        if (target.assignedTo) {
+          const user = await storage.getUser(target.assignedTo);
+          assignedToName = user?.name || `User ${target.assignedTo}`;
+        }
+        return {
+          ...target,
+          targetName: target.productName || target.targetName,
+          assignedTo: assignedToName,
+          targetValue: target.targetValue?.toString() || "0",
+          actualValue: target.actualValue?.toString() || "0"
+        };
+      }));
+      res.json(transformedTargets);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/sales-targets/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid sales target ID" });
+      }
+      
+      const storage = getStorage();
+      const target = await storage.getSalesTarget(id);
+      
+      if (!target) {
+        return res.status(404).json({ message: "Sales target not found" });
+      }
+      
+      res.json(target);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/sales-targets", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'sales-targets:create', 'sales-targets')) return res.status(403).json({ message: 'Forbidden' });
+
+      // Transform frontend data (targetName -> productName, assignedTo string -> id)
+      const body = req.body;
+      const targetData: any = {
+        productName: body.targetName || body.productName || '',
+        targetMonth: body.targetMonth || '',
+        targetYear: body.targetYear || '',
+        targetValue: typeof body.targetValue === 'string' ? parseInt(body.targetValue) || 0 : (body.targetValue || 0),
+        actualValue: typeof body.actualValue === 'string' ? parseInt(body.actualValue) || 0 : (body.actualValue || 0),
+        assignedTo: body.assignedToId || (typeof body.assignedTo === 'number' ? body.assignedTo : undefined),
+        notes: body.notes || ''
+      };
+      
+      const storage = getStorage();
+      const target = await storage.createSalesTarget(targetData);
+      // Return transformed response
+      const user = target.assignedTo ? await storage.getUser(target.assignedTo) : null;
+      res.status(201).json({
+        ...target,
+        targetName: target.productName,
+        assignedTo: user?.name || 'Unassigned',
+        targetValue: target.targetValue?.toString() || "0",
+        actualValue: target.actualValue?.toString() || "0"
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.put("/api/sales-targets/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid sales target ID" });
+      }
+      
+      // Transform frontend data
+      const body = req.body;
+      const updateData: any = {};
+      if (body.targetName !== undefined) updateData.productName = body.targetName;
+      if (body.targetMonth !== undefined) updateData.targetMonth = body.targetMonth;
+      if (body.targetYear !== undefined) updateData.targetYear = body.targetYear;
+      if (body.targetValue !== undefined) updateData.targetValue = typeof body.targetValue === 'string' ? parseInt(body.targetValue) || 0 : body.targetValue;
+      if (body.actualValue !== undefined) updateData.actualValue = typeof body.actualValue === 'string' ? parseInt(body.actualValue) || 0 : body.actualValue;
+      if (body.assignedToId !== undefined) updateData.assignedTo = body.assignedToId;
+      if (body.notes !== undefined) updateData.notes = body.notes;
+      
+      const storage = getStorage();
+      const updated = await storage.updateSalesTarget(id, updateData);
+      
+      if (!updated) {
+        return res.status(404).json({ message: "Sales target not found" });
+      }
+      
+      // Return transformed response
+      const user = updated.assignedTo ? await storage.getUser(updated.assignedTo) : null;
+      res.json({
+        ...updated,
+        targetName: updated.productName,
+        assignedTo: user?.name || 'Unassigned',
+        targetValue: updated.targetValue?.toString() || "0",
+        actualValue: updated.actualValue?.toString() || "0"
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.delete("/api/sales-targets/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'sales-targets:delete', 'sales-targets')) return res.status(403).json({ message: 'Forbidden' });
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid sales target ID" });
+      }
+      
+      const storage = getStorage();
+      const deleted = await storage.deleteSalesTarget(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Sales target not found" });
+      }
+      
+      res.json({ message: "Sales target deleted successfully" });
+    } catch (error) {
+      next(error);
     }
   });
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout";
 import PageHeader from "@/components/page-header";
@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart, LineChart, PieChart } from "lucide-react";
+import { getQueryFn } from "@/lib/queryClient";
+import { BarChart, LineChart, PieChart, TrendingUp, Users, FileText, ShoppingCart, Receipt, Package, Target } from "lucide-react";
 import {
   Area,
   AreaChart,

@@ -27,17 +27,39 @@ export default function QuotationFormPage() {
     (linkedLead?.email && c.email === linkedLead.email) ||
     (linkedLead?.company && c.company === linkedLead.company)
   );
-  const prefillFromLead = linkedLead ? ({
+  // Helper function to split address into lines
+  const splitAddress = (address: string | null | undefined): { line1: string; line2: string } => {
+    if (!address) return { line1: "", line2: "" };
+    const lines = address.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    if (lines.length === 0) return { line1: "", line2: "" };
+    if (lines.length === 1) return { line1: lines[0], line2: "" };
+    // If multiple lines, put first in line1, rest joined in line2
+    return { line1: lines[0], line2: lines.slice(1).join(", ") };
+  };
+
+  const prefillFromLead = linkedLead ? (() => {
+    const address = matchedCustomer?.address || linkedLead.address || "";
+    const { line1, line2 } = splitAddress(address);
+    
+    return {
     quotationNumber: `RX-VQ25-25-07-${Date.now()}`,
     leadId: linkedLead.id,
     customerId: matchedCustomer?.id,
     contactPerson: linkedLead.name,
+      contactPersonTitle: "Mr.",
     customerCompany: matchedCustomer?.company || linkedLead.company,
-    addressLine1: matchedCustomer?.address || linkedLead.address || "",
+      addressLine1: line1,
+      addressLine2: line2,
     city: matchedCustomer?.city || linkedLead.city || "",
     state: matchedCustomer?.state || linkedLead.state || "",
     country: matchedCustomer?.country || linkedLead.country || "India",
     pincode: matchedCustomer?.pincode || linkedLead.pincode || "",
+      shippingAddressLine1: line1,
+      shippingAddressLine2: line2,
+      shippingCity: matchedCustomer?.city || linkedLead.city || "",
+      shippingState: matchedCustomer?.state || linkedLead.state || "",
+      shippingCountry: matchedCustomer?.country || linkedLead.country || "India",
+      shippingPincode: matchedCustomer?.pincode || linkedLead.pincode || "",
     items: Array.isArray((linkedLead as any).assignedProducts) ? (linkedLead as any).assignedProducts : [],
     validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     quotationDate: new Date().toISOString().split('T')[0],
@@ -49,7 +71,8 @@ export default function QuotationFormPage() {
     sgstTotal: "0",
     igstTotal: "0",
     taxableTotal: "0",
-  } as any) : undefined;
+    } as any;
+  })() : undefined;
 
   const { data: copySource, isLoading: copyLoading } = useQuery<Quotation | null>({
     queryKey: ["/api/quotations", copyFromId],

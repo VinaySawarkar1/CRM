@@ -133,22 +133,24 @@ export default function Sidebar({ className }: SidebarProps) {
   };
 
   return (
-    <div className={cn("h-full flex flex-col bg-white", className)}>
+    <div className={cn("h-screen flex flex-col bg-white/90 backdrop-blur-md", className)}>
       {/* Logo */}
-      <div className="p-5 border-b border-gray-100 bg-gradient-to-br from-white to-slate-50">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
-            <span className="text-white font-semibold text-sm">R</span>
+      <div className="p-5 border-b border-gray-100/50 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 flex-shrink-0">
+        <div className="flex items-center gap-3 group cursor-pointer">
+          <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+            <span className="text-white font-bold text-sm">C</span>
           </div>
           <div className="min-w-0">
-            <h1 className="text-base font-semibold text-gray-900 truncate">Reckonix</h1>
-            <p className="text-[11px] text-gray-500">Business AI Suite</p>
+            <h1 className="text-base font-bold text-gray-900 truncate bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Cortex AI
+            </h1>
+            <p className="text-[11px] text-gray-500 font-medium">Business Suite</p>
           </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="flex-1 py-6 overflow-y-auto scrollbar-sidebar">
+      {/* Navigation - Fixed height with scroll */}
+      <div className="flex-1 py-6 overflow-y-auto overflow-x-hidden scrollbar-sidebar min-h-0">
         {/* CRM Section */}
         <div className="mb-8">
           <div className="px-5 mb-3">
@@ -162,14 +164,17 @@ export default function Sidebar({ className }: SidebarProps) {
                 <Button
                   variant={location === item.href ? "default" : "ghost"}
                   className={cn(
-                    "w-full justify-start h-10 px-5 rounded-md border-l-2",
+                    "w-full justify-start h-10 px-5 rounded-lg border-l-4 transition-all duration-300 group",
                     location === item.href 
-                      ? "bg-blue-50 border-blue-600 text-blue-700 hover:bg-blue-100" 
-                      : "border-transparent text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-600 text-blue-700 shadow-md hover:shadow-lg hover:from-blue-100 hover:to-purple-100" 
+                      : "border-transparent text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50/30 hover:text-gray-900 hover:border-gray-300 hover:shadow-sm"
                   )}
                 >
-                  <item.icon className="mr-3 h-4 w-4" />
-                  {item.title}
+                  <item.icon className={cn(
+                    "mr-3 h-4 w-4 transition-transform duration-300",
+                    location === item.href ? "scale-110" : "group-hover:scale-110"
+                  )} />
+                  <span className="font-medium">{item.title}</span>
                 </Button>
               </Link>
             ))}
@@ -189,14 +194,17 @@ export default function Sidebar({ className }: SidebarProps) {
                 <Button
                   variant={location === item.href ? "default" : "ghost"}
                   className={cn(
-                    "w-full justify-start h-10 px-5 rounded-md border-l-2",
+                    "w-full justify-start h-10 px-5 rounded-lg border-l-4 transition-all duration-300 group",
                     location === item.href 
-                      ? "bg-blue-50 border-blue-600 text-blue-700 hover:bg-blue-100" 
-                      : "border-transparent text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-600 text-blue-700 shadow-md hover:shadow-lg hover:from-blue-100 hover:to-purple-100" 
+                      : "border-transparent text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50/30 hover:text-gray-900 hover:border-gray-300 hover:shadow-sm"
                   )}
                 >
-                  <item.icon className="mr-3 h-4 w-4" />
-                  {item.title}
+                  <item.icon className={cn(
+                    "mr-3 h-4 w-4 transition-transform duration-300",
+                    location === item.href ? "scale-110" : "group-hover:scale-110"
+                  )} />
+                  <span className="font-medium">{item.title}</span>
                 </Button>
               </Link>
             ))}
@@ -205,9 +213,9 @@ export default function Sidebar({ className }: SidebarProps) {
       </div>
 
       {/* Footer */}
-      <div className="p-5 border-t border-gray-100">
-        <div className="text-xs text-gray-500 text-center">
-          © 2025 Reckonix
+      <div className="p-5 border-t border-gray-100/50 bg-gradient-to-t from-white to-blue-50/20 flex-shrink-0">
+        <div className="text-xs text-gray-500 text-center font-medium">
+          © 2025 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">Cortex AI</span>
         </div>
       </div>
     </div>

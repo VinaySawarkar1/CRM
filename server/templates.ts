@@ -366,7 +366,7 @@ export function quotationTemplate(data: DocBase & {
       <table class="header-table">
         <tr>
           <td class="company-cell">
-            <div class="company-name">${company.name ?? "Business AI"}</div>
+            <div class="company-name">${company.name ?? "Cortex AI"}</div>
             <div class="company-addr">
               ${company.address || ""}<br/>
               ${company.phone ? `Mobile Number: ${company.phone}<br/>` : ""}
@@ -379,7 +379,7 @@ export function quotationTemplate(data: DocBase & {
             <div class="logo-box">
               ${company.logo ? 
                 `<img src="${company.logo}" alt="Company Logo" class="company-logo" />` : 
-                `<div class="logo-title">${company.name ?? "Business AI"}™</div>
+                `<div class="logo-title">${company.name ?? "Cortex AI"}™</div>
                  <div class="logo-tag">TEST. MEASURE. CALIBRATE.</div>`
               }
             </div>
@@ -524,7 +524,7 @@ export function quotationTemplate(data: DocBase & {
           <td>
             <div class="signature">
               <div class="line"></div>
-              <div><strong>For, ${company.name ?? "Business AI"}</strong></div>
+              <div><strong>For, ${company.name ?? "Cortex AI"}</strong></div>
               <div>Authorised Signatory</div>
             </div>
           </td>
@@ -542,7 +542,7 @@ export function proformaTemplate(data: DocBase & {
   invoiceNumber?: string;
   invoiceDate?: string;
   validUntil?: string;
-  customer?: { company?: string; name?: string; address?: string; city?: string; gstin?: string; phone?: string; email?: string; };
+  customer?: { company?: string; name?: string; address?: string; city?: string; state?: string; country?: string; gstin?: string; phone?: string; email?: string; };
   shipping?: { company?: string; name?: string; address?: string; city?: string; state?: string; country?: string; pincode?: string; phone?: string; email?: string; };
   items?: LineItem[];
   subtotal?: number;
@@ -607,9 +607,60 @@ export function proformaTemplate(data: DocBase & {
   const discountVal = typeof data.discount === 'string' ? parseFloat(data.discount) || 0 : (data.discount || 0);
   const discountAmount = data.discountType === 'percentage' ? (subtotal * discountVal / 100) : discountVal;
   const taxableAmount = subtotal - discountAmount;
-  const cgst = typeof data.cgst === 'string' ? parseFloat(data.cgst) || 0 : (data.cgst || 0);
-  const sgst = typeof data.sgst === 'string' ? parseFloat(data.sgst) || 0 : (data.sgst || 0);
-  const igst = typeof data.igst === 'string' ? parseFloat(data.igst) || 0 : (data.igst || 0);
+  
+  // Calculate GST based on customer state (same logic as quotation form)
+  const companyState = "Maharashtra"; // Company state
+  const companyCountry = "India"; // Company country
+  const customerState = data.shipping?.state || data.customer?.state || "";
+  const customerCountry = data.shipping?.country || data.customer?.country || "India";
+  
+  // Recalculate GST if state information is available, otherwise use provided values
+  let cgst = typeof data.cgst === 'string' ? parseFloat(data.cgst) || 0 : (data.cgst || 0);
+  let sgst = typeof data.sgst === 'string' ? parseFloat(data.sgst) || 0 : (data.sgst || 0);
+  let igst = typeof data.igst === 'string' ? parseFloat(data.igst) || 0 : (data.igst || 0);
+  
+  // If customer state is provided, recalculate GST based on state rules
+  if (customerState && customerCountry === companyCountry) {
+    if (customerState === companyState) {
+      // Same state: Apply CGST + SGST (9% each = 18% total)
+      cgst = (taxableAmount * 9) / 100;
+      sgst = (taxableAmount * 9) / 100;
+      igst = 0;
+    } else {
+      // Different state: Apply IGST (18%)
+      cgst = 0;
+      sgst = 0;
+      igst = (taxableAmount * 18) / 100;
+    }
+  } else if (customerCountry !== companyCountry) {
+    // Different country: No GST
+    cgst = 0;
+    sgst = 0;
+    igst = 0;
+  } else {
+    // Use provided GST values if state not available, but ensure they match taxable amount
+    // Calculate from items if individual GST amounts are provided
+    const calculatedCgst = (data.items || []).reduce((sum, it) => {
+      const cgstAmount = typeof it.cgst === 'string' ? parseFloat(it.cgst) || 0 : (it.cgst ?? 0);
+      return sum + cgstAmount;
+    }, 0);
+    const calculatedSgst = (data.items || []).reduce((sum, it) => {
+      const sgstAmount = typeof it.sgst === 'string' ? parseFloat(it.sgst) || 0 : (it.sgst ?? 0);
+      return sum + sgstAmount;
+    }, 0);
+    const calculatedIgst = (data.items || []).reduce((sum, it) => {
+      const igstAmount = typeof it.igst === 'string' ? parseFloat(it.igst) || 0 : (it.igst ?? 0);
+      return sum + igstAmount;
+    }, 0);
+    
+    // Use calculated values if they differ significantly from provided totals
+    if (Math.abs(calculatedCgst + calculatedSgst + calculatedIgst - (cgst + sgst + igst)) > 0.01) {
+      cgst = calculatedCgst;
+      sgst = calculatedSgst;
+      igst = calculatedIgst;
+    }
+  }
+  
   const total = (taxableAmount + cgst + sgst + igst);
 
   return `<!doctype html>
@@ -710,7 +761,7 @@ export function proformaTemplate(data: DocBase & {
       <table class="header-table">
         <tr>
           <td class="company-cell">
-            <div class="company-name">${company.name ?? "Reckonix"}</div>
+            <div class="company-name">${company.name ?? "Cortex AI"}</div>
             <div class="company-addr">
               ${company.address || ""}<br/>
               ${company.phone ? `Mobile Number: ${company.phone}<br/>` : ""}
@@ -723,7 +774,7 @@ export function proformaTemplate(data: DocBase & {
             <div class="logo-box">
               ${company.logo ? 
                 `<img src="${company.logo}" alt="Company Logo" class="company-logo" />` : 
-                `<div class="logo-title">${company.name ?? "Reckonix"}™</div>
+                `<div class="logo-title">${company.name ?? "Cortex AI"}™</div>
                  <div class="logo-tag">TEST. MEASURE. CALIBRATE.</div>`
               }
             </div>
@@ -1200,6 +1251,12 @@ export function purchaseOrderTemplate(data: DocBase & {
   const taxAmount = data.taxAmount ?? (subtotal * 0.18); // 18% GST
   const total = data.totalAmount ?? (subtotal + extraChargesTotal + taxAmount - discountsTotal);
 
+  // Calculate CGST/SGST/IGST similar to quotation
+  const isInterState = !company.state || !data.vendor?.state || company.state !== data.vendor.state;
+  const cgst = isInterState ? 0 : (taxAmount / 2);
+  const sgst = isInterState ? 0 : (taxAmount / 2);
+  const igst = isInterState ? taxAmount : 0;
+
   return `<!doctype html>
   <html>
   <head>
@@ -1239,7 +1296,7 @@ export function purchaseOrderTemplate(data: DocBase & {
       
       /* Addresses section in table format */
       .addresses-table{width:100%;border-collapse:collapse;margin-bottom:4px}
-      .addresses-table td{border:1px solid var(--border);padding:4px;vertical-align:top;width:100%}
+      .addresses-table td{border:1px solid var(--border);padding:4px;vertical-align:top;width:50%}
       .addresses-table .addr-title{font-weight:600;margin-bottom:2px;color:var(--accent);font-size:8pt}
       
       /* Items table with enhanced borders */
@@ -1271,40 +1328,20 @@ export function purchaseOrderTemplate(data: DocBase & {
       .terms-table ul{margin:4px 0;padding-left:16px}
       .terms-table li{margin-bottom:2px;font-size:6pt}
       
-      /* Extra charges and discounts */
-      .charges-table{width:100%;border-collapse:collapse;margin-bottom:4px}
-      .charges-table td{border:1px solid var(--border);padding:2px;font-size:7pt}
-      .charges-table .charges-title{font-weight:600;color:var(--accent);margin-bottom:2px;font-size:7pt}
+      /* Footer section in table format */
+      .footer-table{width:100%;border-collapse:collapse;margin-top:4px}
+      .footer-table td{border:1px solid var(--border);padding:6px;vertical-align:top;width:50%}
+      .footer-table .disclaimer{font-size:6pt;color:var(--muted)}
+      .signature{text-align:center}
+      .signature .line{border-top:1px solid #000;width:120px;margin:40px auto 2px}
       
-      /* Footer section */
-      .footer-table{width:100%;border-collapse:collapse;margin-top:8px}
-      .footer-table td{border:1px solid var(--border);padding:4px;text-align:center;background:#f8f8f8;font-size:6pt;color:var(--muted)}
-      
-      /* Signature section */
-      .signature-section{width:100%;border-collapse:collapse;margin-top:8px}
-      .signature-section td{border:1px solid var(--border);padding:8px;text-align:center;width:50%}
-      .signature-line{border-top:1px solid var(--border);width:80%;margin:40px auto 4px}
-      .signature-text{font-size:6pt;color:var(--muted)}
+      /* Alternate row shading */
+      .items-table tbody tr:nth-child(even){background:#fbfbfb}
     </style>
   </head>
   <body>
     <div class="document-container">
-      <!-- Header Section -->
-      <table class="header-table">
-        <tr>
-          <td class="company-cell">
-            <div class="company-name">${company.name ?? "Business AI"}</div>
-            <div class="company-addr">${company.address ?? ""}</div>
-            <div class="company-addr">Phone: ${company.phone ?? ""} • Email: ${company.email ?? ""}</div>
-            <div class="company-addr">GSTIN: ${company.gstin ?? ""}</div>
-          </td>
-          <td class="meta-cell">
-            ${company.logo ? `<img src="${company.logo}" alt="Company Logo" class="company-logo" />` : ''}
-          </td>
-        </tr>
-      </table>
-
-      <!-- Title Section -->
+      <!-- Title Section in Table - Moved to Top -->
       <table class="title-table">
         <tr>
           <td>
@@ -1313,34 +1350,58 @@ export function purchaseOrderTemplate(data: DocBase & {
         </tr>
       </table>
 
-      <!-- PO Details Section -->
-      <table class="po-details-table">
+      ${config.header ? `
+      <!-- Header Section in Table -->
+      <table class="header-table">
         <tr>
-          <td>
-            <div><strong>PO No:</strong> ${data.poNumber ?? "-"}</div>
-            <div><strong>Date:</strong> ${data.poDate ?? new Date().toLocaleDateString('en-GB')}</div>
-            ${data.expectedDelivery ? `<div><strong>Expected Delivery:</strong> ${data.expectedDelivery}</div>` : ''}
+          <td class="company-cell">
+            <div class="company-name">${company.name ?? "Cortex AI"}</div>
+            <div class="company-addr">${company.address ?? ""}</div>
+            ${company.phone ? `<div class="company-addr">Phone: ${company.phone}</div>` : ''}
+            ${company.email ? `<div class="company-addr">Email: ${company.email}</div>` : ''}
+            ${company.gstin ? `<div class="company-addr">GSTIN: ${company.gstin}</div>` : ''}
+          </td>
+          <td class="meta-cell">
+            ${company.logo ? `<img src="${company.logo}" alt="Company Logo" class="company-logo" />` : `
+              <div class="logo-box">
+                <div>
+                  <div class="logo-title">${(company.name ?? "Cortex AI").substring(0, 1)}</div>
+                  <div class="logo-tag">${(company.name ?? "Cortex AI").split(' ').map(w => w[0]).join('')}</div>
+                </div>
+              </div>
+            `}
+            <div class="doc-meta">
+              <div><strong>PO No:</strong> ${data.poNumber ?? "-"}</div>
+              <div><strong>Date:</strong> ${data.poDate ?? new Date().toLocaleDateString('en-GB')}</div>
+              ${data.expectedDelivery ? `<div><strong>Expected Delivery:</strong> ${data.expectedDelivery}</div>` : ''}
+            </div>
           </td>
         </tr>
       </table>
+      ` : ''}
 
-      <!-- Vendor Information -->
+      <!-- Addresses Section in Table Format -->
       <table class="addresses-table">
         <tr>
           <td>
             <div class="addr-title">VENDOR DETAILS</div>
             ${data.vendor?.company ? `<div><strong>Company:</strong> ${data.vendor.company}</div>` : ''}
-            ${data.vendor?.title ? `<div><strong>Title:</strong> ${data.vendor.title}</div>` : ''}
-            <div><strong>Name:</strong> ${data.vendor?.name ?? ""}</div>
-            <div><strong>Address:</strong> ${data.vendor?.address ?? ""}</div>
-            ${data.vendor?.city ? `<div><strong>City:</strong> ${data.vendor.city}</div>` : ''}
-            ${data.vendor?.state ? `<div><strong>State:</strong> ${data.vendor.state}</div>` : ''}
+            ${data.vendor?.title && data.vendor?.name ? `<div><strong>${data.vendor.title}:</strong> ${data.vendor.name}</div>` : data.vendor?.name ? `<div><strong>Name:</strong> ${data.vendor.name}</div>` : ''}
+            ${data.vendor?.address ? `<div><strong>Address:</strong> ${data.vendor.address}</div>` : ''}
+            ${data.vendor?.city || data.vendor?.state ? `<div>${[data.vendor?.city, data.vendor?.state, data.vendor?.pincode].filter(Boolean).join(', ')}</div>` : ''}
             ${data.vendor?.country ? `<div><strong>Country:</strong> ${data.vendor.country}</div>` : ''}
-            ${data.vendor?.pincode ? `<div><strong>Pincode:</strong> ${data.vendor.pincode}</div>` : ''}
-            <div><strong>GSTIN:</strong> ${data.vendor?.gstin ?? ""}</div>
+            ${data.vendor?.gstin ? `<div><strong>GSTIN:</strong> ${data.vendor.gstin}</div>` : ''}
             ${data.vendor?.pan ? `<div><strong>PAN:</strong> ${data.vendor.pan}</div>` : ''}
-            <div><strong>Phone:</strong> ${data.vendor?.phone ?? ""}</div>
-            <div><strong>Email:</strong> ${data.vendor?.email ?? ""}</div>
+            ${data.vendor?.phone ? `<div><strong>Phone:</strong> ${data.vendor.phone}</div>` : ''}
+            ${data.vendor?.email ? `<div><strong>Email:</strong> ${data.vendor.email}</div>` : ''}
+          </td>
+          <td>
+            <div class="addr-title">OUR DETAILS</div>
+            <div><strong>Company:</strong> ${company.name ?? "Cortex AI"}</div>
+            <div><strong>Address:</strong> ${company.address ?? ""}</div>
+            ${company.phone ? `<div><strong>Phone:</strong> ${company.phone}</div>` : ''}
+            ${company.email ? `<div><strong>Email:</strong> ${company.email}</div>` : ''}
+            ${company.gstin ? `<div><strong>GSTIN:</strong> ${company.gstin}</div>` : ''}
           </td>
         </tr>
       </table>
@@ -1366,8 +1427,13 @@ export function purchaseOrderTemplate(data: DocBase & {
       <table class="totals-table">
         <tr><td>Sub Total</td><td class="r">${fmt(subtotal, data.currency)}</td></tr>
         ${extraChargesTotal > 0 ? `<tr><td>Extra Charges</td><td class="r">${fmt(extraChargesTotal, data.currency)}</td></tr>` : ''}
-        <tr><td>Tax Amount (18% GST)</td><td class="r">${fmt(taxAmount, data.currency)}</td></tr>
-        ${discountsTotal > 0 ? `<tr><td>Discounts</td><td class="r">-${fmt(discountsTotal, data.currency)}</td></tr>` : ''}
+        ${discountsTotal > 0 ? `<tr><td>Discount</td><td class="r">-${fmt(discountsTotal, data.currency)}</td></tr>` : ''}
+        ${isInterState ? `
+          <tr><td>IGST (18%)</td><td class="r">${fmt(igst, data.currency)}</td></tr>
+        ` : `
+          <tr><td>CGST (9%)</td><td class="r">${fmt(cgst, data.currency)}</td></tr>
+          <tr><td>SGST (9%)</td><td class="r">${fmt(sgst, data.currency)}</td></tr>
+        `}
         <tr class="total-row"><td><strong>Total Amount</strong></td><td class="r"><strong>${fmt(total, data.currency)}</strong></td></tr>
       </table>
 
@@ -1416,42 +1482,81 @@ export function purchaseOrderTemplate(data: DocBase & {
 
 
 
-      <!-- Terms and Conditions -->
-      ${(data.terms && data.terms.length > 0) ? `
-      <table class="terms-table">
+      ${company.bankDetails && (company.bankDetails.bankName || company.bankDetails.accountNo) ? `
+      <!-- Bank Details Section in Table -->
+      <table class="bank-table">
         <tr>
           <td>
-            <div class="terms-title">TERMS AND CONDITIONS</div>
-            <ul>
-              ${data.terms.map(term => `<li>${term}</li>`).join('')}
-            </ul>
+            <div class="bank-title">Bank Details:</div>
+            ${company.bankDetails.bankName ? `<div><strong>Bank Name:</strong> ${company.bankDetails.bankName}</div>` : ''}
+            ${company.bankDetails.accountNo ? `<div><strong>Account No:</strong> ${company.bankDetails.accountNo}</div>` : ''}
+            ${company.bankDetails.ifsc ? `<div><strong>IFSC:</strong> ${company.bankDetails.ifsc}</div>` : ''}
+            ${company.bankDetails.branch ? `<div><strong>Branch:</strong> ${company.bankDetails.branch}</div>` : ''}
           </td>
         </tr>
       </table>
       ` : ''}
 
-      <!-- Signature Section -->
-      <table class="signature-section">
+      <!-- Terms Section in Table -->
+      <table class="terms-table">
         <tr>
           <td>
-            <div class="signature-line"></div>
-            <div class="signature-text">Authorized Signatory</div>
-          </td>
-          <td>
-            <div class="signature-line"></div>
-            <div class="signature-text">Purchase Executive Signature</div>
+            <div class="terms-title">Terms & Conditions:</div>
+            ${(() => {
+              if (data.terms && Array.isArray(data.terms) && data.terms.length > 0) {
+                return `<ul style="margin: 4px 0; padding-left: 16px;">${data.terms.map((term: string) => `<li style="margin-bottom: 2px; font-size: 6pt;">${term}</li>`).join('')}</ul>`;
+              }
+              const defaultTerms = [
+                'Goods should be as per specifications and quality standards',
+                'Delivery should be completed within the specified timeframe',
+                'Payment will be made as per agreed payment terms',
+                'All taxes and duties to be paid by the vendor',
+                'Replacement warranty for manufacturing defects'
+              ];
+              return `<ul style="margin: 4px 0; padding-left: 16px;">${defaultTerms.map(term => `<li style="margin-bottom: 2px; font-size: 6pt;">${term}</li>`).join('')}</ul>`;
+            })()}
           </td>
         </tr>
       </table>
 
-      <!-- Footer -->
+      ${config.footer ? `
+      <!-- Footer Section in Table -->
       <table class="footer-table">
         <tr>
-          <td>This is a computer-generated Purchase Order. E. & O. E.</td>
+          <td>
+            ${config.disclaimer ? `<div class="disclaimer">This is a computer-generated Purchase Order. E. & O. E.</div>` : ''}
+          </td>
+          <td>
+            <div class="signature">
+              <div class="line"></div>
+              <div><strong>For, ${company.name ?? "Cortex AI"}</strong></div>
+              <div>Authorised Signatory</div>
+            </div>
+          </td>
         </tr>
       </table>
+      ` : ''}
     </div>
   </body>
   </html>
   `;
 } 
+// -- Invoice Template
+export function invoiceTemplate(data: DocBase & {
+  invoiceNumber?: string;
+  invoiceDate?: string;
+  dueDate?: string;
+  customer?: { company?: string; name?: string; address?: string; city?: string; state?: string; country?: string; gstin?: string; phone?: string; email?: string; };
+  shipping?: { company?: string; name?: string; address?: string; city?: string; state?: string; country?: string; pincode?: string; phone?: string; email?: string; };
+  items?: LineItem[];
+  subtotal?: number;
+  cgst?: number;
+  sgst?: number;
+  igst?: number;
+  totalAmount?: number;
+  paidAmount?: number;
+  terms?: string;
+  notes?: string;
+  discount?: number;
+  discountType?: 'percentage' | 'fixed';
+}) { return proformaTemplate(data as any); }

@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Customer } from "@shared/schema";
@@ -8,6 +10,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { User, Building, MapPin, FileText, DollarSign, CheckCircle2, AlertCircle, Mail, Phone, Globe, CreditCard, Save, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const customerSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -42,13 +50,11 @@ export default function CustomerForm({
   mode,
   defaultValues,
 }: CustomerFormProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm<CustomerFormData>({
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("basic");
+  const [autoSaved, setAutoSaved] = useState(false);
+  
+  const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
     defaultValues: defaultValues ? {
       name: defaultValues.name,
@@ -73,6 +79,32 @@ export default function CustomerForm({
     },
   });
 
+  const watchedValues = form.watch();
+  const formState = form.formState;
+
+  // Calculate form completion percentage
+  const calculateProgress = () => {
+    const fields = ['name', 'company', 'email', 'phone', 'address', 'city', 'state', 'country', 'gstNumber', 'panNumber', 'paymentTerms', 'status'];
+    const filledFields = fields.filter(field => {
+      const value = watchedValues[field as keyof CustomerFormData];
+      return value && value.toString().trim() !== '';
+    });
+    return Math.round((filledFields.length / fields.length) * 100);
+  };
+
+  const progress = calculateProgress();
+
+  // Auto-save functionality
+  useEffect(() => {
+    if (mode === "edit" && formState.isDirty && !formState.isSubmitting) {
+      const timer = setTimeout(() => {
+        setAutoSaved(true);
+        setTimeout(() => setAutoSaved(false), 3000);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [watchedValues, mode, formState.isDirty, formState.isSubmitting]);
+
   const handleFormSubmit = (data: CustomerFormData) => {
     onSubmit({
       ...data,
@@ -81,239 +113,467 @@ export default function CustomerForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Basic Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="name">Name *</Label>
-              <Input
-                id="name"
-                {...register("name")}
-                placeholder="Customer name"
-                className={errors.name ? "border-red-500" : ""}
-              />
-              {errors.name && (
-                <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6 animate-fade-in-up">
+        {/* Progress Indicator */}
+        <Card className="border-0 shadow-lg glass-effect">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                  <User className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {mode === "create" ? "Create New Customer" : "Edit Customer"}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {progress}% Complete • Fill all required fields
+                  </p>
+                </div>
+              </div>
+              {autoSaved && (
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                  <Save className="h-3 w-3" />
+                  Auto-saved
+                </Badge>
               )}
             </div>
-
-            <div>
-              <Label htmlFor="company">Company *</Label>
-              <Input
-                id="company"
-                {...register("company")}
-                placeholder="Company name"
-                className={errors.company ? "border-red-500" : ""}
-              />
-              {errors.company && (
-                <p className="text-sm text-red-500 mt-1">{errors.company.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="email">Email *</Label>
-              <Input
-                id="email"
-                type="email"
-                {...register("email")}
-                placeholder="customer@example.com"
-                className={errors.email ? "border-red-500" : ""}
-              />
-              {errors.email && (
-                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="phone">Phone *</Label>
-              <Input
-                id="phone"
-                {...register("phone")}
-                placeholder="+91 98765 43210"
-                className={errors.phone ? "border-red-500" : ""}
-              />
-              {errors.phone && (
-                <p className="text-sm text-red-500 mt-1">{errors.phone.message}</p>
-              )}
-            </div>
+            <Progress value={progress} className="h-2" />
           </CardContent>
         </Card>
 
-        {/* Address Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Address Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                {...register("address")}
-                placeholder="Full address"
-                rows={3}
-              />
-            </div>
+        {/* Tabbed Form Sections */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-6 bg-gray-100 p-1 rounded-lg">
+            <TabsTrigger 
+              value="basic" 
+              className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold"
+            >
+              <User className="h-4 w-4 mr-2" />
+              Basic
+            </TabsTrigger>
+            <TabsTrigger 
+              value="address" 
+              className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold"
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              Address
+            </TabsTrigger>
+            <TabsTrigger 
+              value="business" 
+              className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold"
+            >
+              <Building className="h-4 w-4 mr-2" />
+              Business
+            </TabsTrigger>
+            <TabsTrigger 
+              value="additional" 
+              className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Notes
+            </TabsTrigger>
+          </TabsList>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  {...register("city")}
-                  placeholder="City"
+          {/* Basic Information Tab */}
+          <TabsContent value="basic" className="space-y-6 animate-fade-in-up">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="border-0 shadow-lg glass-effect card-hover">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-blue-100">
+                  <CardTitle className="flex items-center gap-2 text-blue-700">
+                    <User className="h-5 w-5" />
+                    Personal Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-blue-600" />
+                          Full Name *
+                          {fieldState.isDirty && !fieldState.error && (
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                          )}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="John Doe"
+                            className={`transition-all duration-200 ${
+                              fieldState.error ? "border-red-300 focus:border-red-500 focus:ring-red-200" :
+                              fieldState.isDirty && !fieldState.error ? "border-green-300 focus:border-green-500" : ""
+                            }`}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="company"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Building className="h-4 w-4 text-blue-600" />
+                          Company Name *
+                          {fieldState.isDirty && !fieldState.error && (
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                          )}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Company Name"
+                            className={`transition-all duration-200 ${
+                              fieldState.error ? "border-red-300 focus:border-red-500 focus:ring-red-200" :
+                              fieldState.isDirty && !fieldState.error ? "border-green-300 focus:border-green-500" : ""
+                            }`}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg glass-effect card-hover">
+                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
+                  <CardTitle className="flex items-center gap-2 text-purple-700">
+                    <Mail className="h-5 w-5" />
+                    Contact Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-blue-600" />
+                          Email Address *
+                          {fieldState.isDirty && !fieldState.error && (
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                          )}
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              {...field}
+                              type="email"
+                              placeholder="customer@example.com"
+                              className={`pl-10 transition-all duration-200 ${
+                                fieldState.error ? "border-red-300 focus:border-red-500 focus:ring-red-200" :
+                                fieldState.isDirty && !fieldState.error ? "border-green-300 focus:border-green-500" : ""
+                              }`}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-blue-600" />
+                          Phone Number *
+                          {fieldState.isDirty && !fieldState.error && (
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                          )}
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              {...field}
+                              type="tel"
+                              placeholder="+91 98765 43210"
+                              className={`pl-10 transition-all duration-200 ${
+                                fieldState.error ? "border-red-300 focus:border-red-500 focus:ring-red-200" :
+                                fieldState.isDirty && !fieldState.error ? "border-green-300 focus:border-green-500" : ""
+                              }`}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Address Tab */}
+          <TabsContent value="address" className="space-y-6 animate-fade-in-up">
+            <Card className="border-0 shadow-lg glass-effect card-hover">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50 border-b border-green-100">
+                <CardTitle className="flex items-center gap-2 text-green-700">
+                  <MapPin className="h-5 w-5" />
+                  Address Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-6">
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-blue-600" />
+                        Street Address
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea {...field} placeholder="Enter full address" rows={3} />
+                      </FormControl>
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <Label htmlFor="state">State</Label>
-                <Input
-                  id="state"
-                  {...register("state")}
-                  placeholder="State"
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="City" />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="State" />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Globe className="h-4 w-4 text-blue-600" />
+                          Country
+                        </FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select country" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="India">India</SelectItem>
+                            <SelectItem value="USA">USA</SelectItem>
+                            <SelectItem value="UK">UK</SelectItem>
+                            <SelectItem value="Canada">Canada</SelectItem>
+                            <SelectItem value="Australia">Australia</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pincode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Pincode</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Pincode" />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Business Tab */}
+          <TabsContent value="business" className="space-y-6 animate-fade-in-up">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="border-0 shadow-lg glass-effect card-hover">
+                <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 border-b border-orange-100">
+                  <CardTitle className="flex items-center gap-2 text-orange-700">
+                    <FileText className="h-5 w-5" />
+                    Tax Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                  <FormField
+                    control={form.control}
+                    name="gstNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>GST Number</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="GST Number" />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="panNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>PAN Number</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="PAN Number" />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg glass-effect card-hover">
+                <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100">
+                  <CardTitle className="flex items-center gap-2 text-indigo-700">
+                    <DollarSign className="h-5 w-5" />
+                    Financial Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                  <FormField
+                    control={form.control}
+                    name="creditLimit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <CreditCard className="h-4 w-4 text-blue-600" />
+                          Credit Limit (₹)
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} type="number" step="0.01" placeholder="0.00" />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="paymentTerms"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Payment Terms</FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select payment terms" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Immediate">Immediate</SelectItem>
+                            <SelectItem value="7 days">7 days</SelectItem>
+                            <SelectItem value="15 days">15 days</SelectItem>
+                            <SelectItem value="30 days">30 days</SelectItem>
+                            <SelectItem value="45 days">45 days</SelectItem>
+                            <SelectItem value="60 days">60 days</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Additional Notes Tab */}
+          <TabsContent value="additional" className="space-y-6 animate-fade-in-up">
+            <Card className="border-0 shadow-lg glass-effect card-hover">
+              <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50 border-b border-slate-100">
+                <CardTitle className="flex items-center gap-2 text-slate-700">
+                  <FileText className="h-5 w-5" />
+                  Additional Notes
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Notes</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} placeholder="Add any additional notes about this customer..." rows={8} />
+                      </FormControl>
+                      <FormDescription>Optional: Add any special notes, preferences, or important information about this customer.</FormDescription>
+                    </FormItem>
+                  )}
                 />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="country">Country</Label>
-                <Select
-                  value={watch("country")}
-                  onValueChange={(value) => setValue("country", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="India">India</SelectItem>
-                    <SelectItem value="USA">USA</SelectItem>
-                    <SelectItem value="UK">UK</SelectItem>
-                    <SelectItem value="Canada">Canada</SelectItem>
-                    <SelectItem value="Australia">Australia</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="pincode">Pincode</Label>
-                <Input
-                  id="pincode"
-                  {...register("pincode")}
-                  placeholder="Pincode"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Business Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Business Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="gstNumber">GST Number</Label>
-                <Input
-                  id="gstNumber"
-                  {...register("gstNumber")}
-                  placeholder="GST Number"
-                />
-              </div>
-              <div>
-                <Label htmlFor="panNumber">PAN Number</Label>
-                <Input
-                  id="panNumber"
-                  {...register("panNumber")}
-                  placeholder="PAN Number"
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="creditLimit">Credit Limit</Label>
-              <Input
-                id="creditLimit"
-                {...register("creditLimit")}
-                placeholder="0.00"
-                type="number"
-                step="0.01"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="paymentTerms">Payment Terms</Label>
-              <Select
-                value={watch("paymentTerms")}
-                onValueChange={(value) => setValue("paymentTerms", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select payment terms" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Immediate">Immediate</SelectItem>
-                  <SelectItem value="7 days">7 days</SelectItem>
-                  <SelectItem value="15 days">15 days</SelectItem>
-                  <SelectItem value="30 days">30 days</SelectItem>
-                  <SelectItem value="45 days">45 days</SelectItem>
-                  <SelectItem value="60 days">60 days</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={watch("status")}
-                onValueChange={(value) => setValue("status", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Additional Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Additional Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div>
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                {...register("notes")}
-                placeholder="Additional notes about the customer..."
-                rows={6}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="flex justify-end gap-4">
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="min-w-[120px]"
-        >
-          {isSubmitting ? "Saving..." : mode === "create" ? "Create Customer" : "Update Customer"}
-        </Button>
-      </div>
-    </form>
+        {/* Submit Button */}
+        <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+          <div className="text-sm text-gray-500">
+            {progress < 100 ? `Complete ${progress}% to finish` : "All fields completed ✓"}
+          </div>
+          <Button
+            type="submit"
+            disabled={isSubmitting || progress < 50}
+            className="min-w-[160px] bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 font-semibold h-11 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                {mode === "create" ? "Create Customer" : "Update Customer"}
+                <CheckCircle2 className="ml-2 h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 } 

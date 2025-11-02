@@ -131,7 +131,7 @@ export default function ProformaFormPage() {
 
   return (
     <Layout>
-      <div className="py-6 px-4 sm:px-6 lg:px-8">
+      <div className="px-6 py-6">
         <div className="mb-6">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={() => setLocation("/quotations")} className="flex items-center gap-2">
@@ -159,13 +159,14 @@ export default function ProformaFormPage() {
             <p className="text-gray-600">Loading proforma...</p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg border">
+          <div className="bg-white rounded-lg border shadow-sm">
             <QuotationForm 
               onSubmit={handleSubmit} 
               isSubmitting={createProforma.isPending || updateProforma.isPending} 
               mode={isEditMode ? "edit" : "create"} 
               defaultValues={proforma || processedCopySource} 
               submitLabel={isEditMode ? "Update Proforma" : "Create Proforma"} 
+              documentType="proforma"
             />
           </div>
         )}

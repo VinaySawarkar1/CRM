@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Lead } from "@shared/schema";
 import Layout from "@/components/layout";
 import PageHeader from "@/components/page-header";
 import LeadTable from "@/components/leads/lead-table";
 import LeadCategoriesManager from "@/components/leads/lead-categories-manager";
+import LeadSourcesManager from "@/components/leads/lead-sources-manager";
 import LeadForm from "@/components/leads/lead-form";
 import LeadDetailsDialog from "@/components/leads/lead-details-dialog";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ import ExcelImportExport from "@/components/common/ExcelImportExport";
 
 export default function LeadsPage() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -48,7 +50,9 @@ export default function LeadsPage() {
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedSource, setSelectedSource] = useState("all");
   const [categoryManagerOpen, setCategoryManagerOpen] = useState(false);
+  const [sourceManagerOpen, setSourceManagerOpen] = useState(false);
   const [timeFilter, setTimeFilter] = useState<string>("all");
   const [page, setPage] = useState<number>(1);
   const pageSize = 20;
@@ -58,6 +62,11 @@ export default function LeadsPage() {
   const { data: allCategories = [] } = useQuery<any[]>({ queryKey: ["/api/lead-categories"] });
   const activeCategories = allCategories.filter(c => c.isActive);
   const categoryLabels: Record<string, string> = Object.fromEntries(activeCategories.map((c: any) => [c.key, c.name]));
+
+  // Dynamic sources from API
+  const { data: allSources = [] } = useQuery<any[]>({ queryKey: ["/api/lead-sources"] });
+  const activeSources = allSources.filter(s => s.isActive);
+  const sourceLabels: Record<string, string> = Object.fromEntries(activeSources.map((s: any) => [s.key, s.name]));
 
   // Get all leads
   const {
@@ -240,8 +249,26 @@ export default function LeadsPage() {
     
     return counts;
   };
+
+  // Calculate source counts
+  const getSourceCounts = () => {
+    const counts: Record<string, number> = { all: 0 };
+    if (!leads) return counts;
+    
+    leads.forEach(lead => {
+      counts.all++;
+      const source = lead.source || 'other';
+      if (!counts[source]) {
+        counts[source] = 0;
+      }
+      counts[source]++;
+    });
+    
+    return counts;
+  };
   
   const categoryCounts = getCategoryCounts();
+  const sourceCounts = getSourceCounts();
   
   // Filter leads based on search query, selected category and time window
   const withinTimeWindow = (createdAt: any) => {
@@ -274,6 +301,10 @@ export default function LeadsPage() {
   const filteredLeads = leads?.filter(lead => {
     // Category filter
     if (selectedCategory !== "all" && lead.category !== selectedCategory) {
+      return false;
+    }
+    // Source filter
+    if (selectedSource !== "all" && (lead.source || 'other') !== selectedSource) {
       return false;
     }
     if (!withinTimeWindow((lead as any).createdAt)) return false;
@@ -331,6 +362,7 @@ export default function LeadsPage() {
               Add New Lead
             </Button>
             <Button variant="outline" onClick={() => setCategoryManagerOpen(true)}>Manage Categories</Button>
+            <Button variant="outline" onClick={() => setSourceManagerOpen(true)}>Manage Sources</Button>
           </div>
         </div>
 
@@ -349,51 +381,70 @@ export default function LeadsPage() {
                 </TabsTrigger>
               ))}
             </TabsList>
-            
-            <TabsContent value={selectedCategory} className="mt-0">
-              {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#800000]" />
-                </div>
-              ) : error ? (
-                <div className="text-center py-8">
-                  <p className="text-red-500">Error loading leads: {(error as Error).message}</p>
-                </div>
-              ) : filteredLeads && filteredLeads.length > 0 ? (
-                <LeadTable
-                  leads={filteredLeads.slice((page-1)*pageSize, page*pageSize)}
-                  isLoading={isLoading}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onConvertToOrder={handleConvertToOrder}
-                  onCreateQuotation={handleCreateQuotation}
-                  onViewDetails={handleViewDetails}
-                  onConvertToCustomer={handleConvertToCustomer}
-                />
-              ) : (
-                <div className="text-center py-12 border rounded-md bg-gray-50">
-                  <p className="text-gray-500">No leads found in this category. Add a new lead to get started.</p>
-                  <Button 
-                    onClick={() => setCreateDialogOpen(true)}
-                    className="mt-4 bg-[#800000] hover:bg-[#4B0000]"
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add New Lead
-                  </Button>
-                </div>
-              )}
-            </TabsContent>
           </Tabs>
-          {filteredLeads && filteredLeads.length > 0 && (
-            <div className="flex items-center justify-between mt-4">
-              <div className="text-sm text-gray-600">Showing {(page-1)*pageSize + 1} - {Math.min(page*pageSize, filteredLeads.length)} of {filteredLeads.length}</div>
-              <div className="flex gap-2">
-                <Button variant="outline" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Prev</Button>
-                <Button variant="outline" disabled={page*pageSize >= filteredLeads.length} onClick={() => setPage(p => p+1)}>Next</Button>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Source Filter Tabs */}
+        <div className="mb-6">
+          <Tabs defaultValue="all" value={selectedSource} onValueChange={setSelectedSource}>
+            <TabsList className="mb-4 overflow-x-auto flex flex-nowrap pb-1 scrollbar-hide">
+              <TabsTrigger value="all" className="whitespace-nowrap">
+                All Sources
+                <Badge variant="outline" className="ml-2 bg-gray-100">{sourceCounts.all || 0}</Badge>
+              </TabsTrigger>
+              {Object.entries(sourceLabels).map(([value, label]) => (
+                <TabsTrigger key={value} value={value} className="whitespace-nowrap">
+                  {label}
+                  <Badge variant="outline" className="ml-2 bg-gray-100">{sourceCounts[value] || 0}</Badge>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {/* Leads Content */}
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-[#800000]" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-8">
+            <p className="text-red-500">Error loading leads: {(error as Error).message}</p>
+          </div>
+        ) : filteredLeads && filteredLeads.length > 0 ? (
+          <LeadTable
+            leads={filteredLeads.slice((page-1)*pageSize, page*pageSize)}
+            isLoading={isLoading}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onConvertToOrder={handleConvertToOrder}
+            onCreateQuotation={handleCreateQuotation}
+            onViewDetails={handleViewDetails}
+            onConvertToCustomer={handleConvertToCustomer}
+          />
+        ) : (
+          <div className="text-center py-12 border rounded-md bg-gray-50">
+            <p className="text-gray-500">No leads found. Add a new lead to get started.</p>
+            <Button 
+              onClick={() => setCreateDialogOpen(true)}
+              className="mt-4 bg-[#800000] hover:bg-[#4B0000]"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Lead
+            </Button>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {filteredLeads && filteredLeads.length > 0 && (
+          <div className="flex items-center justify-between mt-4">
+            <div className="text-sm text-gray-600">Showing {(page-1)*pageSize + 1} - {Math.min(page*pageSize, filteredLeads.length)} of {filteredLeads.length}</div>
+            <div className="flex gap-2">
+              <Button variant="outline" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Prev</Button>
+              <Button variant="outline" disabled={page*pageSize >= filteredLeads.length} onClick={() => setPage(p => p+1)}>Next</Button>
+            </div>
+          </div>
+        )}
 
         {/* Create Lead Dialog */}
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
@@ -484,7 +535,20 @@ export default function LeadsPage() {
           open={detailsDialogOpen}
           onOpenChange={setDetailsDialogOpen}
         />
-        <LeadCategoriesManager open={categoryManagerOpen} onOpenChange={setCategoryManagerOpen} onChanged={() => {}} />
+        <LeadCategoriesManager 
+          open={categoryManagerOpen} 
+          onOpenChange={setCategoryManagerOpen} 
+          onChanged={() => {
+            queryClient.invalidateQueries({ queryKey: ["/api/lead-categories"] });
+          }} 
+        />
+        <LeadSourcesManager 
+          open={sourceManagerOpen} 
+          onOpenChange={setSourceManagerOpen} 
+          onChanged={() => {
+            queryClient.invalidateQueries({ queryKey: ["/api/lead-sources"] });
+          }} 
+        />
       </div>
     </Layout>
   );

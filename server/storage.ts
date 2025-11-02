@@ -5,6 +5,7 @@ import {
   leads, type Lead, type InsertLead,
   leadDiscussions, type LeadDiscussion, type InsertLeadDiscussion,
   leadCategories, type LeadCategory, type InsertLeadCategory,
+  leadSources, type LeadSource, type InsertLeadSource,
   quotations, type Quotation, type InsertQuotation,
   orders, type Order, type InsertOrder,
   invoices, type Invoice, type InsertInvoice,
@@ -61,6 +62,7 @@ const SUPPORT_TICKET_FILE = path.join(DATA_DIR, 'support_tickets.json');
 const CONTRACT_FILE = path.join(DATA_DIR, 'contracts.json');
 const COMPANY_SETTINGS_FILE = path.join(DATA_DIR, 'company-settings.json');
 const LEAD_CATEGORY_FILE = path.join(DATA_DIR, 'lead-categories.json');
+const LEAD_SOURCE_FILE = path.join(DATA_DIR, 'lead-sources.json');
 const PRODUCT_FILE = path.join(DATA_DIR, 'products.json');
 const RAW_MATERIAL_FILE = path.join(DATA_DIR, 'raw-materials.json');
 const QUOTATION_TEMPLATE_FILE = path.join(DATA_DIR, 'quotation-templates.json');
@@ -107,6 +109,10 @@ export interface IStorage {
   createLeadCategory(c: InsertLeadCategory): Promise<LeadCategory>;
   updateLeadCategory(id: number, c: Partial<InsertLeadCategory>): Promise<LeadCategory | undefined>;
   deleteLeadCategory(id: number): Promise<boolean>;
+  getAllLeadSources(): Promise<LeadSource[]>;
+  createLeadSource(c: InsertLeadSource): Promise<LeadSource>;
+  updateLeadSource(id: number, c: Partial<InsertLeadSource>): Promise<LeadSource | undefined>;
+  deleteLeadSource(id: number): Promise<boolean>;
 
   // Quotation operations
   getQuotation(id: number): Promise<Quotation | undefined>;
@@ -239,6 +245,7 @@ export class JSONFileStorage implements IStorage {
   private leads: Map<number, Lead>;
   private leadDiscussions: Map<number, LeadDiscussion>;
   private leadCategories: Map<number, LeadCategory>;
+  private leadSources: Map<number, LeadSource>;
   private quotations: Map<number, Quotation>;
   private orders: Map<number, Order>;
   private invoices: Map<number, Invoice>;
@@ -262,6 +269,7 @@ export class JSONFileStorage implements IStorage {
   leadIdCounter: number;
   leadDiscussionIdCounter: number;
   leadCategoryIdCounter: number;
+  leadSourceIdCounter: number;
   quotationIdCounter: number;
   orderIdCounter: number;
   invoiceIdCounter: number;
@@ -285,6 +293,7 @@ export class JSONFileStorage implements IStorage {
     this.leads = new Map();
     this.leadDiscussions = new Map();
     this.leadCategories = new Map();
+    this.leadSources = new Map();
     this.quotations = new Map();
     this.orders = new Map();
     this.invoices = new Map();
@@ -307,6 +316,7 @@ export class JSONFileStorage implements IStorage {
     this.leadIdCounter = 1;
     this.leadDiscussionIdCounter = 1;
     this.leadCategoryIdCounter = 1;
+    this.leadSourceIdCounter = 1;
     this.quotationIdCounter = 1;
     this.orderIdCounter = 1;
     this.invoiceIdCounter = 1;
@@ -377,6 +387,7 @@ export class JSONFileStorage implements IStorage {
     await this.loadLeads();
     await this.loadLeadDiscussions();
     await this.loadLeadCategories();
+    await this.loadLeadSources();
     await this.loadQuotations();
     await this.loadOrders();
     await this.loadInvoices();
@@ -563,6 +574,52 @@ export class JSONFileStorage implements IStorage {
       createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : c.createdAt
     }));
     await fs.writeFile(LEAD_CATEGORY_FILE, JSON.stringify(arr, null, 2), 'utf-8');
+  }
+
+  private async loadLeadSources() {
+    try {
+      const data = await fs.readFile(LEAD_SOURCE_FILE, 'utf-8');
+      const list = JSON.parse(data) as any[];
+      this.leadSources.clear();
+      let maxId = 0;
+      const normalized = list.map((c, idx) => {
+        const id = c.id ?? (idx + 1);
+        maxId = Math.max(maxId, id);
+        return {
+          id,
+          key: c.key || (c.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, ''),
+          name: c.name || c.key,
+          isActive: typeof c.isActive === 'boolean' ? c.isActive : true,
+          createdAt: c.createdAt ? new Date(c.createdAt) : new Date()
+        } as LeadSource;
+      });
+      normalized.forEach((c) => this.leadSources.set(c.id, c));
+      this.leadSourceIdCounter = maxId + 1;
+    } catch {
+      const defaults: LeadSource[] = [
+        { id: 1, key: 'website', name: 'Website', isActive: true, createdAt: new Date() },
+        { id: 2, key: 'referral', name: 'Referral', isActive: true, createdAt: new Date() },
+        { id: 3, key: 'social_media', name: 'Social Media', isActive: true, createdAt: new Date() },
+        { id: 4, key: 'email_campaign', name: 'Email Campaign', isActive: true, createdAt: new Date() },
+        { id: 5, key: 'cold_call', name: 'Cold Call', isActive: true, createdAt: new Date() },
+        { id: 6, key: 'trade_show', name: 'Trade Show', isActive: true, createdAt: new Date() },
+        { id: 7, key: 'partner', name: 'Partner', isActive: true, createdAt: new Date() },
+        { id: 8, key: 'online_ad', name: 'Online Advertisement', isActive: true, createdAt: new Date() },
+        { id: 9, key: 'other', name: 'Other', isActive: true, createdAt: new Date() },
+      ];
+      this.leadSources.clear();
+      defaults.forEach((c) => this.leadSources.set(c.id, c));
+      this.leadSourceIdCounter = defaults.length + 1;
+      await this.saveLeadSources();
+    }
+  }
+
+  private async saveLeadSources() {
+    const arr = Array.from(this.leadSources.values()).map((c) => ({
+      ...c,
+      createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : c.createdAt
+    }));
+    await fs.writeFile(LEAD_SOURCE_FILE, JSON.stringify(arr, null, 2), 'utf-8');
   }
 
   // Save methods for each entity
@@ -839,6 +896,43 @@ export class JSONFileStorage implements IStorage {
   async deleteLeadCategory(id: number): Promise<boolean> {
     const deleted = this.leadCategories.delete(id);
     if (deleted) await this.saveLeadCategories();
+    return deleted;
+  }
+
+  // Lead Source operations
+  async getAllLeadSources(): Promise<LeadSource[]> {
+    return Array.from(this.leadSources.values());
+  }
+
+  async createLeadSource(insert: InsertLeadSource): Promise<LeadSource> {
+    const id = this.leadSourceIdCounter++;
+    const rec: LeadSource = {
+      id,
+      key: insert.key,
+      name: insert.name,
+      isActive: insert.isActive ?? true,
+      createdAt: new Date()
+    };
+    this.leadSources.set(id, rec);
+    await this.saveLeadSources();
+    return rec;
+  }
+
+  async updateLeadSource(id: number, updates: Partial<InsertLeadSource>): Promise<LeadSource | undefined> {
+    const existing = this.leadSources.get(id);
+    if (!existing) return undefined;
+    const updated: LeadSource = {
+      ...existing,
+      ...updates,
+    };
+    this.leadSources.set(id, updated);
+    await this.saveLeadSources();
+    return updated;
+  }
+
+  async deleteLeadSource(id: number): Promise<boolean> {
+    const deleted = this.leadSources.delete(id);
+    if (deleted) await this.saveLeadSources();
     return deleted;
   }
 

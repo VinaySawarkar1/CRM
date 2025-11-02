@@ -17,6 +17,7 @@ import CustomersPage from "@/pages/customers-page";
 import QuotationsPage from "@/pages/quotations-page";
 import QuotationFormPage from "@/pages/quotation-form-page";
 import InvoicesPage from "@/pages/invoices-page";
+import InvoiceFormPage from "@/pages/invoice-form-page";
 import PaymentsPage from "@/pages/payments-page";
 import PurchaseOrdersPage from "@/pages/purchase-orders-page";
 import PurchaseOrderFormPage from "@/pages/purchase-order-form-page";
@@ -39,38 +40,40 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Switch>
-            <Route path="/auth" component={AuthPage} />
-            <ProtectedRoute path="/" component={DashboardPage} />
-            <ProtectedRoute path="/leads" component={LeadsPage} />
-            <ProtectedRoute path="/orders" component={OrdersPage} />
-            <ProtectedRoute path="/inventory" component={InventoryPage} />
-            <ProtectedRoute path="/tasks" component={TasksPage} />
-            <ProtectedRoute path="/employee-activities" component={EmployeeActivitiesPage} />
-            <ProtectedRoute path="/reports" component={ReportsPage} />
-            <ProtectedRoute path="/customers" component={CustomersPage} />
-            <ProtectedRoute path="/quotations" component={QuotationsPage} />
-            <ProtectedRoute path="/quotations/new" component={QuotationFormPage} />
-            <ProtectedRoute path="/quotations/edit/:id" component={QuotationFormPage} />
-            <ProtectedRoute path="/proforma/new" component={ProformaFormPage} />
-            <ProtectedRoute path="/proforma/edit/:id" component={ProformaFormPage} />
-            <ProtectedRoute path="/invoices" component={InvoicesPage} />
-            <ProtectedRoute path="/payments" component={PaymentsPage} />
-            <ProtectedRoute path="/purchase-orders" component={PurchaseOrdersPage} />
-            <ProtectedRoute path="/purchase-orders/new" component={PurchaseOrderFormPage} />
-            <ProtectedRoute path="/purchase-orders/edit/:id" component={PurchaseOrderFormPage} />
-            <ProtectedRoute path="/sales-targets" component={SalesTargetsPage} />
-            <ProtectedRoute path="/manufacturing" component={ManufacturingPage} />
-            <ProtectedRoute path="/settings" component={SettingsPage} />
-            <ProtectedRoute path="/users" component={UsersPage} />
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Switch>
+          <Route path="/auth" component={AuthPage} />
+          <ProtectedRoute path="/" component={DashboardPage} />
+          <ProtectedRoute path="/leads" component={LeadsPage} />
+          <ProtectedRoute path="/orders" component={OrdersPage} />
+          <ProtectedRoute path="/inventory" component={InventoryPage} />
+          <ProtectedRoute path="/tasks" component={TasksPage} />
+          <ProtectedRoute path="/employee-activities" component={EmployeeActivitiesPage} />
+          <ProtectedRoute path="/reports" component={ReportsPage} />
+          <ProtectedRoute path="/customers" component={CustomersPage} />
+          <ProtectedRoute path="/quotations" component={QuotationsPage} />
+          <ProtectedRoute path="/quotations/new" component={QuotationFormPage} />
+          <ProtectedRoute path="/quotations/edit/:id" component={QuotationFormPage} />
+          <ProtectedRoute path="/proforma/new" component={ProformaFormPage} />
+          <ProtectedRoute path="/proforma/edit/:id" component={ProformaFormPage} />
+          <ProtectedRoute path="/invoices" component={InvoicesPage} />
+          <ProtectedRoute path="/invoices/new" component={InvoiceFormPage} />
+          <ProtectedRoute path="/invoices/edit/:id" component={InvoiceFormPage} />
+          <ProtectedRoute path="/payments" component={PaymentsPage} />
+          <ProtectedRoute path="/purchase-orders" component={PurchaseOrdersPage} />
+          <ProtectedRoute path="/purchase-orders/new" component={PurchaseOrderFormPage} />
+          <ProtectedRoute path="/purchase-orders/edit/:id" component={PurchaseOrderFormPage} />
+          <ProtectedRoute path="/sales-targets" component={SalesTargetsPage} />
+          <ProtectedRoute path="/manufacturing" component={ManufacturingPage} />
+          <ProtectedRoute path="/settings" component={SettingsPage} />
+          <ProtectedRoute path="/users" component={UsersPage} />
 
-            <Route component={NotFoundPage} />
-          </Switch>
-          <Toaster />
-        </AuthProvider>
-      </QueryClientProvider>
+          <Route component={NotFoundPage} />
+        </Switch>
+        <Toaster />
+      </AuthProvider>
+    </QueryClientProvider>
     </ErrorBoundary>
   );
 }

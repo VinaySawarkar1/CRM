@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,7 +10,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, Edit, Search, Check, Settings } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Trash2, Edit, Search, Check, Settings, FileText, User, MapPin, Package, DollarSign, Save, CheckCircle2, Loader2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import TermsSelector from "./terms-selector";
@@ -187,6 +190,7 @@ interface QuotationFormProps {
   mode: "create" | "edit";
   defaultValues?: Quotation;
   submitLabel?: string;
+  documentType?: "quotation" | "proforma" | "invoice"; // Add document type prop
 }
 
 export default function QuotationForm({
@@ -195,8 +199,11 @@ export default function QuotationForm({
   mode,
   defaultValues,
   submitLabel,
+  documentType = "quotation",
 }: QuotationFormProps) {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("details");
+  const [autoSaved, setAutoSaved] = useState(false);
   const [copySource, setCopySource] = useState<string>('none');
   const [templateList, setTemplateList] = useState<any[]>([]);
   const [customerQuoteList, setCustomerQuoteList] = useState<any[]>([]);
@@ -927,29 +934,52 @@ export default function QuotationForm({
   };
 
   // Auto-fill customer details when customer is selected
+  // Helper function to split address into lines
+  const splitAddress = (address: string | null | undefined): { line1: string; line2: string } => {
+    if (!address) return { line1: "", line2: "" };
+    const lines = address.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    if (lines.length === 0) return { line1: "", line2: "" };
+    if (lines.length === 1) return { line1: lines[0], line2: "" };
+    // If multiple lines, put first in line1, rest joined in line2
+    return { line1: lines[0], line2: lines.slice(1).join(", ") };
+  };
+
   const handleCustomerSelect = (customer: any) => {
+    // Clear lead selection when customer is selected
+    setSelectedLead(null);
+    setValue("leadId", undefined);
+    
     setSelectedCustomer(customer);
     setValue("customerId", customer.id);
     setCustomerSearchTerm(customer.company);
+    
+    // Split address intelligently
+    const { line1, line2 } = splitAddress(customer.address);
     
     // Auto-fill Party Details section
     setValue("contactPersonTitle", ""); // Default empty, user can select
     setValue("customerCompany", customer.company || "");
     setValue("contactPerson", customer.name || "");
-    setValue("addressLine1", customer.address || "");
-    setValue("addressLine2", ""); // Not in customer schema, leave empty
+    setValue("addressLine1", line1);
+    setValue("addressLine2", line2);
     setValue("city", customer.city || "");
     setValue("state", customer.state || "");
     setValue("country", customer.country || "India");
     setValue("pincode", customer.pincode || "");
     
     // Auto-fill shipping address (same as billing initially)
-    setValue("shippingAddressLine1", customer.address || "");
-    setValue("shippingAddressLine2", "");
+    setValue("shippingAddressLine1", line1);
+    setValue("shippingAddressLine2", line2);
     setValue("shippingCity", customer.city || "");
     setValue("shippingState", customer.state || "");
     setValue("shippingCountry", customer.country || "India");
     setValue("shippingPincode", customer.pincode || "");
+    
+    // Store GST and PAN in notes section if needed (or could be added to a separate field)
+    // For now, we'll include them in notes if they exist
+    const taxInfo = [];
+    if (customer.gstNumber) taxInfo.push(`GST: ${customer.gstNumber}`);
+    if (customer.panNumber) taxInfo.push(`PAN: ${customer.panNumber}`);
     
     // Recalculate GST for all items when customer state changes
     if (customer.state) {
@@ -977,6 +1007,115 @@ export default function QuotationForm({
     setShowCustomerModal(false);
     setShowCustomerDropdown(false);
   };
+
+  // Handle lead selection (similar to customer selection)
+  const handleLeadSelect = (lead: any) => {
+    // Clear customer selection when lead is selected
+    setSelectedCustomer(null);
+    setValue("customerId", undefined);
+    
+    setSelectedLead(lead);
+    setValue("leadId", lead.id);
+    
+    // Split address intelligently
+    const { line1, line2 } = splitAddress(lead.address);
+    
+    // Auto-fill Party Details section
+    setValue("contactPersonTitle", "");
+    setValue("customerCompany", lead.company || "");
+    setValue("contactPerson", lead.name || "");
+    setValue("addressLine1", line1);
+    setValue("addressLine2", line2);
+    setValue("city", lead.city || "");
+    setValue("state", lead.state || "");
+    setValue("country", lead.country || "India");
+    setValue("pincode", lead.pincode || "");
+    
+    // Auto-fill shipping address (same as billing initially)
+    setValue("shippingAddressLine1", line1);
+    setValue("shippingAddressLine2", line2);
+    setValue("shippingCity", lead.city || "");
+    setValue("shippingState", lead.state || "");
+    setValue("shippingCountry", lead.country || "India");
+    setValue("shippingPincode", lead.pincode || "");
+    
+    // If lead has assigned products, use them as items
+    if (Array.isArray(lead.assignedProducts) && lead.assignedProducts.length > 0) {
+      const mappedItems = lead.assignedProducts.map((item: any) => ({
+        id: Date.now() + Math.random(),
+        description: item.description || "",
+        hsnSac: item.hsnSac || "",
+        quantity: typeof item.quantity === 'number' ? item.quantity : parseInt(item.quantity) || 1,
+        unit: item.unit || "no.s",
+        rate: (item.rate || 0).toString(),
+        discount: (item.discount || 0).toString(),
+        discountType: item.discountType || "amount",
+        taxable: "0",
+        cgst: "0",
+        sgst: "0",
+        igst: "0",
+        amount: "0",
+        leadTime: item.leadTime || "",
+      }));
+      setItems(mappedItems);
+      setValue("items", mappedItems);
+      
+      // Recalculate GST for items
+      if (lead.state) {
+        const updatedItems = mappedItems.map((item: any) => {
+          const quantity = typeof item.quantity === 'number' ? item.quantity : parseFloat(item.quantity) || 0;
+          const rate = parseFloat(item.rate) || 0;
+          const discount = parseFloat(item.discount) || 0;
+          const taxable = quantity * rate - discount;
+          const { cgst, sgst, igst } = calculateGST(taxable, lead.state, lead.country || "India");
+          const amount = taxable + cgst + sgst + igst;
+          
+          return {
+            ...item,
+            taxable: taxable.toString(),
+            cgst: cgst.toString(),
+            sgst: sgst.toString(),
+            igst: igst.toString(),
+            amount: amount.toString(),
+          };
+        });
+        setItems(updatedItems);
+        setValue("items", updatedItems);
+      }
+    } else {
+      // Recalculate GST for existing items when lead state changes
+      if (lead.state && items.length > 0) {
+        const updatedItems = items.map((item: any) => {
+          const quantity = typeof item.quantity === 'number' ? item.quantity : parseFloat(item.quantity) || 0;
+          const rate = parseFloat(item.rate) || 0;
+          const discount = parseFloat(item.discount) || 0;
+          const taxable = quantity * rate - discount;
+          const { cgst, sgst, igst } = calculateGST(taxable, lead.state, lead.country || "India");
+          const amount = taxable + cgst + sgst + igst;
+          
+          return {
+            ...item,
+            quantity: typeof item.quantity === 'string' ? parseInt(item.quantity) || 1 : (typeof item.quantity === 'number' ? item.quantity : 1),
+            taxable: taxable.toString(),
+            cgst: cgst.toString(),
+            sgst: sgst.toString(),
+            igst: igst.toString(),
+            amount: amount.toString(),
+          };
+        });
+        setItems(updatedItems);
+        setValue("items", updatedItems);
+      }
+    }
+  };
+
+  // Auto-populate form when selectedLead changes (when lead is set from outside, e.g., from URL params)
+  useEffect(() => {
+    if (selectedLead && mode === "create" && !selectedCustomer) {
+      // Only auto-populate if no customer is selected to avoid conflicts
+      handleLeadSelect(selectedLead);
+    }
+  }, [selectedLead?.id, mode]); // Only trigger when lead ID changes or mode changes
 
   // Add new customer
   const handleAddCustomer = async (customerData: any) => {
@@ -1341,14 +1480,60 @@ export default function QuotationForm({
     }
   };
 
+  // Calculate progress using watched values
+  const formValues = watch();
+  const progress = React.useMemo(() => {
+    const required = ['quotationNumber', 'quotationDate', 'validUntil', 'contactPerson', 'addressLine1', 'city', 'state', 'country', 'pincode'];
+    const filled = required.filter(f => {
+      const value = formValues?.[f];
+      return value && value.toString().trim() !== '';
+    });
+    const itemsProgress = items.length > 0 ? 10 : 0;
+    return Math.round(((filled.length / required.length) * 80) + itemsProgress);
+  }, [formValues, items.length]);
+
+  useEffect(() => {
+    if (mode === "edit" && formValues?.quotationNumber) {
+      const timer = setTimeout(() => {
+        setAutoSaved(true);
+        setTimeout(() => setAutoSaved(false), 3000);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [formValues, mode]);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">{mode === "edit" ? "Edit Quotation" : "Create Quotation"}</h1>
-        </div>
-      </div>
+    <div className="bg-gray-50 animate-fade-in-up">
+      {/* Progress Header */}
+      <Card className="border-0 shadow-lg glass-effect mb-6">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+                <FileText className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">
+                  {mode === "edit" 
+                    ? (documentType === "proforma" ? "Edit Proforma Invoice" : documentType === "invoice" ? "Edit Invoice" : "Edit Quotation")
+                    : (documentType === "proforma" ? "Create New Proforma Invoice" : documentType === "invoice" ? "Create New Invoice" : "Create New Quotation")
+                  }
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {progress}% Complete • Fill all required fields and add items
+                </p>
+              </div>
+            </div>
+            {autoSaved && (
+              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                <Save className="h-3 w-3" />
+                Auto-saved
+              </Badge>
+            )}
+          </div>
+          <Progress value={progress} className="h-2" />
+        </CardContent>
+      </Card>
 
       <form 
         onSubmit={(e) => {
@@ -1373,10 +1558,10 @@ export default function QuotationForm({
         className="space-y-6"
       >
 
-        <div className="p-6">
+        <div className="p-6 max-w-[1800px] mx-auto">
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-            {/* Left: main content spans 8 cols on xl */}
-            <div className="xl:col-span-8 space-y-6">
+            {/* Left: main content spans 9 cols on xl (increased from 8 to utilize space) */}
+            <div className="xl:col-span-9 space-y-6">
             {/* Main Content */}
             
             {/* Required Fields Note */}
@@ -1522,7 +1707,7 @@ export default function QuotationForm({
                   <Label htmlFor="branch">Branch</Label>
                   <Input
                     id="branch"
-                    value="Business AI - Maharashtra (27ABGFR0875B1ZA)"
+                    value="Cortex AI - Maharashtra (27ABGFR0875B1ZA)"
                     readOnly
                     className="bg-gray-50"
                   />
@@ -1539,7 +1724,7 @@ export default function QuotationForm({
                 <p className="text-sm text-gray-600">Fill in the contact and address information</p>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <Label htmlFor="contactPersonTitle">Title</Label>
                     <Select value={watch("contactPersonTitle") || ""} onValueChange={(value) => setValue("contactPersonTitle", value)}>
@@ -1555,17 +1740,7 @@ export default function QuotationForm({
                       </SelectContent>
                     </Select>
                   </div>
-                  {!watch("customerId") && (
-                    <div className="col-span-2">
-                      <Label htmlFor="customerCompany">Company Name</Label>
-                      <Input
-                        id="customerCompany"
-                        {...register("customerCompany")}
-                        placeholder="Enter company name"
-                      />
-                    </div>
-                  )}
-                  <div className="col-span-2">
+                  <div className={watch("customerId") ? "md:col-span-3" : "md:col-span-2"}>
                     <Label htmlFor="contactPerson">Contact Person <span className="text-red-500">*</span></Label>
                     <Input
                       id="contactPerson"
@@ -1573,19 +1748,31 @@ export default function QuotationForm({
                       placeholder="Enter contact person's full name"
                       className={errors.contactPerson ? "border-red-500" : ""}
                     />
-                                          {errors.contactPerson && hasAttemptedSubmit && (
-                        <div className="text-xs text-red-500 mt-1">{errors.contactPerson.message}</div>
-                      )}
+                    {errors.contactPerson && hasAttemptedSubmit && (
+                      <div className="text-xs text-red-500 mt-1">{errors.contactPerson.message}</div>
+                    )}
                   </div>
+                  {!watch("customerId") && (
+                    <div className="md:col-span-1">
+                      <Label htmlFor="customerCompany">Company Name</Label>
+                      <Input
+                        id="customerCompany"
+                        {...register("customerCompany")}
+                        placeholder="Company name"
+                      />
+                    </div>
+                  )}
                 </div>
 
-                <div>
-                  <Label htmlFor="salesCredit">Sales Credit</Label>
-                  <Input
-                    id="salesCredit"
-                    {...register("salesCredit")}
-                    placeholder="Enter sales credit information"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="salesCredit">Sales Credit</Label>
+                    <Input
+                      id="salesCredit"
+                      {...register("salesCredit")}
+                      placeholder="Enter sales credit information"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -1609,7 +1796,7 @@ export default function QuotationForm({
                 </div>
 
                 {/* Address Section */}
-                <div className="grid gap-6 grid-cols-2">
+                <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
                   {/* Billing Address */}
                   <div className="space-y-4">
                     <h4 className="font-medium text-gray-900 border-b pb-2">Billing Address</h4>
@@ -1855,64 +2042,6 @@ export default function QuotationForm({
                         </div>
                       </div>
                     </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Document Details (removed duplicate; now in sidebar) */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Document Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="quotationNumber">Quotation No. <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="quotationNumber"
-                    {...register("quotationNumber")}
-                    placeholder="Auto-generated"
-                    className={errors.quotationNumber ? "border-red-500" : ""}
-                  />
-                  {errors.quotationNumber && hasAttemptedSubmit && (
-                    <div className="text-xs text-red-500 mt-1">{errors.quotationNumber.message}</div>
-                  )}
-                  <div className="text-xs text-gray-500 mt-1">Prev.: RX-VQ25-25-07-143</div>
-                </div>
-
-                <div>
-                  <Label htmlFor="reference">Reference</Label>
-                  <Input
-                    id="reference"
-                    {...register("reference")}
-                    placeholder="Reference"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="quotationDate">Quotation Date <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="quotationDate"
-                      type="date"
-                      {...register("quotationDate")}
-                      className={errors.quotationDate ? "border-red-500" : ""}
-                    />
-                    {errors.quotationDate && hasAttemptedSubmit && (
-                      <div className="text-xs text-red-500 mt-1">{errors.quotationDate.message}</div>
-                    )}
-                  </div>
-                  <div>
-                    <Label htmlFor="validUntil">Valid till <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="validUntil"
-                      type="date"
-                      {...register("validUntil")}
-                      className={errors.validUntil ? "border-red-500" : ""}
-                    />
-                                      {errors.validUntil && hasAttemptedSubmit && (
-                    <div className="text-xs text-red-500 mt-1">{errors.validUntil.message}</div>
-                  )}
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -2299,7 +2428,7 @@ export default function QuotationForm({
             </div>
 
             {/* Sidebar: right column */}
-            <div className="xl:col-span-4 space-y-6 xl:sticky xl:top-4 self-start">
+            <div className="xl:col-span-3 space-y-6 xl:sticky xl:top-4 self-start">
               {/* Document Details moved to sidebar */}
               <Card>
                 <CardHeader>
@@ -2307,7 +2436,10 @@ export default function QuotationForm({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="quotationNumber">Quotation No. <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="quotationNumber">
+                      {documentType === "proforma" ? "Proforma No." : documentType === "invoice" ? "Invoice No." : "Quotation No."} 
+                      <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       id="quotationNumber"
                       {...register("quotationNumber")}
@@ -2317,6 +2449,7 @@ export default function QuotationForm({
                     {errors.quotationNumber && hasAttemptedSubmit && (
                       <div className="text-xs text-red-500 mt-1">{errors.quotationNumber.message}</div>
                     )}
+                    <div className="text-xs text-gray-500 mt-1">Prev.: RX-VQ25-25-07-143</div>
                   </div>
 
                   <div>
@@ -2324,11 +2457,11 @@ export default function QuotationForm({
                     <Input
                       id="reference"
                       {...register("reference")}
-                      placeholder="Reference"
+                      placeholder="Reference (optional)"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div>
                       <Label htmlFor="quotationDate">Quotation Date <span className="text-red-500">*</span></Label>
                       <Input
@@ -2428,7 +2561,13 @@ export default function QuotationForm({
                       className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Saving...' : (mode === 'edit' ? 'Update Quotation' : 'Save Quotation')}
+                      {isSubmitting 
+                        ? 'Saving...' 
+                        : submitLabel || (mode === 'edit' 
+                          ? (documentType === "proforma" ? 'Update Proforma' : 'Update Quotation')
+                          : (documentType === "proforma" ? 'Create Proforma' : 'Save Quotation')
+                        )
+                      }
                     </Button>
                   </div>
                 </CardContent>
@@ -2436,7 +2575,7 @@ export default function QuotationForm({
             </div>
 
             {/* Bank Details - stays in main content, not sidebar */}
-            <Card className="xl:col-span-8">
+            <Card className="xl:col-span-9">
               <CardHeader>
                 <CardTitle>Bank Details</CardTitle>
               </CardHeader>

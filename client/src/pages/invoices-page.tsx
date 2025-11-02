@@ -1,27 +1,20 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Invoice } from "@shared/schema";
 import Layout from "@/components/layout";
 import PageHeader from "@/components/page-header";
 import InvoiceTable from "@/components/invoices/invoice-table";
-import InvoiceForm from "@/components/invoices/invoice-form";
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, FileText, Receipt, Download, Printer } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export default function InvoicesPage() {
   const { toast } = useToast();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+  const [location, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("invoices");
@@ -37,52 +30,6 @@ export default function InvoicesPage() {
     queryKey: ["/api/invoices"],
   });
 
-  // Create invoice mutation
-  const createInvoice = useMutation({
-    mutationFn: async (data: any) => {
-      const res = await apiRequest("POST", "/api/invoices", data);
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
-      setDialogOpen(false);
-      toast({
-        title: "Invoice Created",
-        description: "New invoice has been created successfully.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: `Failed to create invoice: ${error.message}`,
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Update invoice mutation
-  const updateInvoice = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const res = await apiRequest("PUT", `/api/invoices/${id}`, data);
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
-      setDialogOpen(false);
-      setEditingInvoice(null);
-      toast({
-        title: "Invoice Updated",
-        description: "Invoice has been updated successfully.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: `Failed to update invoice: ${error.message}`,
-        variant: "destructive",
-      });
-    },
-  });
 
   // Delete invoice mutation
   const deleteInvoice = useMutation({
@@ -128,17 +75,8 @@ export default function InvoicesPage() {
     },
   });
 
-  const handleSubmit = (data: any) => {
-    if (editingInvoice) {
-      updateInvoice.mutate({ id: editingInvoice.id, data });
-    } else {
-      createInvoice.mutate(data);
-    }
-  };
-
   const handleEdit = (invoice: Invoice) => {
-    setEditingInvoice(invoice);
-    setDialogOpen(true);
+    setLocation(`/invoices/edit/${invoice.id}`);
   };
 
   const handleDelete = (id: number) => {
@@ -157,8 +95,7 @@ export default function InvoicesPage() {
   };
 
   const handleAddNew = () => {
-    setEditingInvoice(null);
-    setDialogOpen(true);
+    setLocation("/invoices/new");
   };
 
   // Filter invoices based on search and status
@@ -330,23 +267,6 @@ export default function InvoicesPage() {
           </div>
         )}
       </div>
-
-      {/* Invoice Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingInvoice ? "Edit Invoice" : "Create Invoice"}
-            </DialogTitle>
-          </DialogHeader>
-          <InvoiceForm
-            onSubmit={handleSubmit}
-            isSubmitting={createInvoice.isPending || updateInvoice.isPending}
-            mode={editingInvoice ? "edit" : "create"}
-            defaultValues={editingInvoice || undefined}
-          />
-        </DialogContent>
-      </Dialog>
     </Layout>
   );
 } 

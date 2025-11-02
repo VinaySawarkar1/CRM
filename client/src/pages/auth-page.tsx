@@ -75,49 +75,78 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30">
       {/* Hero section */}
-      <div className="hidden md:flex md:w-1/2 bg-[#800000] text-white p-8 flex-col justify-center">
-        <div className="max-w-md mx-auto space-y-8">
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 text-white p-8 flex-col justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-mesh opacity-50"></div>
+        <div className="relative max-w-md mx-auto space-y-8 animate-fade-in-up">
           <div className="text-center">
-            <h1 className="cinzel text-4xl font-bold tracking-wider">Business AI</h1>
-            <p className="mt-2 text-sm tracking-widest font-semibold">TEST. MEASURE. CALIBRATE.</p>
+            <div className="inline-block mb-4">
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto shadow-2xl animate-float">
+                <span className="text-3xl font-bold">C</span>
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold tracking-wider mb-2 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+              Cortex AI
+            </h1>
+            <p className="mt-2 text-sm tracking-widest font-semibold text-blue-100">Cortex AI Business Suite</p>
           </div>
           
-          <div className="space-y-4">
-                          <p className="text-lg">Welcome to Business AI</p>
-            <p>
+          <div className="space-y-4 glass-dark p-6 rounded-2xl backdrop-blur-md">
+            <p className="text-xl font-semibold">Welcome to Cortex AI</p>
+            <p className="text-blue-100">
               Our comprehensive platform allows you to:
             </p>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Manage leads and convert them to orders</li>
-              <li>Process and track customer orders</li>
-              <li>Monitor inventory levels in real-time</li>
-              <li>Assign and track tasks across your team</li>
+            <ul className="list-none space-y-3">
+              <li className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+                <span>Manage leads and convert them to orders</span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+                <span>Process and track customer orders</span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+                <span>Monitor inventory levels in real-time</span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+                <span>Assign and track tasks across your team</span>
+              </li>
             </ul>
-            <p className="mt-8 text-sm opacity-80">Secure, efficient, and designed for precision businesses.</p>
+            <p className="mt-8 text-sm opacity-90 pt-4 border-t border-white/20">Secure, efficient, and designed for precision businesses.</p>
           </div>
         </div>
       </div>
       
       {/* Auth forms */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
-        <Card className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center p-6">
+        <Card className="w-full max-w-md shadow-2xl border-0 glass-effect">
           <CardHeader className="space-y-1">
             <div className="md:hidden text-center mb-4">
-              <h1 className="cinzel text-2xl font-bold tracking-wider text-[#800000]">Business AI</h1>
-              <p className="text-xs tracking-widest font-semibold text-[#D4AF37]">TEST. MEASURE. CALIBRATE.</p>
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-lg">
+                <span className="text-2xl font-bold text-white">C</span>
+              </div>
+              <h1 className="text-3xl font-bold tracking-wider bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Cortex AI</h1>
+              <p className="text-xs tracking-widest font-semibold text-gray-500 mt-1">Cortex AI Business Suite</p>
             </div>
-            <CardTitle className="text-2xl text-center">Authentication</CardTitle>
-            <CardDescription className="text-center">
-                              Sign in to access Business AI
+            <CardTitle className="text-3xl text-center font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Welcome Back
+            </CardTitle>
+            <CardDescription className="text-center text-base">
+              Sign in to access your dashboard
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 p-1 rounded-lg">
+                <TabsTrigger value="login" className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold">
+                  Login
+                </TabsTrigger>
+                <TabsTrigger value="register" className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold">
+                  Register
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="login">
@@ -151,7 +180,7 @@ export default function AuthPage() {
                     />
                     <Button 
                       type="submit" 
-                      className="w-full bg-[#800000] hover:bg-[#4B0000]" 
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 font-semibold" 
                       disabled={loginMutation.isPending}
                     >
                       {loginMutation.isPending ? (
@@ -220,7 +249,7 @@ export default function AuthPage() {
                     />
                     <Button 
                       type="submit" 
-                      className="w-full bg-[#800000] hover:bg-[#4B0000]" 
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 font-semibold" 
                       disabled={registerMutation.isPending}
                     >
                       {registerMutation.isPending ? (

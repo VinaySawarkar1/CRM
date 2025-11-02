@@ -67,6 +67,10 @@ export interface IStorage {
   createLeadCategory(c: InsertLeadCategory): Promise<LeadCategory>;
   updateLeadCategory(id: number, c: Partial<InsertLeadCategory>): Promise<LeadCategory | undefined>;
   deleteLeadCategory(id: number): Promise<boolean>;
+  getAllLeadSources(): Promise<LeadSource[]>;
+  createLeadSource(c: InsertLeadSource): Promise<LeadSource>;
+  updateLeadSource(id: number, c: Partial<InsertLeadSource>): Promise<LeadSource | undefined>;
+  deleteLeadSource(id: number): Promise<boolean>;
 
   // Quotation operations
   getQuotation(id: number): Promise<Quotation | undefined>;
@@ -191,6 +195,8 @@ export class MongoDBStorage implements IStorage {
     suppliers: Collection;
     leads: Collection;
     leadDiscussions: Collection;
+    leadCategories: Collection;
+    leadSources: Collection;
     quotations: Collection;
     orders: Collection;
     invoices: Collection;
@@ -224,6 +230,8 @@ export class MongoDBStorage implements IStorage {
       suppliers: db.collection('suppliers'),
       leads: db.collection('leads'),
       leadDiscussions: db.collection('leadDiscussions'),
+      leadCategories: db.collection('leadCategories'),
+      leadSources: db.collection('leadSources'),
       quotations: db.collection('quotations'),
       orders: db.collection('orders'),
       invoices: db.collection('invoices'),
@@ -481,6 +489,55 @@ export class MongoDBStorage implements IStorage {
 
   async deleteLeadCategory(id: number): Promise<boolean> {
     const result = await this.collections.leadCategories.deleteOne({ id });
+    return result.deletedCount > 0;
+  }
+
+  async getAllLeadSources(): Promise<LeadSource[]> {
+    const results = await this.collections.leadSources.find().toArray();
+    return results.map(source => {
+      const { _id, ...sourceData } = source;
+      return {
+        ...sourceData,
+        id: this.convertToNumberId(source._id || source.id),
+      } as LeadSource;
+    });
+  }
+
+  async createLeadSource(source: InsertLeadSource): Promise<LeadSource> {
+    // Get the next ID
+    const allSources = await this.getAllLeadSources();
+    const maxId = allSources.length > 0 ? Math.max(...allSources.map(s => typeof s.id === 'number' ? s.id : parseInt(String(s.id)) || 0)) : 0;
+    const nextId = maxId + 1;
+    
+    const result = await this.collections.leadSources.insertOne({
+      ...source,
+      id: nextId,
+      createdAt: new Date(),
+    });
+    
+    return {
+      ...source,
+      id: nextId,
+      createdAt: new Date(),
+    } as LeadSource;
+  }
+
+  async updateLeadSource(id: number, sourceUpdate: Partial<InsertLeadSource>): Promise<LeadSource | undefined> {
+    const result = await this.collections.leadSources.findOneAndUpdate(
+      { id },
+      { 
+        $set: { 
+          ...sourceUpdate,
+        } 
+      },
+      { returnDocument: 'after' }
+    );
+    
+    return result ? { ...result, id: result.id } as LeadSource : undefined;
+  }
+
+  async deleteLeadSource(id: number): Promise<boolean> {
+    const result = await this.collections.leadSources.deleteOne({ id });
     return result.deletedCount > 0;
   }
 

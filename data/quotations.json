@@ -65,13 +65,13 @@
     "discounts": [],
     "discount": "0",
     "discountType": "amount",
-    "subtotal": "245000",
+    "subtotal": "201000",
     "cgstTotal": "18090",
     "sgstTotal": "18090",
     "igstTotal": "0",
     "taxableTotal": "208820",
-    "totalAmount": "281180",
-    "createdBy": null,
+    "totalAmount": "237180",
+    "createdBy": 1,
     "id": 1,
     "status": "sent",
     "createdAt": "2025-08-12T06:43:00.624Z",
@@ -2257,7 +2257,7 @@
     "igstTotal": "0",
     "taxableTotal": "1748020",
     "totalAmount": "2372980",
-    "createdBy": 1,
+    "createdBy": null,
     "id": 21,
     "status": "draft",
     "createdAt": "2025-08-29T06:23:54.583Z",
@@ -8481,7 +8481,7 @@
     "igstTotal": "0",
     "taxableTotal": "615630",
     "totalAmount": "703870",
-    "createdBy": 1,
+    "createdBy": null,
     "id": 84,
     "status": "draft",
     "createdAt": "2025-09-28T06:19:51.033Z",
@@ -8878,7 +8878,7 @@
     "igstTotal": "0",
     "taxableTotal": "2964790",
     "totalAmount": "3256210",
-    "createdBy": 1,
+    "createdBy": null,
     "id": 86,
     "status": "draft",
     "createdAt": "2025-09-28T06:52:17.556Z",
@@ -8986,7 +8986,7 @@
     "igstTotal": "0",
     "taxableTotal": "712600",
     "totalAmount": "802400",
-    "createdBy": 1,
+    "createdBy": null,
     "id": 87,
     "status": "draft",
     "createdAt": "2025-09-28T07:00:05.367Z",
@@ -11046,10 +11046,11 @@
     "igstTotal": "0",
     "taxableTotal": "2300100",
     "totalAmount": "2601900",
-    "createdBy": 1,
+    "createdBy": null,
     "id": 102,
     "status": "draft",
-    "createdAt": "2025-10-16T09:33:00.939Z"
+    "createdAt": "2025-10-16T09:33:00.939Z",
+    "leadId": null
   },
   {
     "quotationNumber": "RX-VQ25-25-07-1760607702081",
@@ -11124,10 +11125,11 @@
     "igstTotal": "0",
     "taxableTotal": "70630",
     "totalAmount": "84370",
-    "createdBy": 1,
+    "createdBy": null,
     "id": 103,
     "status": "draft",
-    "createdAt": "2025-10-16T09:42:22.406Z"
+    "createdAt": "2025-10-16T09:42:22.406Z",
+    "leadId": null
   },
   {
     "quotationNumber": "RX-VQ25-25-10-261",
@@ -11215,10 +11217,11 @@
     "igstTotal": "0",
     "taxableTotal": "571400",
     "totalAmount": "613600",
-    "createdBy": 1,
+    "createdBy": null,
     "id": 104,
     "status": "draft",
-    "createdAt": "2025-10-17T11:28:49.855Z"
+    "createdAt": "2025-10-17T11:28:49.855Z",
+    "leadId": null
   },
   {
     "quotationNumber": "RX-VQ25-25-10-262",
@@ -11351,9 +11354,10 @@
     "igstTotal": "1863309.1500000001",
     "taxableTotal": "8488408.350000001",
     "totalAmount": "12215026.65",
-    "createdBy": 1,
+    "createdBy": null,
     "id": 105,
     "status": "draft",
-    "createdAt": "2025-10-18T04:48:41.136Z"
+    "createdAt": "2025-10-18T04:48:41.136Z",
+    "leadId": null
   }
 ]

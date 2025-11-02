@@ -41,37 +41,41 @@ export default function Layout({ children }: LayoutProps) {
   const initials = (user.name || user.username || "").split(" ").map(s => s[0]).slice(0,2).join("").toUpperCase();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-white/90 border-r border-gray-200 shadow-sm backdrop-blur">
+    <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 flex overflow-hidden">
+      {/* Sidebar - Fixed position */}
+      <div className="w-64 glass-effect border-r border-gray-200/50 shadow-xl flex-shrink-0 h-screen fixed left-0 top-0 z-40">
         <Sidebar />
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-64 overflow-hidden">
         {/* Top Navigation Bar */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-gray-200">
+        <header className="sticky top-0 z-30 glass-effect border-b border-gray-200/50 shadow-sm flex-shrink-0">
           <div className="px-6 py-3 flex items-center gap-4">
             {/* Brand */}
             <Link href="/">
-              <div className="flex items-center gap-2 text-gray-900 hover:opacity-90 cursor-pointer select-none">
-                <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-semibold">R</div>
-                <span className="hidden sm:block text-base font-semibold tracking-tight">Reckonix</span>
+              <div className="flex items-center gap-2 text-gray-900 hover:opacity-90 cursor-pointer select-none group">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 text-white flex items-center justify-center font-semibold shadow-md group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  C
+                </div>
+                <span className="hidden sm:block text-base font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Cortex AI
+                </span>
               </div>
             </Link>
 
             {/* Search */}
             <div className="flex-1 max-w-2xl">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <div className="relative group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
                 <Input
-                  className="pl-9 h-9 bg-slate-50 focus:bg-white"
+                  className="pl-9 h-9 bg-white/80 backdrop-blur-sm border-gray-200 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all duration-300 shadow-sm"
                   placeholder="Search leads, customers, quotations..."
                 />
                 <div className="hidden md:flex items-center gap-1 absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-gray-400">
-                  <kbd className="px-1.5 py-0.5 rounded border">Ctrl</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded border bg-white/50 backdrop-blur-sm">Ctrl</kbd>
                   +
-                  <kbd className="px-1.5 py-0.5 rounded border">K</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded border bg-white/50 backdrop-blur-sm">K</kbd>
                 </div>
               </div>
             </div>
@@ -79,7 +83,7 @@ export default function Layout({ children }: LayoutProps) {
             {/* Quick Actions */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="h-9" variant="default">
+                <Button className="h-9 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all duration-300" variant="default">
                   <Plus className="h-4 w-4 mr-2" /> New
                 </Button>
               </DropdownMenuTrigger>
@@ -112,12 +116,12 @@ export default function Layout({ children }: LayoutProps) {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-9 px-2">
-                  <div className="w-8 h-8 bg-blue-600 rounded-full text-white flex items-center justify-center text-xs font-semibold mr-2">
+                <Button variant="ghost" className="h-9 px-2 hover:bg-blue-50/50 transition-colors duration-300 rounded-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full text-white flex items-center justify-center text-xs font-semibold mr-2 shadow-md ring-2 ring-blue-100">
                     {initials || "U"}
                   </div>
                   <div className="hidden sm:flex flex-col items-start mr-1">
-                    <span className="text-sm leading-4 text-gray-900">{user.name || user.username}</span>
+                    <span className="text-sm leading-4 font-semibold text-gray-900">{user.name || user.username}</span>
                     <span className="text-[11px] leading-3 text-gray-500 capitalize">{user.role}</span>
                   </div>
                   <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -139,10 +143,8 @@ export default function Layout({ children }: LayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto scrollbar-content">
-          <div className="px-6 py-6">
-            {children}
-          </div>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-content">
+          {children}
         </main>
       </div>
     </div>

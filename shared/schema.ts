@@ -151,6 +151,20 @@ export const insertLeadCategorySchema = createInsertSchema(leadCategories).omit(
   createdAt: true,
 });
 
+// Lead Source schema
+export const leadSources = pgTable("lead_sources", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(),
+  name: text("name").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertLeadSourceSchema = createInsertSchema(leadSources).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Quotation schema
 export const quotations = pgTable("quotations", {
   id: serial("id").primaryKey(),
@@ -568,6 +582,8 @@ export type InsertLeadDiscussion = z.infer<typeof insertLeadDiscussionSchema>;
 export type LeadDiscussion = typeof leadDiscussions.$inferSelect;
 export type LeadCategory = typeof leadCategories.$inferSelect;
 export type InsertLeadCategory = z.infer<typeof insertLeadCategorySchema>;
+export type LeadSource = typeof leadSources.$inferSelect;
+export type InsertLeadSource = z.infer<typeof insertLeadSourceSchema>;
 
 export type InsertQuotation = z.infer<typeof insertQuotationSchema>;
 export type Quotation = typeof quotations.$inferSelect;

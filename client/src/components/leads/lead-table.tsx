@@ -76,6 +76,7 @@ export default function LeadTable({ leads, onEdit, onDelete, onConvertToOrder, o
               <TableHead>Lead</TableHead>
               <TableHead>Company</TableHead>
               <TableHead>Category</TableHead>
+              <TableHead>Source</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date Added</TableHead>
               <TableHead className="text-right">&nbsp;</TableHead>
@@ -114,6 +115,7 @@ export default function LeadTable({ leads, onEdit, onDelete, onConvertToOrder, o
             <TableHead className="font-semibold text-gray-700">Lead</TableHead>
             <TableHead className="font-semibold text-gray-700">Company</TableHead>
             <TableHead className="font-semibold text-gray-700">Category</TableHead>
+            <TableHead className="font-semibold text-gray-700">Source</TableHead>
             <TableHead className="font-semibold text-gray-700">Status</TableHead>
             <TableHead className="font-semibold text-gray-700">Date Added</TableHead>
             <TableHead className="font-semibold text-gray-700 text-right">&nbsp;</TableHead>
@@ -139,6 +141,11 @@ export default function LeadTable({ leads, onEdit, onDelete, onConvertToOrder, o
                 </TableCell>
                 <TableCell>
                   {getCategoryBadge(lead.category)}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className="bg-cyan-100 text-cyan-800">
+                    {lead.source || 'Other'}
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   {getStatusBadge(lead.status)}
@@ -169,12 +176,46 @@ export default function LeadTable({ leads, onEdit, onDelete, onConvertToOrder, o
           </DialogHeader>
           {activeLead && (
             <div className="grid grid-cols-2 gap-3">
-              <Button onClick={() => { onViewDetails(activeLead); setActiveLead(null); }}><Eye className="h-4 w-4 mr-2"/>View Details</Button>
-              <Button onClick={() => { onEdit(activeLead); setActiveLead(null); }}><Edit className="h-4 w-4 mr-2"/>Edit Lead</Button>
-              <Button onClick={() => { onCreateQuotation(activeLead); setActiveLead(null); }}><FileText className="h-4 w-4 mr-2"/>Create Quotation</Button>
-              {onConvertToCustomer && <Button onClick={() => { onConvertToCustomer(activeLead); setActiveLead(null); }}><UserPlus className="h-4 w-4 mr-2"/>Convert to Customer</Button>}
-              <Button onClick={() => { onConvertToOrder(activeLead); setActiveLead(null); }}><ShoppingCart className="h-4 w-4 mr-2"/>Convert to Order</Button>
-              <Button variant="destructive" onClick={() => { onDelete(activeLead.id); setActiveLead(null); }}><Trash className="h-4 w-4 mr-2"/>Delete Lead</Button>
+              <Button 
+                variant="outline" 
+                className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                onClick={() => { onViewDetails(activeLead); setActiveLead(null); }}
+              >
+                <Eye className="h-4 w-4 mr-2"/>View Details
+              </Button>
+              <Button 
+                variant="outline" 
+                className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                onClick={() => { onEdit(activeLead); setActiveLead(null); }}
+              >
+                <Edit className="h-4 w-4 mr-2"/>Edit Lead
+              </Button>
+              <Button 
+                variant="outline" 
+                className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                onClick={() => { onCreateQuotation(activeLead); setActiveLead(null); }}
+              >
+                <FileText className="h-4 w-4 mr-2"/>Create Quotation
+              </Button>
+              {onConvertToCustomer && (
+                <Button 
+                  variant="outline" 
+                  className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                  onClick={() => { onConvertToCustomer(activeLead); setActiveLead(null); }}
+                >
+                  <UserPlus className="h-4 w-4 mr-2"/>Convert to Customer
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                className="text-gray-900 hover:bg-gray-100 border-gray-300"
+                onClick={() => { onConvertToOrder(activeLead); setActiveLead(null); }}
+              >
+                <ShoppingCart className="h-4 w-4 mr-2"/>Convert to Order
+              </Button>
+              <Button variant="destructive" onClick={() => { onDelete(activeLead.id); setActiveLead(null); }}>
+                <Trash className="h-4 w-4 mr-2"/>Delete Lead
+              </Button>
             </div>
           )}
         </DialogContent>

@@ -1,9 +1,12 @@
 import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import * as htmlPdfNode from 'html-pdf-node';
 import {
   quotationTemplate,
   proformaTemplate,
+  invoiceTemplate,
   deliveryChallanTemplate,
   jobOrderTemplate,
   purchaseOrderTemplate,
@@ -131,12 +134,89 @@ class PDFGenerator {
         protocolTimeout: 60000
       };
     } else {
-      // Development configuration
-      return {
+      // Development configuration - try to find Chrome in Puppeteer cache
+      let executablePath: string | undefined;
+      
+      // Check for PUPPETEER_EXECUTABLE_PATH environment variable first
+      if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+        executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+      } else {
+        // Try to find Chrome in common Puppeteer cache locations for Windows
+        const homedir = os.homedir();
+        const possibleCachePaths = [
+          // Default Puppeteer cache location
+          path.join(homedir, '.cache', 'puppeteer', 'chrome'),
+          path.join(homedir, '.cache', 'puppeteer', 'chromium'),
+          // Alternative locations
+          process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, 'puppeteer', 'chrome') : null,
+          process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, 'puppeteer', 'chromium') : null,
+        ].filter((p): p is string => p !== null);
+        
+        // Search for chrome.exe in cache directories
+        try {
+          for (const cachePath of possibleCachePaths) {
+            if (fs.existsSync(cachePath)) {
+              // Look for chrome.exe or chromium.exe in subdirectories
+              const findExecutable = (dir: string): string | null => {
+                try {
+                  const entries = fs.readdirSync(dir, { withFileTypes: true });
+                  for (const entry of entries) {
+                    const fullPath = path.join(dir, entry.name);
+                    if (entry.isDirectory()) {
+                      const found = findExecutable(fullPath);
+                      if (found) return found;
+                    } else if (entry.name === 'chrome.exe' || entry.name === 'chromium.exe') {
+                      return fullPath;
+                    }
+                  }
+                } catch (err) {
+                  // Continue searching
+                }
+                return null;
+              };
+              
+              const found = findExecutable(cachePath);
+              if (found && fs.existsSync(found)) {
+                executablePath = found;
+                console.log(`Found Chrome at: ${executablePath}`);
+                break;
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('Could not search for Chrome in cache:', error);
+        }
+        
+        // If still not found, try using Puppeteer's default browser path
+        if (!executablePath) {
+          try {
+            // Puppeteer might have Chrome installed via @puppeteer/browsers
+            // Try to get it from the default cache location
+            const puppeteerCache = path.join(os.homedir(), '.cache', 'puppeteer');
+            if (fs.existsSync(puppeteerCache)) {
+              console.log('Searching for Chrome in Puppeteer cache...');
+              // Let Puppeteer try to find it automatically by not specifying executablePath
+            }
+          } catch (error) {
+            console.warn('Could not check Puppeteer default cache:', error);
+          }
+        }
+      }
+      
+      const options: puppeteer.LaunchOptions = {
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
         timeout: 30000
       };
+      
+      // Only set executablePath if we found it, otherwise let Puppeteer find it automatically
+      if (executablePath) {
+        options.executablePath = executablePath;
+      } else {
+        console.log('Chrome executable path not specified, Puppeteer will attempt to find it automatically');
+      }
+      
+      return options;
     }
   }
 
@@ -184,7 +264,7 @@ class PDFGenerator {
       // Generate HTML content using the template
       const html = quotationTemplate({
         company: {
-          name: companySettings?.name || "Business AI",
+          name: companySettings?.name || "Cortex AI",
           address: companySettings?.address || "",
           phone: companySettings?.phone || "",
           email: companySettings?.email || "",
@@ -227,32 +307,32 @@ class PDFGenerator {
       
       // Try Puppeteer first, fallback to html-pdf-node if it fails
       try {
-        // Create a simple, fresh browser instance
+      // Create a simple, fresh browser instance
         tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
-        
-        // Create page
-        page = await tempBrowser.newPage();
-        
-        // Set content directly
-        await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        
-        // Wait a bit for content to settle
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Generate PDF
-        const pdfBuffer = await page.pdf({
-          format: 'A4',
-          printBackground: true,
-          margin: {
-            top: '5mm',
-            right: '5mm',
-            bottom: '5mm',
-            left: '5mm'
-          }
-        });
+      
+      // Create page
+      page = await tempBrowser.newPage();
+      
+      // Set content directly
+      await page.setContent(html, { waitUntil: 'domcontentloaded' });
+      
+      // Wait a bit for content to settle
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Generate PDF
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '5mm',
+          right: '5mm',
+          bottom: '5mm',
+          left: '5mm'
+        }
+      });
 
         console.log('Quotation PDF generated successfully with Puppeteer');
-        return Buffer.from(pdfBuffer);
+      return Buffer.from(pdfBuffer);
       } catch (puppeteerError) {
         console.warn('Puppeteer failed, trying fallback method:', puppeteerError);
         
@@ -308,7 +388,7 @@ class PDFGenerator {
 
       const html = proformaTemplate({
         company: {
-          name: companySettings?.name || "Business AI",
+          name: companySettings?.name || "Cortex AI",
           address: companySettings?.address || "",
           phone: companySettings?.phone || "",
           email: companySettings?.email || "",
@@ -331,6 +411,8 @@ class PDFGenerator {
           name: quotation.contactPerson || quotation.customerName || quotation.customer?.name || "",
           address: quotation.addressLine1 || quotation.customerAddress || quotation.customer?.address || "",
           city: quotation.city || quotation.customerCity || quotation.customer?.city || "",
+          state: quotation.state || customerDetails?.state || quotation.customer?.state || "",
+          country: quotation.country || customerDetails?.country || quotation.customer?.country || "India",
           gstin: quotation.customerGstin || customerDetails?.gstNumber || quotation.customer?.gstin || "",
           phone: quotation.customerPhone || customerDetails?.phone || quotation.customer?.phone || "",
           email: quotation.customerEmail || customerDetails?.email || quotation.customer?.email || ""
@@ -374,9 +456,87 @@ class PDFGenerator {
     }
   }
 
-  async generateInvoicePDF(invoice: any): Promise<Buffer> {
-    // Minimal placeholder using quotation template-like layout is not defined here; keep disabled
-    throw new Error('Invoice generation temporarily disabled');
+  async generateInvoicePDF(invoice: any, printConfig?: PrintConfig): Promise<Buffer> {
+    let tempBrowser: puppeteer.Browser | null = null;
+    let page: puppeteer.Page | null = null;
+    try {
+      // Company settings
+      const storage = getStorage();
+      const companySettings = await storage.getCompanySettings();
+      
+      // Customer details
+      let customerDetails = null;
+      if (invoice.customerId) {
+        customerDetails = await storage.getCustomer(invoice.customerId);
+      }
+
+      const html = invoiceTemplate({
+        company: {
+          name: companySettings?.name || "Cortex AI",
+          address: companySettings?.address || "",
+          phone: companySettings?.phone || "",
+          email: companySettings?.email || "",
+          gstin: companySettings?.gstNumber || "",
+          logo: companySettings?.logo || "",
+          bankDetails: companySettings?.bankDetails || {
+            bankName: "",
+            accountNo: "",
+            ifsc: "",
+            branch: ""
+          }
+        },
+        invoiceNumber: invoice.invoiceNumber || invoice.id,
+        invoiceDate: this.formatDate(invoice.invoiceDate),
+        dueDate: this.formatDate(invoice.dueDate),
+        terms: invoice.terms,
+        notes: invoice.notes,
+        customer: {
+          company: invoice.customerCompany || customerDetails?.company || "",
+          name: customerDetails?.name || invoice.customerName || "",
+          address: invoice.addressLine1 || customerDetails?.address || "",
+          city: invoice.city || customerDetails?.city || "",
+          state: invoice.state || customerDetails?.state || "",
+          country: invoice.country || customerDetails?.country || "India",
+          gstin: invoice.customerGstin || customerDetails?.gstNumber || "",
+          phone: customerDetails?.phone || "",
+          email: customerDetails?.email || "",
+        },
+        shipping: {
+          company: invoice.shippingCompany || invoice.customerCompany || "",
+          name: invoice.shippingContactPerson || "",
+          address: invoice.shippingAddressLine1 || invoice.addressLine1 || "",
+          city: invoice.shippingCity || invoice.city || "",
+          state: invoice.shippingState || invoice.state || "",
+          country: invoice.shippingCountry || invoice.country || "India",
+          pincode: invoice.shippingPincode || invoice.pincode || "",
+          phone: customerDetails?.phone || "",
+          email: customerDetails?.email || "",
+        },
+        items: this.parseItems(invoice.items),
+        subtotal: typeof invoice.subtotal === 'string' ? parseFloat(invoice.subtotal) || 0 : (invoice.subtotal || 0),
+        cgstTotal: typeof invoice.cgstTotal === 'string' ? parseFloat(invoice.cgstTotal) || 0 : (invoice.cgstTotal || 0),
+        sgstTotal: typeof invoice.sgstTotal === 'string' ? parseFloat(invoice.sgstTotal) || 0 : (invoice.sgstTotal || 0),
+        igstTotal: typeof invoice.igstTotal === 'string' ? parseFloat(invoice.igstTotal) || 0 : (invoice.igstTotal || 0),
+        cgst: typeof invoice.cgstTotal === 'string' ? parseFloat(invoice.cgstTotal) || 0 : (invoice.cgstTotal || 0),
+        sgst: typeof invoice.sgstTotal === 'string' ? parseFloat(invoice.sgstTotal) || 0 : (invoice.sgstTotal || 0),
+        igst: typeof invoice.igstTotal === 'string' ? parseFloat(invoice.igstTotal) || 0 : (invoice.igstTotal || 0),
+        totalAmount: typeof invoice.totalAmount === 'string' ? parseFloat(invoice.totalAmount) || 0 : (invoice.totalAmount || 0),
+        paidAmount: typeof invoice.paidAmount === 'string' ? parseFloat(invoice.paidAmount) || 0 : (invoice.paidAmount || 0),
+        discount: invoice.discount ? (typeof invoice.discount === 'string' ? parseFloat(invoice.discount) : invoice.discount) : 0,
+        discountType: invoice.discountType || 'amount',
+        printConfig: printConfig
+      });
+
+      tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
+      page = await tempBrowser.newPage();
+      await page.setContent(html, { waitUntil: 'domcontentloaded' });
+      await new Promise(r => setTimeout(r, 500));
+      const pdf = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' } });
+      return Buffer.from(pdf);
+    } finally {
+      if (page) { try { await page.close(); } catch {} }
+      if (tempBrowser) { try { await tempBrowser.close(); } catch {} }
+    }
   }
 
   async generateDeliveryChallanPDF(data: any): Promise<Buffer> {
@@ -387,7 +547,7 @@ class PDFGenerator {
       const companySettings = await storage.getCompanySettings();
       const html = deliveryChallanTemplate({
         company: {
-          name: companySettings?.name || "Business AI",
+          name: companySettings?.name || "Cortex AI",
           address: companySettings?.address || "",
           phone: companySettings?.phone || "",
           email: companySettings?.email || "",
@@ -428,7 +588,7 @@ class PDFGenerator {
       const companySettings = await storage.getCompanySettings();
       const html = jobOrderTemplate({
         company: {
-          name: companySettings?.name || "Business AI",
+          name: companySettings?.name || "Cortex AI",
           address: companySettings?.address || "",
           phone: companySettings?.phone || "",
           email: companySettings?.email || "",
@@ -461,69 +621,71 @@ class PDFGenerator {
     let tempBrowser: puppeteer.Browser | null = null;
     let page: puppeteer.Page | null = null;
     
+    console.log('Starting purchase order PDF generation...');
+
+    // Get company settings
+    const storage = getStorage();
+    const companySettings = await storage.getCompanySettings();
+    
+    // Parse items from the order
+    const items = this.parseItems(order.items);
+    
+    // Calculate totals
+    const subtotal = parseFloat(order.subtotal || "0");
+    const taxAmount = parseFloat(order.taxAmount || "0");
+    const totalAmount = parseFloat(order.totalAmount || "0");
+    
+    // Generate HTML content using the template
+    const html = purchaseOrderTemplate({
+      company: {
+        name: companySettings?.name || "Business AI",
+        address: companySettings?.address || "",
+        phone: companySettings?.phone || "",
+        email: companySettings?.email || "",
+        gstin: companySettings?.gstNumber || "",
+        logo: companySettings?.logo || "",
+        state: companySettings?.state || "",
+        bankDetails: companySettings?.bankDetails || {}
+      },
+      poNumber: order.poNumber || `PO-${order.id}`,
+      poDate: this.formatDate(order.orderDate),
+      expectedDelivery: order.expectedDelivery ? this.formatDate(order.expectedDelivery) : undefined,
+      vendor: {
+        name: order.supplierName || supplier?.name || "Supplier",
+        company: order.supplierCompany || supplier?.company || "",
+        title: order.supplierTitle || "",
+        address: order.supplierAddress || supplier?.address || "",
+        city: order.supplierCity || supplier?.city || "",
+        state: order.supplierState || supplier?.state || "",
+        country: order.supplierCountry || supplier?.country || "",
+        pincode: order.supplierPincode || supplier?.pincode || "",
+        gstin: order.supplierGstin || supplier?.gstNumber || "",
+        pan: order.supplierPan || supplier?.panNumber || "",
+        phone: order.supplierPhone || supplier?.phone || "",
+        email: order.supplierEmail || supplier?.email || ""
+      },
+      items: items.map(item => ({
+        description: item.description || item.name || "",
+        quantity: item.quantity || 1,
+        unit: item.unit || "pcs",
+        rate: parseFloat(item.unitPrice || item.rate || "0"),
+        amount: (item.quantity || 1) * parseFloat(item.unitPrice || item.rate || "0")
+      })),
+      subtotal: subtotal,
+      taxAmount: taxAmount,
+      totalAmount: totalAmount,
+      extraCharges: order.extraCharges || [],
+      discounts: order.discounts || [],
+      deliveryTerms: order.deliveryTerms || "As per vendor",
+      paymentTerms: order.paymentTerms || "As per contract",
+      terms: order.terms || [],
+      notes: order.notes || "",
+      currency: "INR",
+      printConfig: undefined // Can be passed from request if needed
+    });
+
+    // Try Puppeteer first, fallback to html-pdf-node if it fails
     try {
-      console.log('Starting purchase order PDF generation...');
-
-      // Get company settings
-      const storage = getStorage();
-      const companySettings = await storage.getCompanySettings();
-      
-      // Parse items from the order
-      const items = this.parseItems(order.items);
-      
-      // Calculate totals
-      const subtotal = parseFloat(order.subtotal || "0");
-      const taxAmount = parseFloat(order.taxAmount || "0");
-      const totalAmount = parseFloat(order.totalAmount || "0");
-      
-      // Generate HTML content using the template
-      const html = purchaseOrderTemplate({
-        company: {
-          name: companySettings?.name || "Business AI",
-          address: companySettings?.address || "",
-          phone: companySettings?.phone || "",
-          email: companySettings?.email || "",
-          gstin: companySettings?.gstNumber || "",
-          logo: companySettings?.logo || "",
-          bankDetails: companySettings?.bankDetails || {}
-        },
-        poNumber: order.poNumber || `PO-${order.id}`,
-        poDate: this.formatDate(order.orderDate),
-        expectedDelivery: order.expectedDelivery ? this.formatDate(order.expectedDelivery) : undefined,
-        vendor: {
-          name: order.supplierName || supplier?.name || "Supplier",
-          company: order.supplierCompany || supplier?.company || "",
-          title: order.supplierTitle || "",
-          address: order.supplierAddress || supplier?.address || "",
-          city: order.supplierCity || supplier?.city || "",
-          state: order.supplierState || supplier?.state || "",
-          country: order.supplierCountry || supplier?.country || "",
-          pincode: order.supplierPincode || supplier?.pincode || "",
-          gstin: order.supplierGstin || supplier?.gstNumber || "",
-          pan: order.supplierPan || supplier?.panNumber || "",
-          phone: order.supplierPhone || supplier?.phone || "",
-          email: order.supplierEmail || supplier?.email || ""
-        },
-        items: items.map(item => ({
-          description: item.description || item.name || "",
-          quantity: item.quantity || 1,
-          unit: item.unit || "pcs",
-          rate: parseFloat(item.unitPrice || item.rate || "0"),
-          amount: (item.quantity || 1) * parseFloat(item.unitPrice || item.rate || "0")
-        })),
-        subtotal: subtotal,
-        taxAmount: taxAmount,
-        totalAmount: totalAmount,
-        extraCharges: order.extraCharges || [],
-        discounts: order.discounts || [],
-        deliveryTerms: order.deliveryTerms || "As per vendor",
-        paymentTerms: order.paymentTerms || "As per contract",
-        terms: order.terms || [],
-        notes: order.notes || "",
-        currency: "INR"
-      });
-
-      // Launch browser and generate PDF
       tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
       page = await tempBrowser.newPage();
       await page.setContent(html, { waitUntil: 'domcontentloaded' });
@@ -535,13 +697,25 @@ class PDFGenerator {
         margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' } 
       });
       
-      return Buffer.from(pdf);
-    } catch (error) {
-      console.error('Error generating purchase order PDF:', error);
-      throw new Error(`Failed to generate purchase order PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
+      // Clean up before returning
       if (page) { try { await page.close(); } catch {} }
       if (tempBrowser) { try { await tempBrowser.close(); } catch {} }
+      
+      return Buffer.from(pdf);
+    } catch (puppeteerError: any) {
+      console.warn('Puppeteer failed for purchase order PDF, trying fallback method:', puppeteerError?.message || puppeteerError);
+      
+      // Clean up Puppeteer resources
+      if (page) { try { await page.close(); } catch {} }
+      if (tempBrowser) { try { await tempBrowser.close(); } catch {} }
+      
+      // Use fallback method
+      try {
+        return await this.generatePDFFallback(html);
+      } catch (fallbackError) {
+        console.error('Both Puppeteer and fallback PDF generation failed:', fallbackError);
+        throw new Error(`Failed to generate purchase order PDF: ${fallbackError instanceof Error ? fallbackError.message : 'Unknown error'}`);
+      }
     }
   }
 

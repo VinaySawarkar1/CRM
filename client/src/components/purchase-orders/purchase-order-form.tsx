@@ -9,7 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, Search, Package, Edit, Check } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Trash2, Search, Package, Edit, Check, FileText, Building, MapPin, DollarSign, Save, CheckCircle2, Loader2, ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import TermsSelector from "../quotations/terms-selector";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -76,6 +79,8 @@ export default function PurchaseOrderForm({
   onSubmit,
 }: PurchaseOrderFormProps) {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("details");
+  const [autoSaved, setAutoSaved] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isCustomerDialogOpen, setIsCustomerDialogOpen] = useState(false);
@@ -160,6 +165,28 @@ export default function PurchaseOrderForm({
   });
 
   const watchedItems = watch("items");
+  const formValues = watch();
+
+  // Calculate progress
+  const calculateProgress = () => {
+    const required = ['poNumber', 'supplierName', 'orderDate'];
+    const filled = required.filter(f => formValues[f] && formValues[f].toString().trim() !== '');
+    const itemsProgress = watchedItems?.some((item: any) => item.description?.trim()) ? 20 : 0;
+    return Math.round(((filled.length / required.length) * 60) + itemsProgress);
+  };
+
+  const progress = calculateProgress();
+
+  // Auto-save
+  useEffect(() => {
+    if (mode === "edit" && formValues.poNumber) {
+      const timer = setTimeout(() => {
+        setAutoSaved(true);
+        setTimeout(() => setAutoSaved(false), 3000);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [formValues, mode]);
 
   // Calculate totals when items change
   useEffect(() => {
@@ -295,7 +322,35 @@ export default function PurchaseOrderForm({
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 animate-fade-in-up">
+      {/* Progress Header */}
+      <Card className="border-0 shadow-lg glass-effect mb-6">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-md">
+                <ShoppingCart className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">
+                  {mode === "edit" ? "Edit Purchase Order" : "Create New Purchase Order"}
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {progress}% Complete • Fill all required fields and add items
+                </p>
+              </div>
+            </div>
+            {autoSaved && (
+              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                <Save className="h-3 w-3" />
+                Auto-saved
+              </Badge>
+            )}
+          </div>
+          <Progress value={progress} className="h-2" />
+        </CardContent>
+      </Card>
+
       {/* Item Editing Modal */}
       {showEditItemModal && selectedItemForEdit && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -412,12 +467,32 @@ export default function PurchaseOrderForm({
       )}
 
       <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6 bg-gray-100 p-1 rounded-lg">
+            <TabsTrigger value="details" className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold">
+              <FileText className="h-4 w-4 mr-2" />
+              Details
+            </TabsTrigger>
+            <TabsTrigger value="items" className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold">
+              <Package className="h-4 w-4 mr-2" />
+              Items
+            </TabsTrigger>
+            <TabsTrigger value="summary" className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold">
+              <DollarSign className="h-4 w-4 mr-2" />
+              Summary
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="details" className="space-y-6 animate-fade-in-up">
         {/* Basic Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
+        <Card className="border-0 shadow-lg glass-effect card-hover">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-blue-100">
+            <CardTitle className="flex items-center gap-2 text-blue-700">
+              <Building className="h-5 w-5" />
+              Basic Information
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-6">
             <div>
               <Label htmlFor="supplier">Supplier</Label>
               <div className="flex gap-2">
@@ -732,26 +807,201 @@ export default function PurchaseOrderForm({
           </CardContent>
         </Card>
 
-        {/* Totals Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label>Subtotal</Label>
-                  <Input
-                    value={watch("subtotal") || "0"}
-                    readOnly
-                    className="bg-gray-50 font-semibold"
-                  />
+          </TabsContent>
+
+          <TabsContent value="items" className="space-y-6 animate-fade-in-up">
+            {/* Items Section */}
+            <Card className="border-0 shadow-lg glass-effect card-hover">
+              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100">
+                <CardTitle className="flex items-center gap-2 text-indigo-700">
+                  <Package className="h-5 w-5" />
+                  Purchase Order Items
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  {fields.map((field, index) => (
+                    <div key={field.id} className="grid grid-cols-12 gap-2 items-end border border-gray-200 rounded-lg p-3 hover:border-blue-300 transition-all">
+                      <div className="col-span-4">
+                        <Label>Description *</Label>
+                        <Input
+                          {...register(`items.${index}.description`)}
+                          placeholder="Item description"
+                          className={errors.items?.[index]?.description ? "border-red-500" : ""}
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Label>Quantity *</Label>
+                        <Input
+                          type="number"
+                          {...register(`items.${index}.quantity`)}
+                          min="1"
+                          onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Label>Unit *</Label>
+                        <Input
+                          {...register(`items.${index}.unit`)}
+                          placeholder="pcs"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Label>Unit Price *</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...register(`items.${index}.unitPrice`)}
+                          min="0"
+                          onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <Label>Amount</Label>
+                        <Input
+                          value={watchedItems?.[index]?.amount || 0}
+                          readOnly
+                          className="bg-gray-50"
+                        />
+                      </div>
+                      <div className="col-span-1 flex gap-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditItem(index)}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRemoveItem(index)}
+                          disabled={fields.length === 1}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleAddItem}
+                      className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-0"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Item
+                    </Button>
+                    <Dialog open={isInventoryDialogOpen} onOpenChange={setIsInventoryDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button type="button" variant="outline">
+                          <Package className="h-4 w-4 mr-2" />
+                          From Inventory
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl max-h-[80vh]">
+                        <DialogHeader>
+                          <DialogTitle>Select Item from Inventory</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              placeholder="Search inventory by name, SKU, or description..."
+                              value={inventorySearchTerm}
+                              onChange={(e) => setInventorySearchTerm(e.target.value)}
+                              className="pl-10"
+                            />
+                          </div>
+                          <ScrollArea className="h-96">
+                            <div className="space-y-2">
+                              {inventory.filter(item =>
+                                item.name.toLowerCase().includes(inventorySearchTerm.toLowerCase()) ||
+                                (item.sku && item.sku.toLowerCase().includes(inventorySearchTerm.toLowerCase())) ||
+                                (item.description && item.description.toLowerCase().includes(inventorySearchTerm.toLowerCase()))
+                              ).map((item) => (
+                                <div
+                                  key={item.id}
+                                  className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                                  onClick={() => handleInventorySelect(item)}
+                                >
+                                  <div className="flex justify-between items-start">
+                                    <div>
+                                      <div className="font-medium">{item.name}</div>
+                                      {item.sku && (
+                                        <div className="text-sm text-gray-600">SKU: {item.sku}</div>
+                                      )}
+                                      {item.description && (
+                                        <div className="text-sm text-gray-500">{item.description}</div>
+                                      )}
+                                      <div className="text-sm text-blue-600">
+                                        Cost: ₹{item.costPrice || 0} | Stock: {item.quantity || 0}
+                                      </div>
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleInventorySelect(item);
+                                      }}
+                                    >
+                                      Add
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                              {inventory.filter(item =>
+                                item.name.toLowerCase().includes(inventorySearchTerm.toLowerCase()) ||
+                                (item.sku && item.sku.toLowerCase().includes(inventorySearchTerm.toLowerCase())) ||
+                                (item.description && item.description.toLowerCase().includes(inventorySearchTerm.toLowerCase()))
+                              ).length === 0 && (
+                                <div className="text-center py-8 text-gray-500">
+                                  No inventory items found matching your search.
+                                </div>
+                              )}
+                            </div>
+                          </ScrollArea>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </div>
-                <div>
-                  <Label>Tax Amount (18% GST)</Label>
-                  <Input
-                    value={watch("taxAmount") || "0"}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="summary" className="space-y-6 animate-fade-in-up">
+            {/* Totals Section */}
+            <Card className="border-0 shadow-lg glass-effect card-hover">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50 border-b border-green-100">
+                <CardTitle className="flex items-center gap-2 text-green-700">
+                  <DollarSign className="h-5 w-5" />
+                  Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label>Subtotal</Label>
+                      <Input
+                        value={watch("subtotal") || "0"}
+                        readOnly
+                        className="bg-gray-50 font-semibold"
+                      />
+                    </div>
+                    <div>
+                      <Label>Tax Amount (18% GST)</Label>
+                      <Input
+                        value={watch("taxAmount") || "0"}
                     readOnly
                     className="bg-gray-50"
                   />
@@ -769,41 +1019,66 @@ export default function PurchaseOrderForm({
           </CardContent>
         </Card>
 
-        {/* Notes Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Additional Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div>
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                {...register("notes")}
-                placeholder="Additional notes or special instructions..."
-                rows={3}
-              />
-            </div>
-          </CardContent>
-        </Card>
+            {/* Notes Section */}
+            <Card className="border-0 shadow-lg glass-effect card-hover">
+              <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50 border-b border-slate-100">
+                <CardTitle className="flex items-center gap-2 text-slate-700">
+                  <FileText className="h-5 w-5" />
+                  Additional Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div>
+                  <Label htmlFor="notes">Notes</Label>
+                  <Textarea
+                    id="notes"
+                    {...register("notes")}
+                    placeholder="Additional notes or special instructions..."
+                    rows={3}
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Terms and Conditions Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Terms and Conditions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TermsSelector
-              selectedTerms={watch("terms") || []}
-              onTermsChange={(terms) => setValue("terms", terms)}
-            />
-          </CardContent>
-        </Card>
+            {/* Terms and Conditions Section */}
+            <Card className="border-0 shadow-lg glass-effect card-hover">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-blue-100">
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <FileText className="h-5 w-5" />
+                  Terms and Conditions
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <TermsSelector
+                  selectedTerms={watch("terms") || []}
+                  onTermsChange={(terms) => setValue("terms", terms)}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {/* Submit Button */}
-        <div className="flex justify-end space-x-2">
-          <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
-            {submitLabel}
+        <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+          <div className="text-sm text-gray-500">
+            {progress < 100 ? `Complete ${progress}% to finish` : "All fields completed ✓"}
+          </div>
+          <Button 
+            type="submit" 
+            disabled={isSubmitting || progress < 50} 
+            className="min-w-[160px] bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 font-semibold h-11 text-base disabled:opacity-50"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                {submitLabel}
+                <CheckCircle2 className="ml-2 h-4 w-4" />
+              </>
+            )}
           </Button>
         </div>
       </form>
