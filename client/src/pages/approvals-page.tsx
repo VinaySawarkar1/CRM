@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Layout from "@/components/layout";
 import PageHeader from "@/components/page-header";
@@ -15,9 +15,18 @@ export default function ApprovalsPage() {
   const { user } = useAuth();
   const { data, isLoading, error, refetch } = useQuery<{ companies: any[]; users: any[] }>({
     queryKey: ["/api/pending-approvals"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/pending-approvals");
+      const json = await res.json();
+      console.log('Approvals query response:', json);
+      return json;
+    },
     enabled: user?.role === 'superuser',
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const approveCompany = useMutation({
@@ -47,21 +56,42 @@ export default function ApprovalsPage() {
     );
   }
 
+  // Auto-refetch when user becomes superuser
+  useEffect(() => {
+    if (user?.role === 'superuser') {
+      refetch();
+    }
+  }, [user?.role, refetch]);
+
   const companies = data?.companies || [];
   const users = data?.users || [];
 
   return (
     <Layout>
       <div className="py-6 px-4 sm:px-6 lg:px-8">
-        <PageHeader 
-          title="Pending Approvals" 
-          subtitle="Review and approve new company registrations"
-        />
+        <div className="flex justify-between items-center mb-4">
+          <PageHeader 
+            title="Pending Approvals" 
+            subtitle="Review and approve new company registrations"
+          />
+          <Button variant="outline" onClick={() => refetch()} disabled={isLoading}>
+            {isLoading ? "Loading..." : "Refresh"}
+          </Button>
+        </div>
 
         {isLoading ? (
           <Card><CardContent className="pt-6"><p>Loading...</p></CardContent></Card>
+        ) : error ? (
+          <Card><CardContent className="pt-6"><p className="text-center text-red-500">Error loading approvals: {error instanceof Error ? error.message : 'Unknown error'}</p></CardContent></Card>
         ) : companies.length === 0 && users.length === 0 ? (
-          <Card><CardContent className="pt-6"><p className="text-center text-gray-500">No pending approvals</p></CardContent></Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center space-y-2">
+                <p className="text-gray-500">No pending approvals</p>
+                <Button variant="outline" size="sm" onClick={() => refetch()}>Refresh</Button>
+              </div>
+            </CardContent>
+          </Card>
         ) : (
           <div className="space-y-6">
             {companies.length > 0 && (

@@ -57,6 +57,7 @@ export default function QuotationsPage() {
     const customer = customers?.find(c => c.id === quotation.customerId);
     return {
       ...quotation,
+      quotationNumber: quotation.quotationNumber || '',
       customerName: customer?.name || 'Unknown Customer',
       customerCompany: customer?.company || quotation.customerCompany || 'Unknown Company',
       customerEmail: customer?.email || '',
@@ -270,7 +271,9 @@ export default function QuotationsPage() {
   // Filters
   const withinTimeWindow = (createdAt: any) => {
     if (timeFilter === 'all') return true;
+    if (!createdAt) return false;
     const d = new Date(createdAt);
+    if (isNaN(d.getTime())) return false;
     const now = new Date();
     if (timeFilter === 'day') return d.toDateString() === now.toDateString();
     if (timeFilter === 'week') { const start = new Date(now); start.setDate(now.getDate()-7); return d >= start && d <= now; }
@@ -281,13 +284,13 @@ export default function QuotationsPage() {
   };
 
   const filteredQuotations = enrichedQuotations.filter(quotation => {
-    const quoteNumber = quotation.quotationNumber || '';
-    const customerCompany = quotation.customerCompany || '';
-    const customerName = quotation.customerName || '';
+    const quoteNumber = String(quotation.quotationNumber || '').toLowerCase();
+    const customerCompany = String(quotation.customerCompany || '').toLowerCase();
+    const customerName = String(quotation.customerName || '').toLowerCase();
     const searchLower = (searchTerm || '').toLowerCase();
-    const matchesSearch = quoteNumber.toLowerCase().includes(searchLower) ||
-                         customerCompany.toLowerCase().includes(searchLower) ||
-                         customerName.toLowerCase().includes(searchLower);
+    const matchesSearch = quoteNumber.includes(searchLower) ||
+                         customerCompany.includes(searchLower) ||
+                         customerName.includes(searchLower);
     const matchesStatus = statusFilter === "all" || quotation.status === statusFilter;
     return matchesSearch && matchesStatus && withinTimeWindow(quotation.createdAt);
   });

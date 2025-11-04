@@ -56,12 +56,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const me = await getStorage().getUser((req.user as any).id);
       if (!me || me.role !== 'superuser') return res.status(403).json({ message: "Forbidden" });
-      const companies = await getStorage().getAllCompanies();
-      const pendingCompanies = companies.filter(c => c.status === 'pending');
+      const allCompanies = await getStorage().getAllCompanies();
+      const pendingCompanies = allCompanies.filter(c => String(c.status || '').toLowerCase() === 'pending');
       const allUsers = await getStorage().getAllUsers();
-      const pendingUsers = allUsers.filter(u => !u.isActive && u.companyId);
+      const pendingUsers = allUsers.filter(u => u.isActive === false && u.companyId != null);
+      console.log('Pending approvals:', { 
+        companiesCount: pendingCompanies.length, 
+        usersCount: pendingUsers.length, 
+        allCompaniesCount: allCompanies.length,
+        allUsersCount: allUsers.length,
+        companies: pendingCompanies.map(c => ({ id: c.id, name: c.name, status: c.status })),
+        users: pendingUsers.map(u => ({ id: u.id, name: u.name, companyId: u.companyId, isActive: u.isActive }))
+      });
       res.json({ companies: pendingCompanies, users: pendingUsers.map(u => ({ ...u, password: undefined })) });
-    } catch (err) { next(err); }
+    } catch (err) { 
+      console.error('Error fetching pending approvals:', err);
+      next(err); 
+    }
   });
 
   // Superuser: approve company and activate admin user
