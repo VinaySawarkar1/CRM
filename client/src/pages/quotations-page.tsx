@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -281,25 +281,47 @@ export default function QuotationsPage() {
   };
 
   const filteredQuotations = enrichedQuotations.filter(quotation => {
-    const quoteNumber = quotation.quotationNumber;
-    const matchesSearch = (quoteNumber?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                         (quotation.customerCompany?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                         (quotation.customerName?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+    const quoteNumber = quotation.quotationNumber || '';
+    const customerCompany = quotation.customerCompany || '';
+    const customerName = quotation.customerName || '';
+    const searchLower = (searchTerm || '').toLowerCase();
+    const matchesSearch = quoteNumber.toLowerCase().includes(searchLower) ||
+                         customerCompany.toLowerCase().includes(searchLower) ||
+                         customerName.toLowerCase().includes(searchLower);
     const matchesStatus = statusFilter === "all" || quotation.status === statusFilter;
     return matchesSearch && matchesStatus && withinTimeWindow(quotation.createdAt);
   });
 
   const filteredProformas = (enrichedProformas || []).filter((p: any) => {
-    const num = (p.proformaNumber || p.quotationNumber || '').toLowerCase();
-    const matchesSearch = num.includes(searchTerm.toLowerCase()) ||
-      (p.customerCompany?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (p.customerName?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+    const num = String(p.proformaNumber || p.quotationNumber || '').toLowerCase();
+    const customerCompany = String(p.customerCompany || '').toLowerCase();
+    const customerName = String(p.customerName || '').toLowerCase();
+    const searchLower = (searchTerm || '').toLowerCase();
+    const matchesSearch = num.includes(searchLower) ||
+      customerCompany.includes(searchLower) ||
+      customerName.includes(searchLower);
     const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
     return matchesSearch && matchesStatus && withinTimeWindow(p.createdAt);
   });
 
-  const paginatedQuotes = filteredQuotations.slice((page-1)*pageSize, page*pageSize);
-  const paginatedProformas = filteredProformas.slice((page-1)*pageSize, page*pageSize);
+  const totalQuotes = filteredQuotations.length;
+  const totalProformas = filteredProformas.length;
+  const maxPageQuotes = Math.max(1, Math.ceil(totalQuotes / pageSize));
+  const maxPageProformas = Math.max(1, Math.ceil(totalProformas / pageSize));
+  const maxPage = activeTab === 'proforma' ? maxPageProformas : maxPageQuotes;
+  
+  // Ensure page doesn't exceed maximum (use useEffect to avoid render issues)
+  const currentPage = Math.min(Math.max(1, page), maxPage);
+  
+  // Reset page to 1 if filtered results change and current page is invalid
+  useEffect(() => {
+    if (page > maxPage && maxPage > 0) {
+      setPage(maxPage);
+    }
+  }, [maxPage, page]);
+  
+  const paginatedQuotes = filteredQuotations.slice((currentPage-1)*pageSize, currentPage*pageSize);
+  const paginatedProformas = filteredProformas.slice((currentPage-1)*pageSize, currentPage*pageSize);
 
   // Calculate statistics (for quotations for now)
   const totalQuotations = enrichedQuotations.length;
@@ -478,13 +500,15 @@ export default function QuotationsPage() {
           <div className="flex items-center justify-between mt-4">
             <div className="text-sm text-gray-600">
               {(() => {
-                const total = activeTab === 'proforma' ? filteredProformas.length : filteredQuotations.length;
-                return `Showing ${(page-1)*pageSize + 1} - ${Math.min(page*pageSize, total)} of ${total}`;
+                const total = activeTab === 'proforma' ? totalProformas : totalQuotes;
+                const start = total > 0 ? (currentPage - 1) * pageSize + 1 : 0;
+                const end = Math.min(currentPage * pageSize, total);
+                return total > 0 ? `Showing ${start} - ${end} of ${total}` : 'No results';
               })()}
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Prev</Button>
-              <Button variant="outline" disabled={page*pageSize >= (activeTab === 'proforma' ? filteredProformas.length : filteredQuotations.length)} onClick={() => setPage(p => p+1)}>Next</Button>
+              <Button variant="outline" disabled={currentPage === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Prev</Button>
+              <Button variant="outline" disabled={currentPage >= maxPage} onClick={() => setPage(p => Math.min(maxPage, p+1))}>Next</Button>
             </div>
           </div>
         )}

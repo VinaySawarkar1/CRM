@@ -1,5 +1,6 @@
 import { 
   users, type User, type InsertUser,
+  companies, type Company, type InsertCompany,
   customers, type Customer, type InsertCustomer,
   suppliers, type Supplier, type InsertSupplier,
   leads, type Lead, type InsertLead,
@@ -68,14 +69,23 @@ const RAW_MATERIAL_FILE = path.join(DATA_DIR, 'raw-materials.json');
 const QUOTATION_TEMPLATE_FILE = path.join(DATA_DIR, 'quotation-templates.json');
 const CAPTURED_LEAD_FILE = path.join(DATA_DIR, 'captured-leads.json');
 const PROFORMA_FILE = path.join(DATA_DIR, 'proformas.json');
+const COMPANY_FILE = path.join(DATA_DIR, 'companies.json');
 
 // Interface for all storage operations
 export interface IStorage {
+  // Company operations
+  getCompany(id: number): Promise<Company | undefined>;
+  createCompany(company: InsertCompany): Promise<Company>;
+  updateCompany(id: number, company: Partial<InsertCompany>): Promise<Company | undefined>;
+  getAllCompanies(): Promise<Company[]>;
+  getUsersByCompanyId(companyId: number): Promise<User[]>;
+  
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
+  updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
 
   // Customer operations
   getCustomer(id: number): Promise<Customer | undefined>;
@@ -260,9 +270,11 @@ export class JSONFileStorage implements IStorage {
   private supportTickets: Map<number, SupportTicket>;
   private contracts: Map<number, Contract>;
   private proformas: Map<number, Proforma>;
+  private companies: Map<number, Company>;
   sessionStore: SessionStore;
   
   // Counters for auto-incrementing IDs
+  companyIdCounter: number;
   userIdCounter: number;
   customerIdCounter: number;
   supplierIdCounter: number;
@@ -308,8 +320,10 @@ export class JSONFileStorage implements IStorage {
     this.supportTickets = new Map();
     this.contracts = new Map();
     this.proformas = new Map();
+    this.companies = new Map();
     
     // Initialize counters
+    this.companyIdCounter = 1;
     this.userIdCounter = 1;
     this.customerIdCounter = 1;
     this.supplierIdCounter = 1;
@@ -367,8 +381,10 @@ export class JSONFileStorage implements IStorage {
           name: 'System Administrator',
           email: 'admin@businessai.com',
           phone: '+91 98765 43210',
-          role: 'admin',
-          department: 'IT'
+          role: 'superuser',
+          department: 'IT',
+          companyId: null,
+          isActive: true
         });
         
         console.log('Default admin user created:', adminUser.username);
@@ -381,6 +397,7 @@ export class JSONFileStorage implements IStorage {
   // Helper to load all data from JSON files
   private async loadData() {
     await ensureDataDir();
+    await this.loadCompanies();
     await this.loadUsers();
     await this.loadCustomers();
     await this.loadSuppliers();
@@ -433,6 +450,10 @@ export class JSONFileStorage implements IStorage {
   }
 
   // Load methods for each entity
+  private async loadCompanies() {
+    await this.loadFromFile(COMPANY_FILE, this.companies, 'companyIdCounter');
+  }
+
   private async loadUsers() {
     await this.loadFromFile(USER_FILE, this.users, 'userIdCounter');
   }
@@ -623,6 +644,10 @@ export class JSONFileStorage implements IStorage {
   }
 
   // Save methods for each entity
+  private async saveCompanies() {
+    await this.saveToFile(COMPANY_FILE, this.companies);
+  }
+
   private async saveUsers() {
     await this.saveToFile(USER_FILE, this.users);
   }
@@ -712,7 +737,7 @@ export class JSONFileStorage implements IStorage {
       ...insertUser, 
       id,
       role: insertUser.role || "user",
-      isActive: true,
+      isActive: insertUser.isActive !== undefined ? insertUser.isActive : (insertUser.role === 'superuser'),
       createdAt: new Date()
     };
     this.users.set(id, user);
@@ -731,6 +756,43 @@ export class JSONFileStorage implements IStorage {
     this.users.set(id, updated);
     await this.saveUsers();
     return updated;
+  }
+
+  // Company methods
+  async getCompany(id: number): Promise<Company | undefined> {
+    return this.companies.get(id);
+  }
+
+  async createCompany(insertCompany: InsertCompany): Promise<Company> {
+    const id = this.companyIdCounter++;
+    const company: Company = {
+      ...insertCompany,
+      id,
+      status: insertCompany.status || "pending",
+      maxUsers: insertCompany.maxUsers || 20,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.companies.set(id, company);
+    await this.saveCompanies();
+    return company;
+  }
+
+  async updateCompany(id: number, companyUpdate: Partial<InsertCompany>): Promise<Company | undefined> {
+    const company = this.companies.get(id);
+    if (!company) return undefined;
+    const updated: Company = { ...company, ...companyUpdate, updatedAt: new Date() } as Company;
+    this.companies.set(id, updated);
+    await this.saveCompanies();
+    return updated;
+  }
+
+  async getAllCompanies(): Promise<Company[]> {
+    return Array.from(this.companies.values());
+  }
+
+  async getUsersByCompanyId(companyId: number): Promise<User[]> {
+    return Array.from(this.users.values()).filter(u => u.companyId === companyId);
   }
 
   // Customer methods

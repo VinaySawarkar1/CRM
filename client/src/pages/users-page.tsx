@@ -6,14 +6,26 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/use-auth";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function UsersPage() {
   const { toast } = useToast();
+  const { user: currentUser } = useAuth();
   const { data: users = [] } = useQuery<any[]>({ queryKey: ["/api/users"] });
   const [formOpen, setFormOpen] = useState(false);
   const [permissions, setPermissions] = useState<string[]>([]);
+  
+  // Calculate user count for company admin
+  const companyUsers = currentUser?.role === 'admin' && currentUser?.companyId
+    ? users.filter(u => u.companyId === currentUser.companyId)
+    : [];
+  const userCount = companyUsers.length;
+  const maxUsers = 20;
+  const canCreateUser = currentUser?.role === 'superuser' || (currentUser?.role === 'admin' && userCount < maxUsers);
 
   const createUser = useMutation({
     mutationFn: async (payload: any) => {
@@ -50,8 +62,20 @@ export default function UsersPage() {
       <div className="py-6 px-4 sm:px-6 lg:px-8">
         <PageHeader title="User Management" subtitle="Approve users, create sub-users, and assign permissions" />
 
-        <div className="mb-4 flex justify-end">
-          <Button onClick={() => setFormOpen(v => !v)}>{formOpen ? 'Close' : 'Create Sub-User'}</Button>
+        <div className="mb-4 flex justify-between items-center">
+          {currentUser?.role === 'admin' && (
+            <Alert className="max-w-md">
+              <AlertDescription>
+                Users: <strong>{userCount}/{maxUsers}</strong> 
+                {userCount >= maxUsers && <span className="text-red-600 ml-2">(Limit reached)</span>}
+              </AlertDescription>
+            </Alert>
+          )}
+          {canCreateUser && (
+            <Button onClick={() => setFormOpen(v => !v)}>
+              {formOpen ? 'Close' : currentUser?.role === 'superuser' ? 'Create User' : 'Create Sub-User'}
+            </Button>
+          )}
         </div>
 
         {formOpen && (
@@ -67,10 +91,15 @@ export default function UsersPage() {
                   name: fd.get('name') as string,
                   email: fd.get('email') as string,
                   phone: fd.get('phone') as string,
-                  role: fd.get('role') as string,
+                  role: currentUser?.role === 'superuser' ? (fd.get('role') as string) : 'user',
                   isActive: (fd.get('isActive') as any) === 'on',
                   permissions,
+                  department: fd.get('department') as string,
                 };
+                if (currentUser?.role !== 'superuser' && userCount >= maxUsers) {
+                  toast({ title: "Error", description: "Maximum 20 users per company reached", variant: "destructive" });
+                  return;
+                }
                 createUser.mutate(payload);
               }} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -82,14 +111,19 @@ export default function UsersPage() {
                     <Label>Password</Label>
                     <Input name="password" type="password" required />
                   </div>
+                  {currentUser?.role === 'superuser' && (
+                    <div className="space-y-2">
+                      <Label>Role</Label>
+                      <select name="role" className="border rounded px-3 py-2 w-full" defaultValue="user">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                        <option value="superuser">Superuser</option>
+                      </select>
+                    </div>
+                  )}
                   <div className="space-y-2">
-                    <Label>Role</Label>
-                    <select name="role" className="border rounded px-3 py-2 w-full" defaultValue="user">
-                      <option value="user">User</option>
-                      <option value="sales">Sales</option>
-                      <option value="accounts">Accounts</option>
-                      <option value="admin">Admin</option>
-                    </select>
+                    <Label>Department</Label>
+                    <Input name="department" placeholder="Optional" />
                   </div>
                   <div className="space-y-2">
                     <Label>Full Name</Label>
@@ -128,17 +162,45 @@ export default function UsersPage() {
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="text-left"><th className="p-2">Name</th><th className="p-2">Username</th><th className="p-2">Email</th><th className="p-2">Role</th><th className="p-2">Active</th><th className="p-2">Actions</th></tr></thead>
+                <thead>
+                  <tr className="text-left">
+                    <th className="p-2">Name</th>
+                    <th className="p-2">Username</th>
+                    <th className="p-2">Email</th>
+                    <th className="p-2">Role</th>
+                    {currentUser?.role === 'superuser' && <th className="p-2">Company</th>}
+                    <th className="p-2">Status</th>
+                    <th className="p-2">Actions</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {users.map((u) => (
                     <tr key={u.id} className="border-t">
                       <td className="p-2">{u.name}</td>
                       <td className="p-2">{u.username}</td>
                       <td className="p-2">{u.email}</td>
-                      <td className="p-2">{u.role}</td>
-                      <td className="p-2">{u.isActive ? 'Yes' : 'No'}</td>
                       <td className="p-2">
-                        <Button variant="outline" size="sm" onClick={() => updateUser.mutate({ id: u.id, updates: { isActive: !u.isActive } })}>{u.isActive ? 'Deactivate' : 'Activate'}</Button>
+                        <Badge variant={u.role === 'superuser' ? 'default' : u.role === 'admin' ? 'secondary' : 'outline'}>
+                          {u.role}
+                        </Badge>
+                      </td>
+                      {currentUser?.role === 'superuser' && (
+                        <td className="p-2">{u.companyId ? `Company ${u.companyId}` : 'No Company'}</td>
+                      )}
+                      <td className="p-2">
+                        <Badge variant={u.isActive ? 'default' : 'destructive'}>
+                          {u.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </td>
+                      <td className="p-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => updateUser.mutate({ id: u.id, updates: { isActive: !u.isActive } })}
+                          disabled={currentUser?.role !== 'superuser' && u.companyId !== currentUser?.companyId}
+                        >
+                          {u.isActive ? 'Deactivate' : 'Activate'}
+                        </Button>
                       </td>
                     </tr>
                   ))}

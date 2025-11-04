@@ -25,6 +25,7 @@ import SalesTargetsPage from "@/pages/sales-targets-page";
 import ManufacturingPage from "@/pages/manufacturing-page";
 import SettingsPage from "@/pages/settings-page";
 import UsersPage from "@/pages/users-page";
+import ApprovalsPage from "@/pages/approvals-page";
 import ProformaFormPage from "@/pages/proforma-form-page";
 
 import NotFoundPage from "@/pages/not-found";
@@ -68,6 +69,7 @@ function App() {
           <ProtectedRoute path="/manufacturing" component={ManufacturingPage} />
           <ProtectedRoute path="/settings" component={SettingsPage} />
           <ProtectedRoute path="/users" component={UsersPage} />
+          <ProtectedRoute path="/approvals" component={ApprovalsPage} />
 
           <Route component={NotFoundPage} />
         </Switch>

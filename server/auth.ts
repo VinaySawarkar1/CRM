@@ -60,8 +60,19 @@ export function setupAuth(app: Express) {
         if (!user || !(await comparePasswords(password, user.password))) {
           return done(null, false);
         } else {
+          // Superuser bypasses company checks
+          if (user.role === 'superuser') {
+            return done(null, user);
+          }
           // Only allow active (approved) users
           if (user.isActive === false) return done(null, false);
+          // Check if company is active (if user has companyId)
+          if (user.companyId) {
+            const company = await storage.getCompany(user.companyId);
+            if (!company || company.status !== 'active') {
+              return done(null, false);
+            }
+          }
           return done(null, user);
         }
       } catch (err) {
@@ -84,25 +95,63 @@ export function setupAuth(app: Express) {
     try {
       console.log('Registration request received:', { ...req.body, password: '[HIDDEN]' });
       
+      // Validate required fields
+      if (!req.body.username || !req.body.password || !req.body.name || !req.body.email || !req.body.companyName) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // Check if username already exists
       const existingUser = await storage.getUserByUsername(req.body.username);
       if (existingUser) {
         console.log('Registration failed: Username already exists');
         return res.status(400).json({ message: "Username already exists" });
       }
 
-      console.log('Creating new user...');
-      const user = await storage.createUser({
-        ...req.body,
-        // New users are inactive until approved
-        isActive: false,
-        password: await hashPassword(req.body.password),
+      // Check if email already exists
+      const allUsers = await storage.getAllUsers();
+      const existingEmail = allUsers.find(u => u.email && u.email.toLowerCase() === req.body.email.toLowerCase());
+      if (existingEmail) {
+        console.log('Registration failed: Email already exists');
+        return res.status(400).json({ message: "Email already registered" });
+      }
+
+      // Check if company email already exists
+      const allCompanies = await storage.getAllCompanies();
+      const existingCompanyEmail = allCompanies.find(c => c.email && c.email.toLowerCase() === req.body.email.toLowerCase());
+      if (existingCompanyEmail) {
+        console.log('Registration failed: Company email already exists');
+        return res.status(400).json({ message: "Email already registered" });
+      }
+
+      // Create company for new registration
+      const company = await storage.createCompany({
+        name: req.body.companyName || req.body.name + "'s Company",
+        email: req.body.email,
+        phone: req.body.phone || "",
+        status: "pending", // Awaiting superuser approval
+        maxUsers: 20
       });
-      console.log('User created (inactive):', { id: user.id, username: user.username });
+
+      console.log('Creating new user with company...');
+      const user = await storage.createUser({
+        username: req.body.username,
+        password: await hashPassword(req.body.password),
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone || "",
+        role: 'admin', // Company admin after approval
+        companyId: company.id,
+        // New users are inactive until approved by superuser
+        isActive: false,
+        department: req.body.department || "",
+      });
+      console.log('User created (inactive):', { id: user.id, username: user.username, companyId: company.id });
       // Do not auto-login inactive users
-      res.status(201).json({ message: 'Registration successful. Await admin approval.', userId: user.id });
+      res.status(201).json({ message: 'Registration successful. Await superuser approval.', userId: user.id, companyId: company.id });
     } catch (err) {
       console.error('Registration error:', err);
-      next(err);
+      const errorMessage = err instanceof Error ? err.message : 'Registration failed. Please try again.';
+      res.status(500).json({ message: errorMessage });
     }
   });
 

@@ -557,38 +557,61 @@ export function proformaTemplate(data: DocBase & {
 }) {
   const company = data.company || {};
   // Generate items HTML exactly like quotation template
+  // Check if any item has discount to determine column visibility
+  const hasDiscount = (data.items || []).some(item => {
+    const itemDiscount = typeof item.discount === 'string' ? parseFloat(item.discount) || 0 : (item.discount ?? 0);
+    return itemDiscount > 0;
+  }) || (data.discount && data.discount > 0);
+
   const itemsHtml = (data.items || []).map((it, i) => {
-    const quantity = typeof it.quantity === 'string' ? parseFloat(it.quantity) || 1 : (it.quantity ?? 1);
+    // Ensure proper parsing of numeric values
     const rate = typeof it.rate === 'string' ? parseFloat(it.rate) || 0 : (it.rate ?? 0);
+    const quantity = typeof it.quantity === 'string' ? parseFloat(it.quantity) || 1 : (it.quantity ?? 1);
     const taxable = quantity * rate;
+    
+    // Parse discount values
+    const itemDiscount = typeof it.discount === 'string' ? parseFloat(it.discount) || 0 : (it.discount ?? 0);
+    const itemDiscountType = it.discountType || 'amount';
+    
+    // Calculate discounted taxable amount
+    let discountedTaxable = taxable;
+    if (itemDiscount > 0) {
+      if (itemDiscountType === 'percentage') {
+        discountedTaxable = taxable - (taxable * itemDiscount / 100);
+      } else {
+        discountedTaxable = taxable - itemDiscount;
+      }
+    }
+    
+    // Parse GST amounts properly - they might be stored as strings
+    const igstAmount = typeof it.igst === 'string' ? parseFloat(it.igst) || 0 : (it.igst ?? 0);
     const cgstAmount = typeof it.cgst === 'string' ? parseFloat(it.cgst) || 0 : (it.cgst ?? 0);
     const sgstAmount = typeof it.sgst === 'string' ? parseFloat(it.sgst) || 0 : (it.sgst ?? 0);
-    const igstAmount = typeof it.igst === 'string' ? parseFloat(it.igst) || 0 : (it.igst ?? 0);
-    const parsedAmount = typeof it.amount === 'string' ? (parseFloat(it.amount) || NaN) : (typeof it.amount === 'number' ? it.amount : NaN);
-    const total = Number.isFinite(parsedAmount) ? parsedAmount : (taxable + cgstAmount + sgstAmount + igstAmount);
+    
+    // GST percentage is fixed at 18%
+    const gstPercentage = 18;
+    
+    // Use the actual GST amount for total calculation (like quotation)
+    const gstAmount = igstAmount + cgstAmount + sgstAmount;
+    const amountWithTax = discountedTaxable + gstAmount;
     
     // Ensure we have valid values
     const itemName = it.name || it.description || "Item " + (i + 1);
     const itemDescription = it.description && it.name ? it.description : "";
     const itemHsnSac = it.hsnSac || "-";
-    const itemQuantity = quantity;
-    const itemUnit = it.unit || "nos";
-    const itemRate = rate;
-    const itemTaxable = taxable;
-    const itemTotal = total;
     
     return `
       <tr>
         <td class="c">${i + 1}</td>
         <td>${itemName}${itemDescription ? `<div class="muted">${itemDescription}</div>` : ""}</td>
         <td class="c">${itemHsnSac}</td>
-        <td class="c">${itemQuantity}</td>
-        <td class="c">${itemUnit}</td>
-        <td class="r">${fmt(itemRate, data.currency)}</td>
-        ${data.discount && data.discount > 0 ? `<td class="r">${fmt(data.discountType === 'percentage' ? (itemTaxable * data.discount / 100) : data.discount, data.currency)}</td>` : ''}
-        <td class="r">${fmt(itemTaxable, data.currency)}</td>
-        <td class="c">18.00%</td>
-        <td class="r">${fmt(itemTotal, data.currency)}</td>
+        <td class="c">${quantity}</td>
+        <td class="c">${it.unit || "nos"}</td>
+        <td class="r">${fmt(rate, data.currency)}</td>
+        ${hasDiscount ? `<td class="c">${itemDiscount > 0 ? (itemDiscountType === 'percentage' ? itemDiscount + '%' : fmt(itemDiscount, data.currency)) : '-'}</td>` : ''}
+        <td class="r">${fmt(discountedTaxable, data.currency)}</td>
+        <td class="c">${gstPercentage > 0 ? gstPercentage.toFixed(2) + "%" : "-"}</td>
+        <td class="r">${fmt(amountWithTax, data.currency)}</td>
       </tr>
     `;
   }).join("");
@@ -704,6 +727,7 @@ export function proformaTemplate(data: DocBase & {
       .addresses-table{width:100%;border-collapse:collapse;margin-bottom:4px}
       .addresses-table td{border:1px solid var(--border);padding:4px;vertical-align:top;width:50%}
       .addresses-table .addr-title{font-weight:600;margin-bottom:2px;color:var(--accent);font-size:8pt}
+      .addresses-table .addr-content{font-size:7pt;line-height:1.3;color:#222}
       
       /* Items table with enhanced borders - exactly like quotation */
       .items-table{width:100%;border-collapse:collapse;margin-bottom:4px;border:1px solid var(--border)}
@@ -802,7 +826,7 @@ export function proformaTemplate(data: DocBase & {
         <tr>
           <td>
             <div class="addr-title">Billing Address</div>
-            <div>
+            <div class="addr-content">
               <strong>${data.customer?.company ?? data.customer?.name ?? "-"}</strong><br/>
               ${data.customer?.name ? `${data.customer.name}<br/>` : ""}
               ${data.customer?.address ?? "-"}<br/>
@@ -813,7 +837,7 @@ export function proformaTemplate(data: DocBase & {
           </td>
           <td>
             <div class="addr-title">Shipping Address</div>
-            <div>
+            <div class="addr-content">
               <strong>${data.shipping?.company ?? data.customer?.company ?? data.customer?.name ?? "-"}</strong><br/>
               ${(data.shipping?.name ?? data.customer?.name) ? `${data.shipping?.name ?? data.customer?.name}<br/>` : ""}
               ${data.shipping?.address ?? data.customer?.address ?? "-"}<br/>
@@ -830,12 +854,12 @@ export function proformaTemplate(data: DocBase & {
         <thead>
           <tr>
             <th style="width:4%">Sr</th>
-            <th style="width:${data.discount && data.discount > 0 ? '32%' : '35%'}">Item & Description</th>
+            <th style="width:${hasDiscount ? '32%' : '35%'}">Item & Description</th>
             <th style="width:8%">HSN/SAC</th>
             <th style="width:8%">Qty</th>
             <th style="width:8%">Unit</th>
             <th style="width:12%">Rate (₹)</th>
-            ${data.discount && data.discount > 0 ? '<th style="width:8%">Discount</th>' : ''}
+            ${hasDiscount ? '<th style="width:8%">Discount</th>' : ''}
             <th style="width:12%">Taxable (₹)</th>
             <th style="width:8%">GST</th>
             <th style="width:12%">Amount (₹)</th>
@@ -1252,7 +1276,8 @@ export function purchaseOrderTemplate(data: DocBase & {
   const total = data.totalAmount ?? (subtotal + extraChargesTotal + taxAmount - discountsTotal);
 
   // Calculate CGST/SGST/IGST similar to quotation
-  const isInterState = !company.state || !data.vendor?.state || company.state !== data.vendor.state;
+  const companyState = "Maharashtra"; // Company state (hardcoded for now)
+  const isInterState = !data.vendor?.state || companyState !== data.vendor.state;
   const cgst = isInterState ? 0 : (taxAmount / 2);
   const sgst = isInterState ? 0 : (taxAmount / 2);
   const igst = isInterState ? taxAmount : 0;

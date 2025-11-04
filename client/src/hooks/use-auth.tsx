@@ -53,16 +53,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (credentials: InsertUser) => {
-      const res = await apiRequest("POST", "/api/register", credentials);
-      return await res.json();
+    mutationFn: async (credentials: any) => {
+      try {
+        const res = await apiRequest("POST", "/api/register", credentials);
+        const data = await res.json();
+        return data;
+      } catch (error: any) {
+        // apiRequest throws an error, extract message if available
+        const errorMessage = error?.message || "Registration failed. Please check your information and try again.";
+        throw new Error(errorMessage);
+      }
     },
-    onSuccess: (user: SelectUser) => {
-      queryClient.setQueryData(["/api/user"], user);
+    onSuccess: (data: any) => {
       toast({
         title: "Registration successful",
-        description: `Welcome, ${user.name}!`,
+        description: data.message || "Your account is pending approval by the system administrator.",
       });
+      // Optionally redirect to login after successful registration
+      setTimeout(() => {
+        window.location.href = '/auth';
+      }, 2000);
     },
     onError: (error: Error) => {
       toast({

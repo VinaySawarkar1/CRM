@@ -23,12 +23,12 @@ import { ProformaStore } from "./proforma-storage";
 
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Simple permission helper (feature:action). Admin bypasses.
+  // Simple permission helper (feature:action). Superuser and Admin bypasses.
   const hasPermission = (req: any, key: string, featureFallback?: string) => {
     if (!req.isAuthenticated?.()) return false;
     const user: any = req.user || {};
     if (!user) return false;
-    if (user.role === "admin") return true;
+    if (user.role === "superuser" || user.role === "admin") return true;
     const list: string[] = Array.isArray(user.permissions) ? user.permissions : [];
     if (list.includes(key)) return true;
     if (featureFallback && list.includes(featureFallback)) return true;
@@ -50,16 +50,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin or Parent: list users
+  // Superuser: list all pending companies/users for approval
+  app.get("/api/pending-approvals", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const me = await getStorage().getUser((req.user as any).id);
+      if (!me || me.role !== 'superuser') return res.status(403).json({ message: "Forbidden" });
+      const companies = await getStorage().getAllCompanies();
+      const pendingCompanies = companies.filter(c => c.status === 'pending');
+      const allUsers = await getStorage().getAllUsers();
+      const pendingUsers = allUsers.filter(u => !u.isActive && u.companyId);
+      res.json({ companies: pendingCompanies, users: pendingUsers.map(u => ({ ...u, password: undefined })) });
+    } catch (err) { next(err); }
+  });
+
+  // Superuser: approve company and activate admin user
+  app.post("/api/approve-company/:companyId", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const me = await getStorage().getUser((req.user as any).id);
+      if (!me || me.role !== 'superuser') return res.status(403).json({ message: "Forbidden" });
+      const companyId = parseInt(req.params.companyId);
+      const company = await getStorage().getCompany(companyId);
+      if (!company) return res.status(404).json({ message: "Company not found" });
+      await getStorage().updateCompany(companyId, { status: 'active' });
+      // Activate the company admin user
+      const users = await getStorage().getAllUsers();
+      const adminUser = users.find(u => u.companyId === companyId && u.role === 'admin');
+      if (adminUser) {
+        await getStorage().updateUser(adminUser.id, { isActive: true });
+      }
+      res.json({ success: true, message: "Company approved" });
+    } catch (err) { next(err); }
+  });
+
+  // Admin or Parent: list users (filtered by company)
   app.get("/api/users", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const me = await getStorage().getUser((req.user as any).id);
       if (!me) return res.status(401).json({ message: "Unauthorized" });
-      const users = await getStorage().getAllUsers();
-      const filtered = me.role === 'admin'
-        ? users
-        : users.filter(u => u.id === me.id || (u as any).parentUserId === me.id);
+      const allUsers = await getStorage().getAllUsers();
+      let filtered;
+      if (me.role === 'superuser') {
+        filtered = allUsers; // Superuser sees all
+      } else if (me.role === 'admin' && me.companyId) {
+        // Company admin sees users in their company
+        filtered = allUsers.filter(u => u.companyId === me.companyId);
+      } else {
+        // Regular users see only themselves and their sub-users
+        filtered = allUsers.filter(u => u.id === me.id || (u as any).parentUserId === me.id);
+      }
       res.json(filtered.map(u => ({ ...u, password: undefined })));
     } catch (err) { next(err); }
   });
@@ -75,12 +116,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!me) return res.status(401).json({ message: "Unauthorized" });
       const existing = await storage.getUser(id);
       if (!existing) return res.status(404).json({ message: "User not found" });
-      // Only admin can update any user; non-admin can only update their sub-users (or self)
-      if (me.role !== 'admin' && !(existing.parentUserId === me.id || existing.id === me.id)) {
+      
+      // Superuser can update anyone
+      if (me.role === 'superuser') {
+        const user = await storage.updateUser(id, updates as any);
+        return res.json({ ...user!, password: undefined });
+      }
+      
+      // Company admin can update users in their company
+      if (me.role === 'admin' && me.companyId) {
+        if (existing.companyId !== me.companyId) {
+          return res.status(403).json({ message: 'Forbidden: Cannot modify users from other companies' });
+        }
+        // Company admin cannot create superuser or change role to admin (only one admin per company)
+        if (updates.role === 'superuser' || (updates.role === 'admin' && existing.id !== me.id)) {
+          return res.status(403).json({ message: 'Forbidden role change' });
+        }
+        const user = await storage.updateUser(id, updates as any);
+        return res.json({ ...user!, password: undefined });
+      }
+      
+      // Regular users can only update their sub-users (or self)
+      if (!(existing.parentUserId === me.id || existing.id === me.id)) {
         return res.status(403).json({ message: 'Forbidden' });
       }
-      // Non-admins cannot escalate role to admin
-      if (me.role !== 'admin' && updates.role === 'admin') {
+      // Non-admins cannot escalate role
+      if (updates.role === 'admin' || updates.role === 'superuser') {
         return res.status(403).json({ message: 'Forbidden role change' });
       }
       const user = await storage.updateUser(id, updates as any);
@@ -88,34 +149,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (err) { next(err); }
   });
 
-  // Create sub-user under current user or admin creates any user
+  // Create sub-user under current user or admin creates any user (max 20 per company)
   app.post("/api/users", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const storage = getStorage();
       const me = await storage.getUser((req.user as any).id);
       if (!me) return res.status(401).json({ message: "Unauthorized" });
-      // Only admin or active main users can create sub-users
-      const payload = req.body as any; // username, password, name, email, role, permissions
-      const { scrypt, randomBytes } = require('crypto');
-      const { promisify } = require('util');
-      const scryptAsync = promisify(scrypt);
-      const salt = randomBytes(16).toString('hex');
-      const buf = (await scryptAsync(payload.password, salt, 64)) as Buffer;
-      const hashed = `${buf.toString('hex')}.${salt}`;
-      const created = await storage.createUser({
-        username: payload.username,
-        password: hashed,
-        name: payload.name,
-        email: payload.email,
-        phone: payload.phone,
-        role: me.role === 'admin' ? (payload.role || 'user') : (payload.role === 'admin' ? 'user' : (payload.role || 'user')),
-        department: payload.department,
-        isActive: Boolean(payload.isActive),
-        parentUserId: me.role === 'admin' ? (payload.parentUserId || me.id) : me.id,
-        permissions: payload.permissions || null,
-      } as any);
-      res.status(201).json({ ...created, password: undefined });
+      
+      // Superuser can create any user
+      if (me.role === 'superuser') {
+        const payload = req.body as any;
+        const { scrypt, randomBytes } = require('crypto');
+        const { promisify } = require('util');
+        const scryptAsync = promisify(scrypt);
+        const salt = randomBytes(16).toString('hex');
+        const buf = (await scryptAsync(payload.password, salt, 64)) as Buffer;
+        const hashed = `${buf.toString('hex')}.${salt}`;
+        const created = await storage.createUser({
+          username: payload.username,
+          password: hashed,
+          name: payload.name,
+          email: payload.email,
+          phone: payload.phone,
+          role: payload.role || 'user',
+          companyId: payload.companyId,
+          department: payload.department,
+          isActive: Boolean(payload.isActive),
+          parentUserId: payload.parentUserId || null,
+          permissions: payload.permissions || null,
+        } as any);
+        return res.status(201).json({ ...created, password: undefined });
+      }
+      
+      // Company admin can create sub-users (max 20 per company)
+      if (me.role === 'admin' && me.companyId) {
+        const companyUsers = await storage.getUsersByCompanyId(me.companyId);
+        if (companyUsers.length >= 20) {
+          return res.status(400).json({ message: "Maximum 20 users per company reached" });
+        }
+        const payload = req.body as any;
+        const { scrypt, randomBytes } = require('crypto');
+        const { promisify } = require('util');
+        const scryptAsync = promisify(scrypt);
+        const salt = randomBytes(16).toString('hex');
+        const buf = (await scryptAsync(payload.password, salt, 64)) as Buffer;
+        const hashed = `${buf.toString('hex')}.${salt}`;
+        const created = await storage.createUser({
+          username: payload.username,
+          password: hashed,
+          name: payload.name,
+          email: payload.email,
+          phone: payload.phone,
+          role: 'user', // Company admin can only create regular users
+          companyId: me.companyId,
+          department: payload.department,
+          isActive: Boolean(payload.isActive),
+          parentUserId: me.id,
+          permissions: payload.permissions || null,
+        } as any);
+        return res.status(201).json({ ...created, password: undefined });
+      }
+      
+      // Regular users cannot create sub-users (removed for multi-tenant)
+      return res.status(403).json({ message: "Only company admins can create users" });
     } catch (err) { next(err); }
   });
 

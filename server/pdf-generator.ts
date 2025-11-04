@@ -438,17 +438,36 @@ class PDFGenerator {
         totalAmount: typeof quotation.totalAmount === 'string' ? parseFloat(quotation.totalAmount) : (quotation.totalAmount || 0)
       });
 
-      tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
-      page = await tempBrowser.newPage();
-      await page.setContent(html, { waitUntil: 'domcontentloaded' });
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const pdfBuffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' }
-      });
-      return Buffer.from(pdfBuffer);
+      // Try Puppeteer first, fallback to html-pdf-node if it fails
+      try {
+        tempBrowser = await puppeteer.launch(this.getPuppeteerOptions());
+        page = await tempBrowser.newPage();
+        await page.setContent(html, { waitUntil: 'domcontentloaded' });
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const pdfBuffer = await page.pdf({
+          format: 'A4',
+          printBackground: true,
+          margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' }
+        });
+        
+        console.log('Proforma Invoice PDF generated successfully with Puppeteer');
+        return Buffer.from(pdfBuffer);
+      } catch (puppeteerError) {
+        console.warn('Puppeteer failed for proforma invoice, trying fallback method:', puppeteerError);
+        
+        // Clean up Puppeteer resources
+        if (page) {
+          try { await page.close(); } catch {}
+        }
+        if (tempBrowser) {
+          try { await tempBrowser.close(); } catch {}
+        }
+        
+        // Use fallback method
+        return await this.generatePDFFallback(html);
+      }
     } catch (error) {
+      console.error('Proforma Invoice PDF generation failed:', error);
       throw new Error(`Proforma invoice generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       if (page) { try { await page.close(); } catch {} }

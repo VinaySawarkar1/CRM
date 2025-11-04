@@ -18,6 +18,7 @@ import {
   HelpCircle,
   CreditCard,
   Truck,
+  CheckCircle2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -110,6 +111,11 @@ const erpItems = [
     href: "/users",
     icon: Users,
   },
+  {
+    title: "Approvals",
+    href: "/approvals",
+    icon: CheckCircle2,
+  },
 ];
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -120,6 +126,10 @@ export default function Sidebar({ className }: SidebarProps) {
 
   const allow = (title: string) => {
     if (!user) return false;
+    // Superuser sees everything
+    if (user.role === 'superuser') return true;
+    // Approvals page is superuser only
+    if (title === 'Approvals') return false;
     if (user.role === 'admin') return true;
     // If user has granular permissions, check them first
     const perms = (user as any).permissions as string[] | undefined;

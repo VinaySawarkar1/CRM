@@ -5,7 +5,7 @@
     "name": "System Administrator",
     "email": "admin@businessai.com",
     "phone": "+91 98765 43210",
-    "role": "admin",
+    "role": "superuser",
     "department": "IT",
     "isActive": true,
     "lastLogin": null,
@@ -18,5 +18,18 @@
     "name": "Mayuri Baywar",
     "role": "user",
     "id": 2
+  },
+  {
+    "username": "vinay",
+    "password": "a47e407e10ab221e948535146317498b5623ae48719fa6890c38d9c7b38d7de098ae7d2b0df39734c84677621f7a014e5c0bfa417d96debdefc8d6f07779a425.07b472ab7027661c6de30bed9c31f9d5",
+    "name": "Vinay sawarkar",
+    "email": "vinaysawarkar0@gmail.com",
+    "phone": "09175240313",
+    "role": "admin",
+    "companyId": 1,
+    "isActive": false,
+    "department": "",
+    "id": 3,
+    "createdAt": "2025-11-04T17:53:27.166Z"
   }
 ]

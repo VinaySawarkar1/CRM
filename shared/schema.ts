@@ -2,6 +2,30 @@ import { pgTable, text, serial, integer, boolean, timestamp, json, decimal, date
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Company/Tenant schema
+export const companies = pgTable("companies", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  country: text("country").default("India"),
+  pincode: text("pincode"),
+  gstNumber: text("gst_number"),
+  status: text("status").notNull().default("pending"), // pending, active, suspended
+  maxUsers: integer("max_users").notNull().default(20),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCompanySchema = createInsertSchema(companies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // User schema
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -10,7 +34,8 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   phone: text("phone"),
-  role: text("role").notNull().default("user"),
+  role: text("role").notNull().default("user"), // superuser, admin, user
+  companyId: integer("company_id").references(() => companies.id),
   department: text("department"),
   isActive: boolean("is_active").notNull().default(false),
   parentUserId: integer("parent_user_id").references(() => users.id),
@@ -26,6 +51,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   phone: true,
   role: true,
+  companyId: true,
   department: true,
   parentUserId: true,
   permissions: true,
@@ -568,6 +594,8 @@ export const insertContractSchema = createInsertSchema(contracts).omit({
 // Type definitions
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type InsertCompany = z.infer<typeof insertCompanySchema>;
+export type Company = typeof companies.$inferSelect;
 
 export type InsertCustomer = z.infer<typeof insertCustomerSchema>;
 export type Customer = typeof customers.$inferSelect;

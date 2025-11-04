@@ -22,6 +22,9 @@ const registerSchema = insertUserSchema.extend({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string(),
+  companyName: z.string().min(2, "Company name is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -50,6 +53,9 @@ export default function AuthPage() {
       username: "",
       password: "",
       confirmPassword: "",
+      companyName: "",
+      email: "",
+      phone: "",
       role: "user",
     },
   });
@@ -59,8 +65,8 @@ export default function AuthPage() {
   };
 
   const onRegisterSubmit = (data: RegisterFormValues) => {
-    const { confirmPassword, ...registerData } = data;
-    registerMutation.mutate(registerData);
+    const { confirmPassword, companyName, ...registerData } = data;
+    registerMutation.mutate({ ...registerData, companyName } as any);
   };
 
   // If user is already logged in, redirect to home
@@ -197,6 +203,19 @@ export default function AuthPage() {
                   <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
                     <FormField
                       control={registerForm.control}
+                      name="companyName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter your company name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={registerForm.control}
                       name="name"
                       render={({ field }) => (
                         <FormItem>
@@ -247,6 +266,35 @@ export default function AuthPage() {
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={registerForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="Enter your email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={registerForm.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone (Optional)</FormLabel>
+                          <FormControl>
+                            <Input type="tel" placeholder="Enter your phone number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <p className="text-xs text-gray-600">
+                      After registration, your account will be reviewed and activated by the system administrator.
+                    </p>
                     <Button 
                       type="submit" 
                       className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 font-semibold" 
