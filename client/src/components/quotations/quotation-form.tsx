@@ -925,8 +925,9 @@ export default function QuotationForm({
       setFilteredCustomers(customers);
       setShowCustomerDropdown(false);
     } else {
+      const searchLower = (searchTerm || '').toLowerCase();
       const filtered = customers.filter(customer =>
-        customer.company.toLowerCase().includes(searchTerm.toLowerCase())
+        String(customer.company || '').toLowerCase().includes(searchLower)
       );
       setFilteredCustomers(filtered);
       setShowCustomerDropdown(filtered.length > 0);
@@ -2748,10 +2749,10 @@ export default function QuotationForm({
                    placeholder="Search"
                    className="pl-10"
                    onChange={(e) => {
-                     const searchTerm = e.target.value.toLowerCase();
+                     const searchTerm = (e.target.value || '').toLowerCase();
                      const filtered = inventory.filter(item =>
-                       item.name.toLowerCase().includes(searchTerm) ||
-                       item.description.toLowerCase().includes(searchTerm)
+                       String(item.name || '').toLowerCase().includes(searchTerm) ||
+                       String(item.description || '').toLowerCase().includes(searchTerm)
                      );
                      setFilteredInventory(filtered);
                    }}

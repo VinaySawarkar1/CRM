@@ -100,7 +100,8 @@ export default function QuotationTable({
       'expired': { color: 'bg-yellow-100 text-yellow-800', label: 'Expired' }
     };
     
-    const config = statusConfig[status.toLowerCase() as keyof typeof statusConfig] || statusConfig.draft;
+    const safeStatus = String(status || 'draft').toLowerCase();
+    const config = statusConfig[safeStatus as keyof typeof statusConfig] || statusConfig.draft;
     return <Badge className={config.color}>{config.label}</Badge>;
   };
 
@@ -185,7 +186,7 @@ export default function QuotationTable({
               </TableCell>
               <TableCell>
                   <div className="flex items-center gap-2">
-                    {getStatusBadge(quotation.status)}
+                    {getStatusBadge(quotation.status || 'draft')}
                     {mode !== 'proforma' && (
                       <select
                         className="text-xs border rounded px-1 py-0.5"
