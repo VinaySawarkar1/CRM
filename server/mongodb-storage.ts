@@ -876,11 +876,60 @@ export class MongoDBStorage implements IStorage {
   async getAllPayments(): Promise<Payment[]> { return []; }
   async deletePayment(id: number): Promise<boolean> { return false; }
 
-  async getPurchaseOrder(id: number): Promise<PurchaseOrder | undefined> { return undefined; }
-  async createPurchaseOrder(purchaseOrder: InsertPurchaseOrder): Promise<PurchaseOrder> { throw new Error('Not implemented'); }
-  async updatePurchaseOrder(id: number, purchaseOrder: Partial<InsertPurchaseOrder>): Promise<PurchaseOrder | undefined> { return undefined; }
-  async getAllPurchaseOrders(): Promise<PurchaseOrder[]> { return []; }
-  async deletePurchaseOrder(id: number): Promise<boolean> { return false; }
+  async getPurchaseOrder(id: number): Promise<PurchaseOrder | undefined> {
+    const purchaseOrder = await this.collections.purchaseOrders.findOne({ id });
+    return purchaseOrder as PurchaseOrder | undefined;
+  }
+  
+  async createPurchaseOrder(purchaseOrder: InsertPurchaseOrder): Promise<PurchaseOrder> {
+    // Get the next ID
+    const allPurchaseOrders = await this.getAllPurchaseOrders();
+    const maxId = allPurchaseOrders.length > 0 ? Math.max(...allPurchaseOrders.map(po => typeof po.id === 'number' ? po.id : parseInt(String(po.id)) || 0)) : 0;
+    const nextId = maxId + 1;
+    
+    const purchaseOrderData = {
+      ...purchaseOrder,
+      id: nextId,
+      status: purchaseOrder.status || "pending",
+      createdAt: new Date(),
+    };
+    
+    const result = await this.collections.purchaseOrders.insertOne(purchaseOrderData);
+    
+    return {
+      ...purchaseOrder,
+      id: nextId,
+      status: purchaseOrder.status || "pending",
+      createdAt: new Date(),
+    } as PurchaseOrder;
+  }
+  
+  async updatePurchaseOrder(id: number, purchaseOrder: Partial<InsertPurchaseOrder>): Promise<PurchaseOrder | undefined> {
+    const existing = await this.getPurchaseOrder(id);
+    if (!existing) return undefined;
+    
+    const updated = {
+      ...existing,
+      ...purchaseOrder,
+    };
+    
+    await this.collections.purchaseOrders.updateOne(
+      { id },
+      { $set: updated }
+    );
+    
+    return updated as PurchaseOrder;
+  }
+  
+  async getAllPurchaseOrders(): Promise<PurchaseOrder[]> {
+    const purchaseOrders = await this.collections.purchaseOrders.find({}).toArray();
+    return purchaseOrders as PurchaseOrder[];
+  }
+  
+  async deletePurchaseOrder(id: number): Promise<boolean> {
+    const result = await this.collections.purchaseOrders.deleteOne({ id });
+    return result.deletedCount > 0;
+  }
 
   async getManufacturingJob(id: number): Promise<ManufacturingJob | undefined> { return undefined; }
   async createManufacturingJob(job: InsertManufacturingJob): Promise<ManufacturingJob> { throw new Error('Not implemented'); }
@@ -961,25 +1010,47 @@ export class MongoDBStorage implements IStorage {
     try {
       const existingSettings = await this.getCompanySettings();
       
+      // Deep merge nested objects (bankDetails, integrations, etc.)
+      const mergedSettings = {
+        ...existingSettings,
+        ...settings,
+        // Merge bankDetails if both exist
+        bankDetails: settings.bankDetails 
+          ? { ...(existingSettings?.bankDetails || {}), ...settings.bankDetails }
+          : existingSettings?.bankDetails,
+        // Merge integrations if both exist (deep merge for nested objects like indiaMart)
+        integrations: settings.integrations
+          ? {
+              ...(existingSettings?.integrations || {}),
+              ...settings.integrations,
+              // Deep merge indiaMart if both exist
+              indiaMart: settings.integrations.indiaMart
+                ? { ...(existingSettings?.integrations?.indiaMart || {}), ...settings.integrations.indiaMart }
+                : existingSettings?.integrations?.indiaMart
+            }
+          : existingSettings?.integrations,
+        updatedAt: new Date()
+      };
+      
+      // Remove MongoDB _id from the update object
+      const { _id, ...updateData } = mergedSettings;
+      
       if (existingSettings && existingSettings._id) {
         // Update existing settings
         const result = await this.collections.companySettings.updateOne(
           { _id: existingSettings._id },
           { 
-            $set: {
-              ...settings,
-              updatedAt: new Date()
-            }
+            $set: updateData
           }
         );
         
-        if (result.modifiedCount > 0) {
+        if (result.modifiedCount > 0 || result.matchedCount > 0) {
           return await this.getCompanySettings();
         }
       } else {
         // Create new settings
         const result = await this.collections.companySettings.insertOne({
-          ...settings,
+          ...updateData,
           createdAt: new Date(),
           updatedAt: new Date()
         });

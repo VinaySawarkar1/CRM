@@ -66,25 +66,33 @@ export default function SettingsPage() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     
-    const data = {
-      name: formData.get("name") as string,
-      address: formData.get("address") as string,
-      phone: formData.get("phone") as string,
-      email: formData.get("email") as string,
-      gstNumber: formData.get("gstNumber") as string,
-      panNumber: formData.get("panNumber") as string,
-      website: formData.get("website") as string,
+    // Collect all form data, including empty strings (they should be saved)
+    const data: any = {
+      name: (formData.get("name") as string) || "",
+      address: (formData.get("address") as string) || "",
+      phone: (formData.get("phone") as string) || "",
+      email: (formData.get("email") as string) || "",
+      gstNumber: (formData.get("gstNumber") as string) || "",
+      panNumber: (formData.get("panNumber") as string) || "",
+      website: (formData.get("website") as string) || "",
       bankDetails: {
-        bankName: formData.get("bankName") as string,
-        accountNo: formData.get("accountNo") as string,
-        ifsc: formData.get("ifsc") as string,
-        branch: formData.get("branch") as string,
-        upi: formData.get("upi") as string,
-        swift: formData.get("swift") as string,
+        bankName: (formData.get("bankName") as string) || "",
+        accountNo: (formData.get("accountNo") as string) || "",
+        ifsc: (formData.get("ifsc") as string) || "",
+        branch: (formData.get("branch") as string) || "",
+        upi: (formData.get("upi") as string) || "",
+        swift: (formData.get("swift") as string) || "",
       },
-      logo: logoPreview || companySettings?.logo,
     };
+    
+    // Only update logo if a new one was selected
+    if (logoPreview) {
+      data.logo = logoPreview;
+    } else if (companySettings?.logo) {
+      data.logo = companySettings.logo;
+    }
 
+    console.log('Saving settings data:', data);
     updateSettings.mutate(data);
   };
 
@@ -354,9 +362,22 @@ export default function SettingsPage() {
                   onSubmit={(e) => {
                     e.preventDefault();
                     const form = e.currentTarget as HTMLFormElement;
-                    const apiKey = (form.elements.namedItem('indiaMartApiKey') as HTMLInputElement).value;
-                    const schedule = (form.elements.namedItem('indiaMartSchedule') as HTMLSelectElement).value;
-                    updateSettings.mutate({ integrations: { indiaMart: { apiKey, schedule } } });
+                    const apiKey = (form.elements.namedItem('indiaMartApiKey') as HTMLInputElement).value || "";
+                    const schedule = (form.elements.namedItem('indiaMartSchedule') as HTMLSelectElement).value || "manual";
+                    const integrationsData = { 
+                      integrations: { 
+                        indiaMart: { 
+                          apiKey, 
+                          schedule,
+                          // Preserve lastSyncedAt if it exists
+                          ...(companySettings?.integrations?.indiaMart?.lastSyncedAt && {
+                            lastSyncedAt: companySettings.integrations.indiaMart.lastSyncedAt
+                          })
+                        } 
+                      } 
+                    };
+                    console.log('Saving integrations data:', integrationsData);
+                    updateSettings.mutate(integrationsData);
                   }}
                   className="space-y-4"
                 >

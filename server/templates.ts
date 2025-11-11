@@ -1252,10 +1252,19 @@ export function purchaseOrderTemplate(data: DocBase & {
     const rate = typeof it.rate === 'string' ? parseFloat(it.rate) || 0 : (it.rate ?? 0);
     const amount = quantity * rate;
     
+    // Handle product name and description like quotation template
+    // Product name is the primary identifier
+    const itemName = it.name || it.description || "Item " + (i + 1);
+    // Description is shown separately below the name if it exists and is different from name
+    const itemDescription = it.description && it.description !== itemName ? it.description : "";
+    
     return `
       <tr>
         <td class="c">${i + 1}</td>
-        <td style="color: #000;">${(it.description || it.name || "").replace(/\n/g, '<br/>')}</td>
+        <td style="color: #000;">
+          <div>${itemName}</div>
+          ${itemDescription ? `<div class="muted" style="margin-top: 2px; font-size: 6.5pt; color: #666;">${itemDescription.replace(/\n/g, '<br/>')}</div>` : ""}
+        </td>
         <td class="c">${quantity}</td>
         <td class="c">${it.unit ?? "nos"}</td>
         <td class="r">${fmt(rate, data.currency)}</td>
@@ -1395,15 +1404,23 @@ export function purchaseOrderTemplate(data: DocBase & {
                 </div>
               </div>
             `}
-            <div class="doc-meta">
-              <div><strong>PO No:</strong> ${data.poNumber ?? "-"}</div>
-              <div><strong>Date:</strong> ${data.poDate ?? new Date().toLocaleDateString('en-GB')}</div>
-              ${data.expectedDelivery ? `<div><strong>Expected Delivery:</strong> ${data.expectedDelivery}</div>` : ''}
-            </div>
           </td>
         </tr>
       </table>
       ` : ''}
+
+      <!-- Purchase Order Details Section -->
+      <table class="po-details-table">
+        <tr>
+          <td>
+            <div class="doc-meta">
+              <div><strong>PO No. :</strong> ${data.poNumber ?? "-"}</div>
+              <div><strong>Date :</strong> ${data.poDate ?? new Date().toLocaleDateString('en-GB')}</div>
+              ${data.expectedDelivery ? `<div><strong>Expected Delivery :</strong> ${data.expectedDelivery}</div>` : ''}
+            </div>
+          </td>
+        </tr>
+      </table>
 
       <!-- Addresses Section in Table Format -->
       <table class="addresses-table">
@@ -1507,20 +1524,24 @@ export function purchaseOrderTemplate(data: DocBase & {
 
 
 
-      ${company.bankDetails && (company.bankDetails.bankName || company.bankDetails.accountNo) ? `
-      <!-- Bank Details Section in Table -->
-      <table class="bank-table">
+
+      <!-- Notes Section -->
+      ${(() => {
+        const notesValue = data.notes;
+        if (!notesValue) return '';
+        const notesStr = String(notesValue).trim();
+        if (notesStr.length === 0) return '';
+        return `
+      <table class="terms-table">
         <tr>
           <td>
-            <div class="bank-title">Bank Details:</div>
-            ${company.bankDetails.bankName ? `<div><strong>Bank Name:</strong> ${company.bankDetails.bankName}</div>` : ''}
-            ${company.bankDetails.accountNo ? `<div><strong>Account No:</strong> ${company.bankDetails.accountNo}</div>` : ''}
-            ${company.bankDetails.ifsc ? `<div><strong>IFSC:</strong> ${company.bankDetails.ifsc}</div>` : ''}
-            ${company.bankDetails.branch ? `<div><strong>Branch:</strong> ${company.bankDetails.branch}</div>` : ''}
+            <div class="terms-title">Notes:</div>
+            <div style="margin: 4px 0; font-size: 7pt; line-height: 1.4; white-space: pre-wrap;">${notesStr.replace(/\n/g, '<br/>')}</div>
           </td>
         </tr>
       </table>
-      ` : ''}
+        `;
+      })()}
 
       <!-- Terms Section in Table -->
       <table class="terms-table">

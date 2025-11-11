@@ -1,6 +1,6 @@
 [
   {
-    "poNumber": "PO-2025-9542",
+    "poNumber": "PO-2025-6669",
     "supplierId": 1,
     "supplierName": "Rajesh Kumar",
     "supplierCompany": "Tech Solutions Inc.",
@@ -14,29 +14,104 @@
     "supplierPan": "ABCDE1234F",
     "supplierPhone": "+91-9876543210",
     "supplierEmail": "contact@techsolutions.com",
-    "orderDate": "2025-11-01",
-    "expectedDelivery": "2025-11-08",
+    "orderDate": "2025-11-11",
+    "expectedDelivery": "2025-11-18",
     "items": [
       {
-        "description": "Vision Measuring System",
+        "name": "Precision VMM",
+        "description": "Ultra-precise vision measuring system",
         "quantity": 1,
         "unit": "pcs",
-        "unitPrice": 88,
-        "amount": 88
+        "unitPrice": 6,
+        "amount": 6
       }
     ],
-    "subtotal": 88,
-    "taxAmount": 15.84,
-    "totalAmount": 103.84,
+    "subtotal": 6,
+    "taxAmount": 1.08,
+    "totalAmount": 7.08,
     "status": "draft",
     "notes": "",
-    "terms": [
-      "Delivery Time",
-      "Payment Terms",
-      "Warranty",
-      "Installation & Commissioning"
-    ],
+    "terms": [],
     "createdAt": "2025-11-01T19:18:32.404Z",
     "id": 1
+  },
+  {
+    "poNumber": "PO-2025-4035",
+    "supplierId": 221,
+    "supplierName": "Georgios Torlakidis",
+    "supplierCompany": "Meatest",
+    "supplierTitle": "",
+    "supplierAddress": "",
+    "supplierCity": "Czech Republic",
+    "supplierState": "-",
+    "supplierCountry": "Czech Republic",
+    "supplierPincode": "",
+    "supplierGstin": "",
+    "supplierPan": "",
+    "supplierPhone": "4205432",
+    "supplierEmail": "meatest@meatest.cz",
+    "orderDate": "2025-11-11",
+    "expectedDelivery": "2025-11-18",
+    "items": [
+      {
+        "description": "Data Logger Basic",
+        "quantity": 1,
+        "unit": "pcs",
+        "unitPrice": 33,
+        "amount": 33
+      }
+    ],
+    "subtotal": 33,
+    "taxAmount": 5.9399999999999995,
+    "totalAmount": 38.94,
+    "status": "draft",
+    "notes": "this is the note section",
+    "terms": [
+      "Returns Policy",
+      "Payment Terms"
+    ],
+    "createdAt": "2025-11-11T18:08:10.497Z",
+    "id": 2
+  },
+  {
+    "poNumber": "PO-2025-8478",
+    "supplierId": 3,
+    "supplierName": "Amit Patel",
+    "supplierCompany": "Global Enterprises",
+    "supplierTitle": "",
+    "supplierAddress": "",
+    "supplierCity": "Delhi",
+    "supplierState": "Delhi",
+    "supplierCountry": "India",
+    "supplierPincode": "110001",
+    "supplierGstin": "07ABCDE1234F1Z7",
+    "supplierPan": "ABCDE1234H",
+    "supplierPhone": "+91-9876543212",
+    "supplierEmail": "hello@globalenterprises.com",
+    "orderDate": "2025-11-11",
+    "expectedDelivery": "2025-11-18",
+    "items": [
+      {
+        "name": "Calibration Kit Pro",
+        "description": " \n\nhjghhghghghg",
+        "quantity": 1,
+        "unit": "pcs",
+        "unitPrice": 0,
+        "amount": 0
+      }
+    ],
+    "subtotal": 0,
+    "taxAmount": 0,
+    "totalAmount": 0,
+    "status": "draft",
+    "notes": "htis is the note",
+    "terms": [
+      "Delivery Time",
+      "Warranty",
+      "Payment: after delivery",
+      "sample"
+    ],
+    "createdAt": "2025-11-11T18:41:06.007Z",
+    "id": 3
   }
 ]

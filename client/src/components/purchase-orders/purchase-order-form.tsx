@@ -43,7 +43,8 @@ const purchaseOrderSchema = z.object({
   orderDate: z.string().min(1, "Order date is required"),
   expectedDelivery: z.union([z.string(), z.null()]).optional(),
   items: z.array(z.object({
-    description: z.string().min(1, "Description is required"),
+    name: z.string().min(1, "Product name is required"),
+    description: z.string().optional(),
     quantity: z.number().min(1, "Quantity must be at least 1"),
     unit: z.string().min(1, "Unit is required"),
     unitPrice: z.number().min(0, "Unit price must be positive"),
@@ -108,12 +109,28 @@ export default function PurchaseOrderForm({
          new Date(defaultValues.expectedDelivery).toISOString().split('T')[0]) : 
         undefined,
       // Ensure items have proper structure
-      items: Array.isArray(defaultValues.items) ? defaultValues.items.map(item => ({
-        ...item,
-        quantity: typeof item.quantity === 'string' ? parseInt(item.quantity) || 1 : item.quantity || 1,
-        unitPrice: typeof item.unitPrice === 'string' ? parseFloat(item.unitPrice) || 0 : item.unitPrice || 0,
-        amount: item.amount ? (typeof item.amount === 'string' ? parseFloat(item.amount) || 0 : item.amount || 0) : 0,
-      })) : [{ 
+      items: Array.isArray(defaultValues.items) ? defaultValues.items.map(item => {
+        // Handle both rate and unitPrice for backward compatibility
+        const unitPrice = item.unitPrice ?? item.rate ?? 0;
+        const parsedUnitPrice = typeof unitPrice === 'string' ? parseFloat(unitPrice) || 0 : unitPrice || 0;
+        
+        // Handle name and description - if only description exists, use it as name
+        // If both exist, use name as product name and description as description
+        // If only description exists (old data), use it as name and empty description
+        const itemName = item.name || item.description || "";
+        const itemDescription = (item.name && item.description) ? item.description : "";
+        
+        return {
+          ...item,
+          name: itemName,
+          description: itemDescription,
+          quantity: typeof item.quantity === 'string' ? parseInt(item.quantity) || 1 : (item.quantity || 1),
+          unitPrice: parsedUnitPrice,
+          unit: item.unit || "pcs",
+          amount: item.amount ? (typeof item.amount === 'string' ? parseFloat(item.amount) || 0 : item.amount || 0) : (item.quantity || 1) * parsedUnitPrice,
+        };
+      }) : [{ 
+        name: "",
         description: "", 
         quantity: 1, 
         unit: "pcs", 
@@ -158,7 +175,7 @@ export default function PurchaseOrderForm({
     },
   });
 
-  const { register, handleSubmit, formState: { errors }, watch, setValue, control } = form;
+  const { register, handleSubmit, formState: { errors }, watch, setValue, getValues, control } = form;
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
@@ -176,6 +193,64 @@ export default function PurchaseOrderForm({
   };
 
   const progress = calculateProgress();
+
+  // Reset form when defaultValues change (for edit mode or when data loads)
+  useEffect(() => {
+    if (defaultValues) {
+      // Parse items if they're stored as JSON string
+      let parsedItems = defaultValues.items;
+      if (typeof parsedItems === 'string') {
+        try {
+          parsedItems = JSON.parse(parsedItems);
+        } catch (e) {
+          console.error('Failed to parse items JSON:', e);
+          parsedItems = [];
+        }
+      }
+      
+      const processedValues = {
+        ...defaultValues,
+        // Convert dates to strings if they exist
+        orderDate: defaultValues.orderDate ? 
+          (typeof defaultValues.orderDate === 'string' ? defaultValues.orderDate : 
+           defaultValues.orderDate instanceof Date ? defaultValues.orderDate.toISOString().split('T')[0] : 
+           new Date(defaultValues.orderDate).toISOString().split('T')[0]) : 
+          undefined,
+        expectedDelivery: defaultValues.expectedDelivery ? 
+          (typeof defaultValues.expectedDelivery === 'string' ? defaultValues.expectedDelivery : 
+           defaultValues.expectedDelivery instanceof Date ? defaultValues.expectedDelivery.toISOString().split('T')[0] : 
+           new Date(defaultValues.expectedDelivery).toISOString().split('T')[0]) : 
+          undefined,
+        // Ensure items have proper structure
+        items: Array.isArray(parsedItems) ? parsedItems.map(item => {
+          // Handle both rate and unitPrice for backward compatibility
+          const unitPrice = item.unitPrice ?? item.rate ?? 0;
+          const parsedUnitPrice = typeof unitPrice === 'string' ? parseFloat(unitPrice) || 0 : unitPrice || 0;
+          
+          // Handle name and description
+          const itemName = item.name || item.description || "";
+          const itemDescription = (item.name && item.description) ? item.description : "";
+          
+          return {
+            ...item,
+            name: itemName,
+            description: itemDescription,
+            quantity: typeof item.quantity === 'string' ? parseInt(item.quantity) || 1 : (item.quantity || 1),
+            unitPrice: parsedUnitPrice,
+            unit: item.unit || "pcs",
+            amount: item.amount ? (typeof item.amount === 'string' ? parseFloat(item.amount) || 0 : item.amount || 0) : (item.quantity || 1) * parsedUnitPrice,
+          };
+        }) : [],
+        // Ensure numeric fields are properly handled
+        subtotal: defaultValues.subtotal ? (typeof defaultValues.subtotal === 'string' ? parseFloat(defaultValues.subtotal) || 0 : defaultValues.subtotal || 0) : 0,
+        taxAmount: defaultValues.taxAmount ? (typeof defaultValues.taxAmount === 'string' ? parseFloat(defaultValues.taxAmount) || 0 : defaultValues.taxAmount || 0) : 0,
+        totalAmount: defaultValues.totalAmount ? (typeof defaultValues.totalAmount === 'string' ? parseFloat(defaultValues.totalAmount) || 0 : defaultValues.totalAmount || 0) : 0,
+        supplierId: defaultValues.supplierId || undefined,
+      };
+      
+      form.reset(processedValues);
+    }
+  }, [defaultValues, form]);
 
   // Auto-save
   useEffect(() => {
@@ -209,11 +284,12 @@ export default function PurchaseOrderForm({
 
   const handleAddItem = () => {
     append({ 
+      name: "",
       description: "", 
       quantity: 1, 
       unit: "pcs", 
       unitPrice: 0, 
-      amount: 0
+      amount: 0 
     });
   };
 
@@ -227,6 +303,8 @@ export default function PurchaseOrderForm({
     const item = watchedItems[index];
     setSelectedItemForEdit({
       ...item,
+      name: item.name || item.description || "",
+      description: item.description || "",
       quantity: typeof item.quantity === 'string' ? parseInt(item.quantity) || 1 : item.quantity,
     });
     setEditItemIndex(index);
@@ -249,15 +327,31 @@ export default function PurchaseOrderForm({
   };
 
   const handleItemChange = (index: number, field: keyof typeof watchedItems[0], value: any) => {
-    const updatedItems = [...watchedItems];
-    updatedItems[index] = { ...updatedItems[index], [field]: value };
-    
-    // Calculate amount for this item
-    const quantity = typeof updatedItems[index].quantity === 'string' ? parseInt(updatedItems[index].quantity) : updatedItems[index].quantity;
-    const unitPrice = typeof updatedItems[index].unitPrice === 'string' ? parseFloat(updatedItems[index].unitPrice) : updatedItems[index].unitPrice;
-    updatedItems[index].amount = (quantity || 0) * (unitPrice || 0);
-    
-    setValue("items", updatedItems);
+    // Update only the specific field to avoid replacing the whole items array (preserves focus)
+    const fieldName = `items.${index}.${String(field)}`;
+
+    // Set the changed field
+    setValue(fieldName, value, { shouldDirty: true, shouldValidate: true });
+
+    // Compute amount using the latest values. Prefer the passed value for the changed field
+    const currentValues = getValues();
+
+    const quantity = field === 'quantity'
+      ? (typeof value === 'string' ? parseInt(value) || 0 : value || 0)
+      : (typeof currentValues.items?.[index]?.quantity === 'string'
+          ? parseInt(currentValues.items[index].quantity) || 0
+          : currentValues.items?.[index]?.quantity || 0);
+
+    const unitPrice = field === 'unitPrice'
+      ? (typeof value === 'string' ? parseFloat(value) || 0 : value || 0)
+      : (typeof currentValues.items?.[index]?.unitPrice === 'string'
+          ? parseFloat(currentValues.items[index].unitPrice) || 0
+          : currentValues.items?.[index]?.unitPrice || 0);
+
+    const amount = (quantity || 0) * (unitPrice || 0);
+
+    // Update the amount for this item
+    setValue(`items.${index}.amount`, amount, { shouldDirty: true, shouldValidate: false });
   };
 
   const handleSupplierSelect = (supplier: any) => {
@@ -285,7 +379,8 @@ export default function PurchaseOrderForm({
 
   const handleInventorySelect = (item: any) => {
     const newItem = {
-      description: item.name,
+      name: item.name || "",
+      description: item.description || "",
       quantity: 1,
       unit: item.unit || "pcs",
       unitPrice: item.costPrice || 0,
@@ -297,12 +392,12 @@ export default function PurchaseOrderForm({
   };
 
   const onFormSubmit = (data: PurchaseOrderFormData) => {
-    // Validate that at least one item has a description
-    const validItems = data.items.filter(item => item.description.trim());
+    // Validate that at least one item has a product name
+    const validItems = data.items.filter(item => item.name && item.name.trim());
     if (validItems.length === 0) {
       toast({
         title: "Validation Error",
-        description: "At least one item with description is required",
+        description: "At least one item with product name is required",
         variant: "destructive",
       });
       return;
@@ -379,9 +474,22 @@ export default function PurchaseOrderForm({
             </div>
             
             <div className="p-6 space-y-4">
-              {/* Description Section */}
+              {/* Product Name Section */}
               <div>
-                <Label>Description</Label>
+                <Label>Product Name *</Label>
+                <Input
+                  value={selectedItemForEdit?.name || ""}
+                  onChange={(e) => setSelectedItemForEdit({
+                    ...selectedItemForEdit,
+                    name: e.target.value
+                  })}
+                  placeholder="Product name"
+                />
+              </div>
+
+              {/* Product Description Section */}
+              <div>
+                <Label>Product Description</Label>
                 <Textarea
                   value={selectedItemForEdit?.description || ""}
                   onChange={(e) => setSelectedItemForEdit({
@@ -389,7 +497,7 @@ export default function PurchaseOrderForm({
                     description: e.target.value
                   })}
                   rows={3}
-                  placeholder="Item description"
+                  placeholder="Product description (optional)"
                 />
               </div>
 
@@ -651,69 +759,80 @@ export default function PurchaseOrderForm({
           <CardContent>
             <div className="space-y-4">
               {fields.map((field, index) => (
-                <div key={field.id} className="grid grid-cols-12 gap-2 items-end border p-3 rounded">
-                  <div className="col-span-4">
-                    <Label>Description *</Label>
-                    <Input
+                <div key={field.id} className="border p-3 rounded space-y-3">
+                  <div className="grid grid-cols-12 gap-2 items-end">
+                    <div className="col-span-3">
+                      <Label>Product Name *</Label>
+                      <Input
+                        {...register(`items.${index}.name`)}
+                        placeholder="Product name"
+                        className={errors.items?.[index]?.name ? "border-red-500" : ""}
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label>Quantity *</Label>
+                      <Input
+                        type="number"
+                        {...register(`items.${index}.quantity`)}
+                        min="1"
+                        onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label>Unit *</Label>
+                      <Input
+                        {...register(`items.${index}.unit`)}
+                        placeholder="pcs"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label>Unit Price *</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...register(`items.${index}.unitPrice`)}
+                        min="0"
+                        onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label>Amount</Label>
+                      <Input
+                        value={watchedItems?.[index]?.amount || 0}
+                        readOnly
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div className="col-span-1 flex gap-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditItem(index)}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRemoveItem(index)}
+                        disabled={fields.length === 1}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Product Description</Label>
+                    <Textarea
                       {...register(`items.${index}.description`)}
-                      placeholder="Item description"
-                      className={errors.items?.[index]?.description ? "border-red-500" : ""}
+                      placeholder="Enter detailed product description (optional)"
+                      rows={3}
+                      className="resize-y min-h-[60px]"
                     />
-                  </div>
-                  <div className="col-span-2">
-                    <Label>Quantity *</Label>
-                    <Input
-                      type="number"
-                      {...register(`items.${index}.quantity`)}
-                      min="1"
-                      onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <Label>Unit *</Label>
-                    <Input
-                      {...register(`items.${index}.unit`)}
-                      placeholder="pcs"
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <Label>Unit Price *</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      {...register(`items.${index}.unitPrice`)}
-                      min="0"
-                      onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <Label>Amount</Label>
-                    <Input
-                      value={watchedItems?.[index]?.amount || 0}
-                      readOnly
-                      className="bg-gray-50"
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditItem(index)}
-                      className="text-blue-600 hover:text-blue-700"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRemoveItem(index)}
-                      disabled={fields.length === 1}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
               ))}
@@ -821,69 +940,80 @@ export default function PurchaseOrderForm({
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   {fields.map((field, index) => (
-                    <div key={field.id} className="grid grid-cols-12 gap-2 items-end border border-gray-200 rounded-lg p-3 hover:border-blue-300 transition-all">
-                      <div className="col-span-4">
-                        <Label>Description *</Label>
-                        <Input
+                    <div key={field.id} className="border border-gray-200 rounded-lg p-3 hover:border-blue-300 transition-all space-y-3">
+                      <div className="grid grid-cols-12 gap-2 items-end">
+                        <div className="col-span-3">
+                          <Label>Product Name *</Label>
+                          <Input
+                            {...register(`items.${index}.name`)}
+                            placeholder="Product name"
+                            className={errors.items?.[index]?.name ? "border-red-500" : ""}
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <Label>Quantity *</Label>
+                          <Input
+                            type="number"
+                            {...register(`items.${index}.quantity`)}
+                            min="1"
+                            onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <Label>Unit *</Label>
+                          <Input
+                            {...register(`items.${index}.unit`)}
+                            placeholder="pcs"
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <Label>Unit Price *</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            {...register(`items.${index}.unitPrice`)}
+                            min="0"
+                            onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <Label>Amount</Label>
+                          <Input
+                            value={watchedItems?.[index]?.amount || 0}
+                            readOnly
+                            className="bg-gray-50"
+                          />
+                        </div>
+                        <div className="col-span-1 flex gap-1">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditItem(index)}
+                            className="text-blue-600 hover:text-blue-700"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRemoveItem(index)}
+                            disabled={fields.length === 1}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Product Description</Label>
+                        <Textarea
                           {...register(`items.${index}.description`)}
-                          placeholder="Item description"
-                          className={errors.items?.[index]?.description ? "border-red-500" : ""}
+                          placeholder="Enter detailed product description (optional)"
+                          rows={3}
+                          className="resize-y min-h-[60px]"
                         />
-                      </div>
-                      <div className="col-span-2">
-                        <Label>Quantity *</Label>
-                        <Input
-                          type="number"
-                          {...register(`items.${index}.quantity`)}
-                          min="1"
-                          onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                        />
-                      </div>
-                      <div className="col-span-2">
-                        <Label>Unit *</Label>
-                        <Input
-                          {...register(`items.${index}.unit`)}
-                          placeholder="pcs"
-                        />
-                      </div>
-                      <div className="col-span-2">
-                        <Label>Unit Price *</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          {...register(`items.${index}.unitPrice`)}
-                          min="0"
-                          onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <Label>Amount</Label>
-                        <Input
-                          value={watchedItems?.[index]?.amount || 0}
-                          readOnly
-                          className="bg-gray-50"
-                        />
-                      </div>
-                      <div className="col-span-1 flex gap-1">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditItem(index)}
-                          className="text-blue-600 hover:text-blue-700"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRemoveItem(index)}
-                          disabled={fields.length === 1}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
                   ))}

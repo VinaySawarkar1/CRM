@@ -1997,15 +1997,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/purchase-orders", async (req, res, next) => {
     try {
       const storage = getStorage();
+      
+      // Validate required fields
+      if (!req.body.poNumber) {
+        return res.status(400).json({ message: "PO Number is required" });
+      }
+      if (!req.body.supplierName) {
+        return res.status(400).json({ message: "Supplier name is required" });
+      }
+      if (!req.body.orderDate) {
+        return res.status(400).json({ message: "Order date is required" });
+      }
+      if (!Array.isArray(req.body.items) || req.body.items.length === 0) {
+        return res.status(400).json({ message: "At least one item is required" });
+      }
+      
       const purchaseOrderData = {
         ...req.body,
         createdAt: new Date()
       };
       
+      console.log('Creating purchase order with data:', JSON.stringify(purchaseOrderData, null, 2));
+      
       const purchaseOrder = await storage.createPurchaseOrder(purchaseOrderData);
       res.status(201).json(purchaseOrder);
     } catch (error) {
-      next(error);
+      console.error('Error creating purchase order:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ message: errorMessage });
     }
   });
 

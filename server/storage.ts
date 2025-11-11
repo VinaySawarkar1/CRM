@@ -1807,9 +1807,26 @@ export class JSONFileStorage implements IStorage {
 
   async updateCompanySettings(settings: Partial<InsertCompanySettings>): Promise<CompanySettings> {
     const existingSettings = await this.getCompanySettings();
+    
+    // Deep merge nested objects (bankDetails, integrations, etc.)
     const updatedSettings: CompanySettings = {
       ...existingSettings,
       ...settings,
+      // Merge bankDetails if both exist
+      bankDetails: settings.bankDetails 
+        ? { ...(existingSettings?.bankDetails || {}), ...settings.bankDetails }
+        : existingSettings?.bankDetails,
+      // Merge integrations if both exist (deep merge for nested objects like indiaMart)
+      integrations: settings.integrations
+        ? {
+            ...(existingSettings?.integrations || {}),
+            ...settings.integrations,
+            // Deep merge indiaMart if both exist
+            indiaMart: settings.integrations.indiaMart
+              ? { ...(existingSettings?.integrations?.indiaMart || {}), ...settings.integrations.indiaMart }
+              : existingSettings?.integrations?.indiaMart
+          }
+        : existingSettings?.integrations,
       updatedAt: new Date()
     };
     

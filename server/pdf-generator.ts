@@ -663,8 +663,7 @@ class PDFGenerator {
         email: companySettings?.email || "",
         gstin: companySettings?.gstNumber || "",
         logo: companySettings?.logo || "",
-        state: companySettings?.state || "",
-        bankDetails: companySettings?.bankDetails || {}
+        state: companySettings?.state || ""
       },
       poNumber: order.poNumber || `PO-${order.id}`,
       poDate: this.formatDate(order.orderDate),
@@ -684,7 +683,8 @@ class PDFGenerator {
         email: order.supplierEmail || supplier?.email || ""
       },
       items: items.map(item => ({
-        description: item.description || item.name || "",
+        name: item.name || item.description || "",
+        description: item.description || "",
         quantity: item.quantity || 1,
         unit: item.unit || "pcs",
         rate: parseFloat(item.unitPrice || item.rate || "0"),
@@ -698,10 +698,12 @@ class PDFGenerator {
       deliveryTerms: order.deliveryTerms || "As per vendor",
       paymentTerms: order.paymentTerms || "As per contract",
       terms: order.terms || [],
-      notes: order.notes || "",
+      notes: (order.notes && typeof order.notes === 'string') ? order.notes : (order.notes ? String(order.notes) : ""),
       currency: "INR",
       printConfig: undefined // Can be passed from request if needed
     });
+    
+    console.log('Purchase Order PDF - Notes value:', order.notes, 'Type:', typeof order.notes);
 
     // Try Puppeteer first, fallback to html-pdf-node if it fails
     try {
