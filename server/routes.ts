@@ -1972,6 +1972,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Purchase Orders API
+  // Debug endpoints (temporary) to help verify storage
+  app.post("/api/debug/test-purchase-order", async (req, res, next) => {
+    try {
+      const storage = getStorage();
+      const sample = {
+        poNumber: `PO-${new Date().getFullYear()}-TEST-${Date.now()}`,
+        supplierName: "Debug Supplier",
+        orderDate: new Date().toISOString().split('T')[0],
+        items: [{ name: "Debug Item", quantity: 1, unit: "pcs", unitPrice: 1, amount: 1 }],
+        subtotal: 1,
+        taxAmount: 0,
+        totalAmount: 1,
+        status: 'draft',
+        createdAt: new Date()
+      };
+
+      const created = await storage.createPurchaseOrder(sample as any);
+      res.status(201).json({ success: true, created });
+    } catch (err) {
+      console.error('Debug create purchase order failed:', err);
+      res.status(500).json({ success: false, message: (err as any)?.message || 'Error' });
+    }
+  });
+
+  app.get("/api/debug/purchase-orders", async (req, res, next) => {
+    try {
+      const storage = getStorage();
+      const list = await storage.getAllPurchaseOrders();
+      res.json(list);
+    } catch (err) {
+      next(err);
+    }
+  });
+
   app.get("/api/purchase-orders", async (req, res, next) => {
     try {
       const storage = getStorage();
