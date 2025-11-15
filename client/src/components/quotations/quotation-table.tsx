@@ -72,6 +72,11 @@ export default function QuotationTable({
 }: QuotationTableProps) {
   const [, setLocation] = useLocation();
   const [active, setActive] = useState<EnrichedQuotation | null>(null);
+  const resolveId = (entity?: any) => {
+    if (!entity) return undefined;
+    // Prefer numeric `id`, then MongoDB `_id`, then business keys
+    return entity.id ?? entity._id ?? entity.quotationNumber ?? entity.quoteNumber ?? undefined;
+  };
   const formatDate = (dateString: Date) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
@@ -152,7 +157,7 @@ export default function QuotationTable({
         <TableBody>
           {quotations.length > 0 ? (
             quotations.map((quotation) => (
-              <TableRow key={quotation.id} className="hover:bg-gray-50 border-b border-gray-100 cursor-pointer" onClick={() => setActive(quotation)}>
+              <TableRow key={quotation.id ?? quotation.quotationNumber} className="hover:bg-gray-50 border-b border-gray-100 cursor-pointer" onClick={() => setActive(quotation)}>
                 <TableCell>
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -228,10 +233,20 @@ export default function QuotationTable({
           </DialogHeader>
           {active && (
             <div className="grid grid-cols-2 gap-3">
+              {(() => {
+                const idVal = resolveId(active);
+                if (!idVal) {
+                  // Defensive: show a simple message in UI instead of building invalid URLs
+                  return (
+                    <div className="col-span-2 text-red-600">Quotation ID missing — cannot perform actions.</div>
+                  );
+                }
+                return null;
+              })()}
               <Button 
                 variant="outline" 
                 className="text-gray-900 hover:bg-gray-100 border-gray-300"
-                onClick={(e) => { e.stopPropagation(); mode === 'proforma' ? setLocation(`/proforma/edit/${active.id}`) : onEdit(active); setActive(null); }}
+                  onClick={(e) => { e.stopPropagation(); mode === 'proforma' ? setLocation(`/proforma/edit/${resolveId(active)}`) : onEdit(active); setActive(null); }}
               >
                 <Edit className="h-4 w-4 mr-2" />Edit
               </Button>
@@ -257,7 +272,7 @@ export default function QuotationTable({
                 <Button 
                   variant="outline" 
                   className="text-gray-900 hover:bg-gray-100 border-gray-300"
-                  onClick={(e) => { e.stopPropagation(); onGeneratePDF(active.id); setActive(null); }}
+                  onClick={(e) => { e.stopPropagation(); const id = resolveId(active); if (!id) { alert('Quotation id missing'); setActive(null); return; } onGeneratePDF(id as any); setActive(null); }}
                 >
                   <Download className="h-4 w-4 mr-2" />Download PDF
                 </Button>
@@ -265,7 +280,7 @@ export default function QuotationTable({
                 <Button 
                   variant="outline" 
                   className="text-gray-900 hover:bg-gray-100 border-gray-300"
-                  onClick={(e) => { e.stopPropagation(); window.open(`/api/proformas/${active.id}/download-pdf`, '_blank'); setActive(null); }}
+                  onClick={(e) => { e.stopPropagation(); const id = resolveId(active); if (!id) { alert('Proforma id missing'); setActive(null); return; } window.open(`/api/proformas/${id}/download-pdf`, '_blank'); setActive(null); }}
                 >
                   <Download className="h-4 w-4 mr-2" />Download Proforma
                 </Button>
@@ -274,7 +289,7 @@ export default function QuotationTable({
                 <Button 
                   variant="outline" 
                   className="text-gray-900 hover:bg-gray-100 border-gray-300"
-                  onClick={(e) => { e.stopPropagation(); onPrint(active.id); setActive(null); }}
+                  onClick={(e) => { e.stopPropagation(); const id = resolveId(active); if (!id) { alert('Quotation id missing'); setActive(null); return; } onPrint(id as any); setActive(null); }}
                 >
                   <Printer className="h-4 w-4 mr-2" />Print
                 </Button>
@@ -282,7 +297,7 @@ export default function QuotationTable({
                 <Button 
                   variant="outline" 
                   className="text-gray-900 hover:bg-gray-100 border-gray-300"
-                  onClick={(e) => { e.stopPropagation(); window.open(`/api/proformas/${active.id}/download-pdf`, '_blank'); setActive(null); }}
+                  onClick={(e) => { e.stopPropagation(); const id = resolveId(active); if (!id) { alert('Proforma id missing'); setActive(null); return; } window.open(`/api/proformas/${id}/download-pdf`, '_blank'); setActive(null); }}
                 >
                   <Printer className="h-4 w-4 mr-2" />Print Proforma
                 </Button>
@@ -291,7 +306,7 @@ export default function QuotationTable({
                 <Button 
                   variant="outline" 
                   className="text-gray-900 hover:bg-gray-100 border-gray-300"
-                  onClick={(e) => { e.stopPropagation(); onGenerateProformaInvoice(active.id); setActive(null); }}
+                  onClick={(e) => { e.stopPropagation(); const id = resolveId(active); if (!id) { alert('Quotation id missing'); setActive(null); return; } onGenerateProformaInvoice(id as any); setActive(null); }}
                 >
                   <FileCheck className="h-4 w-4 mr-2" />Proforma Invoice
                 </Button>
@@ -299,14 +314,14 @@ export default function QuotationTable({
               <Button 
                 variant="outline" 
                 className="text-gray-900 hover:bg-gray-100 border-gray-300"
-                onClick={(e) => { e.stopPropagation(); onGenerateDeliveryChallan(active.id); setActive(null); }}
+                onClick={(e) => { e.stopPropagation(); const id = resolveId(active); if (!id) { alert('Quotation id missing'); setActive(null); return; } onGenerateDeliveryChallan(id as any); setActive(null); }}
               >
                 <Truck className="h-4 w-4 mr-2" />Delivery Challan
               </Button>
               <Button 
                 variant="outline" 
                 className="text-gray-900 hover:bg-gray-100 border-gray-300"
-                onClick={(e) => { e.stopPropagation(); onConvertToOrder(active.id); setActive(null); }}
+                onClick={(e) => { e.stopPropagation(); const id = resolveId(active); if (!id) { alert('Quotation id missing'); setActive(null); return; } onConvertToOrder(id as any); setActive(null); }}
               >
                 <ShoppingCart className="h-4 w-4 mr-2" />Convert to Order
               </Button>
@@ -314,12 +329,12 @@ export default function QuotationTable({
                 <Button 
                   variant="outline" 
                   className="text-gray-900 hover:bg-gray-100 border-gray-300"
-                  onClick={(e) => { e.stopPropagation(); onConvertToInvoice(active.id); setActive(null); }}
+                  onClick={(e) => { e.stopPropagation(); const id = resolveId(active); if (!id) { alert('Quotation id missing'); setActive(null); return; } onConvertToInvoice(id as any); setActive(null); }}
                 >
                   <FileText className="h-4 w-4 mr-2" />Convert to Invoice
                 </Button>
               )}
-              <Button variant="destructive" onClick={(e) => { e.stopPropagation(); onDelete(active.id); setActive(null); }}>
+              <Button variant="destructive" onClick={(e) => { e.stopPropagation(); const id = resolveId(active); if (!id) { alert('Quotation id missing'); setActive(null); return; } onDelete(id as any); setActive(null); }}>
                 <Trash className="h-4 w-4 mr-2" />Delete
               </Button>
             </div>
