@@ -71,8 +71,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const all = await storage.getAllQuotations();
       const found = all.find((x: any) => String(x.id) === idParam || String(x.quotationNumber) === idParam || String(x.quoteNumber) === idParam);
-      console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> ${found ? 'found id='+found.id : 'not found'}`);
-      if (found) return found.id;
+      // If found but no numeric `id` field, attempt to resolve from Mongo `_id` or via storage helpers
+      if (found) {
+        const sAny: any = storage as any;
+        // If the found object already has a numeric id, return it
+        if (found.id !== undefined && found.id !== null) {
+          console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> found id=${found.id}`);
+          return found.id;
+        }
+
+        // If storage supports lookup by object id, try to get a canonical record
+        if (found._id && typeof sAny.getQuotationByObjectId === 'function') {
+          try {
+            const qobj = await sAny.getQuotationByObjectId(String(found._id));
+            if (qobj && qobj.id) {
+              console.log(`[resolveQuotationIdParam] resolved from found._id -> id=${qobj.id}`);
+              return qobj.id;
+            }
+          } catch (err) {
+            console.warn('[resolveQuotationIdParam] getQuotationByObjectId error', err);
+          }
+        }
+
+        // If storage exposes a convertToNumberId helper, use it to derive a numeric id
+        if (found._id && typeof sAny.convertToNumberId === 'function') {
+          try {
+            const numId = sAny.convertToNumberId(found._id);
+            if (numId !== undefined && numId !== null && !isNaN(Number(numId))) {
+              console.log(`[resolveQuotationIdParam] converted found._id -> id=${numId}`);
+              return Number(numId);
+            }
+          } catch (err) {
+            console.warn('[resolveQuotationIdParam] convertToNumberId error', err);
+          }
+        }
+
+        // Last resort: try parsing any id-like string on the found object
+        const fallbackId = parseInt(String(found.id || found._id || ''), 10);
+        if (!isNaN(fallbackId)) {
+          console.log(`[resolveQuotationIdParam] parsed fallback id -> ${fallbackId}`);
+          return fallbackId;
+        }
+
+        console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> found but no usable id`);
+        return undefined;
+      }
+      console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> not found`);
     } catch (err) {
       console.warn('[resolveQuotationIdParam] fallback lookup error', err);
     }
