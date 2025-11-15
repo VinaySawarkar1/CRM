@@ -251,9 +251,42 @@ class PDFGenerator {
     try {
       console.log('Starting simple quotation PDF generation...');
 
-      // Get company settings
+      // Get company settings (global) and prefer quotation-specific company if available
       const storage = getStorage();
       const companySettings = await storage.getCompanySettings();
+      let companyInfo = {
+        name: companySettings?.name || "BizSuite",
+        address: companySettings?.address || "",
+        phone: companySettings?.phone || "",
+        email: companySettings?.email || "",
+        gstin: companySettings?.gstNumber || "",
+        logo: companySettings?.logo || "",
+        bankDetails: companySettings?.bankDetails || {
+          bankName: "",
+          accountNo: "",
+          ifsc: "",
+          branch: ""
+        }
+      };
+      // If quotation belongs to a company (multi-tenant), prefer that company's details
+      try {
+        if (quotation.companyId) {
+          const companyRecord = await storage.getCompany(quotation.companyId);
+          if (companyRecord) {
+            companyInfo = {
+              name: companyRecord.name || companyInfo.name,
+              address: companyRecord.address || companyInfo.address,
+              phone: companyRecord.phone || companyInfo.phone,
+              email: companyRecord.email || companyInfo.email,
+              gstin: companyRecord.gstNumber || companyInfo.gstin,
+              logo: companyInfo.logo,
+              bankDetails: companyInfo.bankDetails
+            };
+          }
+        }
+      } catch (err) {
+        // ignore and fall back to global settings
+      }
       
       // Get customer details if customerId exists
       let customerDetails = null;
@@ -263,20 +296,7 @@ class PDFGenerator {
 
       // Generate HTML content using the template
       const html = quotationTemplate({
-        company: {
-          name: companySettings?.name || "BizSuite",
-          address: companySettings?.address || "",
-          phone: companySettings?.phone || "",
-          email: companySettings?.email || "",
-          gstin: companySettings?.gstNumber || "",
-          logo: companySettings?.logo || "",
-          bankDetails: companySettings?.bankDetails || {
-            bankName: "",
-            accountNo: "",
-            ifsc: "",
-            branch: ""
-          }
-        },
+        company: companyInfo,
         quoteNumber: quotation.quotationNumber || quotation.id,
         date: this.formatDate(quotation.quotationDate),
         validUntil: this.formatDate(quotation.validUntil),
@@ -379,6 +399,36 @@ class PDFGenerator {
       // Company settings
       const storage = getStorage();
       const companySettings = await storage.getCompanySettings();
+      let companyInfo = {
+        name: companySettings?.name || "BizSuite",
+        address: companySettings?.address || "",
+        phone: companySettings?.phone || "",
+        email: companySettings?.email || "",
+        gstin: companySettings?.gstNumber || "",
+        logo: companySettings?.logo || "",
+        bankDetails: companySettings?.bankDetails || {
+          bankName: "",
+          accountNo: "",
+          ifsc: "",
+          branch: ""
+        }
+      };
+      try {
+        if (quotation.companyId) {
+          const companyRecord = await storage.getCompany(quotation.companyId);
+          if (companyRecord) {
+            companyInfo = {
+              name: companyRecord.name || companyInfo.name,
+              address: companyRecord.address || companyInfo.address,
+              phone: companyRecord.phone || companyInfo.phone,
+              email: companyRecord.email || companyInfo.email,
+              gstin: companyRecord.gstNumber || companyInfo.gstin,
+              logo: companyInfo.logo,
+              bankDetails: companyInfo.bankDetails
+            };
+          }
+        }
+      } catch (err) {}
       
       // Customer details
       let customerDetails = null;
@@ -387,20 +437,7 @@ class PDFGenerator {
       }
 
       const html = proformaTemplate({
-        company: {
-          name: companySettings?.name || "BizSuite",
-          address: companySettings?.address || "",
-          phone: companySettings?.phone || "",
-          email: companySettings?.email || "",
-          gstin: companySettings?.gstNumber || "",
-          logo: companySettings?.logo || "",
-          bankDetails: companySettings?.bankDetails || {
-            bankName: "",
-            accountNo: "",
-            ifsc: "",
-            branch: ""
-          }
-        },
+        company: companyInfo,
         invoiceNumber: quotation.quotationNumber || quotation.id,
         invoiceDate: this.formatDate(quotation.quotationDate),
         validUntil: this.formatDate(quotation.validUntil),
@@ -482,6 +519,31 @@ class PDFGenerator {
       // Company settings
       const storage = getStorage();
       const companySettings = await storage.getCompanySettings();
+      let companyInfo = {
+        name: companySettings?.name || "BizSuite",
+        address: companySettings?.address || "",
+        phone: companySettings?.phone || "",
+        email: companySettings?.email || "",
+        gstin: companySettings?.gstNumber || "",
+        logo: companySettings?.logo || "",
+        bankDetails: companySettings?.bankDetails || {}
+      };
+      try {
+        if (quotation.customerId) {
+          const companyRecord = await storage.getCompany(quotation.customerId as any);
+          if (companyRecord) {
+            companyInfo = {
+              name: companyRecord.name || companyInfo.name,
+              address: companyRecord.address || companyInfo.address,
+              phone: companyRecord.phone || companyInfo.phone,
+              email: companyRecord.email || companyInfo.email,
+              gstin: companyRecord.gstNumber || companyInfo.gstin,
+              logo: companyInfo.logo,
+              bankDetails: companyInfo.bankDetails
+            };
+          }
+        }
+      } catch (err) {}
       
       // Customer details
       let customerDetails = null;
@@ -490,20 +552,7 @@ class PDFGenerator {
       }
 
       const html = invoiceTemplate({
-        company: {
-          name: companySettings?.name || "BizSuite",
-          address: companySettings?.address || "",
-          phone: companySettings?.phone || "",
-          email: companySettings?.email || "",
-          gstin: companySettings?.gstNumber || "",
-          logo: companySettings?.logo || "",
-          bankDetails: companySettings?.bankDetails || {
-            bankName: "",
-            accountNo: "",
-            ifsc: "",
-            branch: ""
-          }
-        },
+        company: companyInfo,
         invoiceNumber: invoice.invoiceNumber || invoice.id,
         invoiceDate: this.formatDate(invoice.invoiceDate),
         dueDate: this.formatDate(invoice.dueDate),
