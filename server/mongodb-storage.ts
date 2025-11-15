@@ -654,6 +654,17 @@ export class MongoDBStorage implements IStorage {
     return result.deletedCount > 0;
   }
 
+  // Delete by MongoDB ObjectId
+  async deleteQuotationByObjectId(objectId: string): Promise<boolean> {
+    try {
+      const result = await this.collections.quotations.deleteOne({ _id: new ObjectId(objectId) });
+      return result.deletedCount > 0;
+    } catch (err) {
+      console.warn('deleteQuotationByObjectId error', err);
+      return false;
+    }
+  }
+
   // Order operations
   async getOrder(id: number): Promise<Order | undefined> {
     const result = await this.collections.orders.findOne({ id });

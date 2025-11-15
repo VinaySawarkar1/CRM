@@ -1098,14 +1098,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!hasPermission(req, 'quotations:delete', 'quotations')) return res.status(403).json({ message: 'Forbidden' });
       
       const storage = getStorage();
+      const sAny: any = storage as any;
+      let deleted = false;
+
       const resolvedId = await resolveQuotationIdParam(req.params.id);
-      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
-      const deleted = await storage.deleteQuotation(resolvedId);
-      
+      if (resolvedId) {
+        deleted = await storage.deleteQuotation(resolvedId);
+      } else {
+        // Try to find the quotation object and delete by object id if possible
+        const found = await findQuotationObjectByParam(req.params.id);
+        if (!found) {
+          return res.status(400).json({ message: "Invalid quotation ID" });
+        }
+
+        if (found.id !== undefined && found.id !== null) {
+          deleted = await storage.deleteQuotation(found.id);
+        } else if (found._id && typeof sAny.deleteQuotationByObjectId === 'function') {
+          try {
+            deleted = await sAny.deleteQuotationByObjectId(String(found._id));
+          } catch (err) {
+            console.warn('[deleteQuotation] deleteQuotationByObjectId error', err);
+            deleted = false;
+          }
+        } else if (found._id && typeof sAny.convertToNumberId === 'function') {
+          try {
+            const numId = sAny.convertToNumberId(found._id);
+            if (!isNaN(Number(numId))) {
+              deleted = await storage.deleteQuotation(Number(numId));
+            }
+          } catch (err) {
+            console.warn('[deleteQuotation] convertToNumberId error', err);
+            deleted = false;
+          }
+        }
+      }
+
       if (!deleted) {
         return res.status(404).json({ message: "Quotation not found" });
       }
-      
+
       res.json({ message: "Quotation deleted successfully" });
     } catch (error) {
       next(error);
