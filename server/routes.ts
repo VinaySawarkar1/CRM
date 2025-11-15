@@ -39,11 +39,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Helper to resolve a quotation id param to a numeric id or return undefined
   async function resolveQuotationIdParam(idParam: string) {
     const storage = getStorage();
+    console.log(`[resolveQuotationIdParam] incoming idParam=${idParam}`);
+
     // Try numeric first
     const asNumber = parseInt(idParam);
     if (!isNaN(asNumber)) {
-      const q = await storage.getQuotation(asNumber);
-      if (q) return asNumber;
+      try {
+        const q = await storage.getQuotation(asNumber);
+        console.log(`[resolveQuotationIdParam] numeric lookup for ${asNumber} -> ${q ? 'found' : 'not found'}`);
+        if (q) return asNumber;
+      } catch (err) {
+        console.warn('[resolveQuotationIdParam] numeric lookup error', err);
+      }
+    } else {
+      console.log('[resolveQuotationIdParam] incoming idParam is not numeric');
     }
 
     // If storage implements MongoDB helpers, try object id lookup
@@ -51,21 +60,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (typeof sAny.getQuotationByObjectId === 'function') {
       try {
         const q = await sAny.getQuotationByObjectId(idParam);
+        console.log(`[resolveQuotationIdParam] objectId lookup for ${idParam} -> ${q ? 'found' : 'not found'}`);
         if (q && q.id) return q.id;
       } catch (err) {
-        // ignore
+        console.warn('[resolveQuotationIdParam] objectId lookup error', err);
       }
     }
 
     // Fallback: search all quotations by string match on id or quotationNumber
     try {
       const all = await storage.getAllQuotations();
-      const found = all.find((x: any) => String(x.id) === idParam || String(x.quotationNumber) === idParam);
+      const found = all.find((x: any) => String(x.id) === idParam || String(x.quotationNumber) === idParam || String(x.quoteNumber) === idParam);
+      console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> ${found ? 'found id='+found.id : 'not found'}`);
       if (found) return found.id;
     } catch (err) {
-      // ignore
+      console.warn('[resolveQuotationIdParam] fallback lookup error', err);
     }
 
+    console.log(`[resolveQuotationIdParam] could not resolve idParam=${idParam}`);
     return undefined;
   }
   // Customer Management Routes
