@@ -124,6 +124,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log(`[resolveQuotationIdParam] could not resolve idParam=${idParam}`);
     return undefined;
   }
+
+  // Helper to return the quotation object by any supported param (number, objectId, quotationNumber)
+  async function findQuotationObjectByParam(idParam: string) {
+    const storage = getStorage();
+    // Try numeric
+    const asNumber = parseInt(idParam);
+    if (!isNaN(asNumber)) {
+      try {
+        const q = await storage.getQuotation(asNumber);
+        if (q) return q;
+      } catch (err) {
+        console.warn('[findQuotationObjectByParam] numeric lookup error', err);
+      }
+    }
+
+    // Try objectId helper if available
+    const sAny: any = storage as any;
+    if (typeof sAny.getQuotationByObjectId === 'function') {
+      try {
+        const q = await sAny.getQuotationByObjectId(idParam);
+        if (q) return q;
+      } catch (err) {
+        // ignore BSON errors for non-24-char ids
+      }
+    }
+
+    // Fallback: search all quotations for matching quotationNumber or id-like values
+    try {
+      const all = await storage.getAllQuotations();
+      const found = all.find((x: any) => String(x.id) === idParam || String(x.quotationNumber) === idParam || String(x.quoteNumber) === idParam || String(x._id || '') === idParam);
+      if (found) return found as any;
+    } catch (err) {
+      console.warn('[findQuotationObjectByParam] fallback lookup error', err);
+    }
+
+    return undefined;
+  }
   // Customer Management Routes
   app.get("/api/customers", async (req, res, next) => {
     try {
@@ -817,15 +854,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const storage = getStorage();
       const resolvedId = await resolveQuotationIdParam(req.params.id);
-      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
-      const quotation = await storage.getQuotation(resolvedId);
-      
+      let quotation;
+      if (resolvedId) {
+        quotation = await storage.getQuotation(resolvedId);
+      } else {
+        // Try to get the quotation object directly (supports quotationNumber or _id)
+        quotation = await findQuotationObjectByParam(req.params.id);
+      }
+
       if (!quotation) {
         return res.status(404).json({ message: "Quotation not found" });
       }
-      
-      console.log('Generating Quotation PDF for quotation:', resolvedId);
-      const pdfBuffer = await pdfGenerator.generateQuotationPDF(quotation);
+
+      console.log('Generating Quotation PDF for quotation:', quotation.id ?? req.params.id);
+      const pdfBuffer = await pdfGenerator.generateQuotationPDF(quotation as any);
       console.log('Quotation PDF generated, buffer size:', pdfBuffer.length);
       
       res.setHeader('Content-Type', 'application/pdf');
@@ -846,20 +888,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const storage = getStorage();
       const resolvedId = await resolveQuotationIdParam(req.params.id);
-      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
-      const quotation = await storage.getQuotation(resolvedId);
-      
+      let quotation;
+      if (resolvedId) {
+        quotation = await storage.getQuotation(resolvedId);
+      } else {
+        quotation = await findQuotationObjectByParam(req.params.id);
+      }
+
       if (!quotation) {
         return res.status(404).json({ message: "Quotation not found" });
       }
-      
-      console.log('Generating Proforma Invoice for quotation:', resolvedId);
+
+      console.log('Generating Proforma Invoice for quotation:', quotation.id ?? req.params.id);
       // Create or find a proforma record
-      let proforma = (await ProformaStore.getAll()).find(p => p.quotationId === resolvedId);
+      let proforma = (await ProformaStore.getAll()).find(p => p.quotationId === (quotation.id || undefined));
       if (!proforma) {
-        proforma = await ProformaStore.createFromQuotation(quotation);
+        proforma = await ProformaStore.createFromQuotation(quotation as any);
       }
-      const pdfBuffer = await pdfGenerator.generateProformaInvoicePDF(quotation);
+      const pdfBuffer = await pdfGenerator.generateProformaInvoicePDF(quotation as any);
       console.log('Proforma Invoice generated, buffer size:', pdfBuffer.length);
       
       res.setHeader('Content-Type', 'application/pdf');
