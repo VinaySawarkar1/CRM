@@ -36,6 +36,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (list.includes(`${f}:*`)) return true;
     return false;
   };
+  // Helper to resolve a quotation id param to a numeric id or return undefined
+  async function resolveQuotationIdParam(idParam: string) {
+    const storage = getStorage();
+    // Try numeric first
+    const asNumber = parseInt(idParam);
+    if (!isNaN(asNumber)) {
+      const q = await storage.getQuotation(asNumber);
+      if (q) return asNumber;
+    }
+
+    // If storage implements MongoDB helpers, try object id lookup
+    const sAny: any = storage as any;
+    if (typeof sAny.getQuotationByObjectId === 'function') {
+      try {
+        const q = await sAny.getQuotationByObjectId(idParam);
+        if (q && q.id) return q.id;
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    // Fallback: search all quotations by string match on id or quotationNumber
+    try {
+      const all = await storage.getAllQuotations();
+      const found = all.find((x: any) => String(x.id) === idParam || String(x.quotationNumber) === idParam);
+      if (found) return found.id;
+    } catch (err) {
+      // ignore
+    }
+
+    return undefined;
+  }
   // Customer Management Routes
   app.get("/api/customers", async (req, res, next) => {
     try {
@@ -663,14 +695,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/quotations/:id", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid quotation ID" });
-      }
-      
       const storage = getStorage();
-      const quotation = await storage.getQuotation(id);
+      const resolvedId = await resolveQuotationIdParam(req.params.id);
+      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      const quotation = await storage.getQuotation(resolvedId);
       
       if (!quotation) {
         return res.status(404).json({ message: "Quotation not found" });
@@ -709,16 +737,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'quotations:update', 'quotations')) return res.status(403).json({ message: 'Forbidden' });
-      
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid quotation ID" });
-      }
-      
-      const quotationData = insertQuotationSchema.partial().parse(req.body);
-      
       const storage = getStorage();
-      const updatedQuotation = await storage.updateQuotation(id, quotationData);
+      const resolvedId = await resolveQuotationIdParam(req.params.id);
+      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      const quotationData = insertQuotationSchema.partial().parse(req.body);
+      const updatedQuotation = await storage.updateQuotation(resolvedId, quotationData);
       
       if (!updatedQuotation) {
         return res.status(404).json({ message: "Quotation not found" });
@@ -736,20 +759,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/quotations/:id/download-pdf", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid quotation ID" });
-      }
-      
       const storage = getStorage();
-      const quotation = await storage.getQuotation(id);
+      const resolvedId = await resolveQuotationIdParam(req.params.id);
+      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      const quotation = await storage.getQuotation(resolvedId);
       
       if (!quotation) {
         return res.status(404).json({ message: "Quotation not found" });
       }
       
-      console.log('Generating Quotation PDF for quotation:', id);
+      console.log('Generating Quotation PDF for quotation:', resolvedId);
       const pdfBuffer = await pdfGenerator.generateQuotationPDF(quotation);
       console.log('Quotation PDF generated, buffer size:', pdfBuffer.length);
       
@@ -769,22 +788,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/quotations/:id/proforma-invoice", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid quotation ID" });
-      }
-      
       const storage = getStorage();
-      const quotation = await storage.getQuotation(id);
+      const resolvedId = await resolveQuotationIdParam(req.params.id);
+      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      const quotation = await storage.getQuotation(resolvedId);
       
       if (!quotation) {
         return res.status(404).json({ message: "Quotation not found" });
       }
       
-      console.log('Generating Proforma Invoice for quotation:', id);
+      console.log('Generating Proforma Invoice for quotation:', resolvedId);
       // Create or find a proforma record
-      let proforma = (await ProformaStore.getAll()).find(p => p.quotationId === id);
+      let proforma = (await ProformaStore.getAll()).find(p => p.quotationId === resolvedId);
       if (!proforma) {
         proforma = await ProformaStore.createFromQuotation(quotation);
       }
@@ -825,10 +840,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/proformas", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      const quotationId = req.body?.quotationId ? parseInt(req.body.quotationId) : undefined;
-      if (!quotationId) return res.status(400).json({ message: "quotationId is required" });
+      const quotationIdParam = req.body?.quotationId;
+      if (!quotationIdParam) return res.status(400).json({ message: "quotationId is required" });
       const storage = getStorage();
-      const quotation = await storage.getQuotation(quotationId);
+      const resolvedId = await resolveQuotationIdParam(String(quotationIdParam));
+      if (!resolvedId) return res.status(404).json({ message: "Quotation not found" });
+      const quotation = await storage.getQuotation(resolvedId);
       if (!quotation) return res.status(404).json({ message: "Quotation not found" });
       const created = await ProformaStore.createFromQuotation(quotation);
       res.status(201).json(created);
@@ -877,10 +894,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/quotations/:id/delivery-challan", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) return res.status(400).json({ message: "Invalid quotation ID" });
       const storage = getStorage();
-      const quotation = await storage.getQuotation(id);
+      const resolvedId = await resolveQuotationIdParam(req.params.id);
+      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      const quotation = await storage.getQuotation(resolvedId);
       if (!quotation) return res.status(404).json({ message: "Quotation not found" });
       const pdfBuffer = await pdfGenerator.generateDeliveryChallanPDF(quotation as any);
       res.setHeader('Content-Type', 'application/pdf');
@@ -897,14 +914,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/quotations/:id/convert-to-invoice", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid quotation ID" });
-      }
-      
       const storage = getStorage();
-      const quotation = await storage.getQuotation(id);
+      const resolvedId = await resolveQuotationIdParam(req.params.id);
+      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      const quotation = await storage.getQuotation(resolvedId);
       
       if (!quotation) {
         return res.status(404).json({ message: "Quotation not found" });
@@ -942,14 +955,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/quotations/:id/convert-to-order", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid quotation ID" });
-      }
-      
       const storage = getStorage();
-      const quotation = await storage.getQuotation(id);
+      const resolvedId = await resolveQuotationIdParam(req.params.id);
+      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      const quotation = await storage.getQuotation(resolvedId);
       
       if (!quotation) {
         return res.status(401).json({ message: "Quotation not found" });
@@ -986,13 +995,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'quotations:delete', 'quotations')) return res.status(403).json({ message: 'Forbidden' });
       
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid quotation ID" });
-      }
-      
       const storage = getStorage();
-      const deleted = await storage.deleteQuotation(id);
+      const resolvedId = await resolveQuotationIdParam(req.params.id);
+      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      const deleted = await storage.deleteQuotation(resolvedId);
       
       if (!deleted) {
         return res.status(404).json({ message: "Quotation not found" });
