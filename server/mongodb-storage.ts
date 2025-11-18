@@ -1,11 +1,13 @@
 import { Collection, ObjectId } from 'mongodb';
 import { connectToMongoDB, getDatabase } from './mongodb';
-import { 
+import {
   users, type User, type InsertUser,
   customers, type Customer, type InsertCustomer,
   suppliers, type Supplier, type InsertSupplier,
   leads, type Lead, type InsertLead,
   leadDiscussions, type LeadDiscussion, type InsertLeadDiscussion,
+  leadCategories, type LeadCategory, type InsertLeadCategory,
+  leadSources, type LeadSource, type InsertLeadSource,
   quotations, type Quotation, type InsertQuotation,
   orders, type Order, type InsertOrder,
   invoices, type Invoice, type InsertInvoice,
@@ -875,11 +877,67 @@ export class MongoDBStorage implements IStorage {
   async getAllSuppliers(): Promise<Supplier[]> { return []; }
   async deleteSupplier(id: number): Promise<boolean> { return false; }
 
-  async getInvoice(id: number): Promise<Invoice | undefined> { return undefined; }
-  async createInvoice(invoice: InsertInvoice): Promise<Invoice> { throw new Error('Not implemented'); }
-  async updateInvoice(id: number, invoice: Partial<InsertInvoice>): Promise<Invoice | undefined> { return undefined; }
-  async getAllInvoices(): Promise<Invoice[]> { return []; }
-  async deleteInvoice(id: number): Promise<boolean> { return false; }
+  async getInvoice(id: number): Promise<Invoice | undefined> {
+    const result = await this.collections.invoices.findOne({ id });
+    return result ? { ...result, id: result.id } as Invoice : undefined;
+  }
+
+  async createInvoice(invoice: InsertInvoice): Promise<Invoice> {
+    // Get the next ID
+    const allInvoices = await this.getAllInvoices();
+    const maxId = allInvoices.length > 0 ? Math.max(...allInvoices.map(i => typeof i.id === 'number' ? i.id : parseInt(String(i.id)) || 0)) : 0;
+    const nextId = maxId + 1;
+
+    const invoiceData = {
+      ...invoice,
+      id: nextId,
+      invoiceNumber: invoice.invoiceNumber || `INV-${new Date().getFullYear()}-${nextId}`,
+      status: invoice.status || "pending",
+      paidAmount: invoice.paidAmount || "0",
+      createdAt: new Date(),
+    };
+
+    const result = await this.collections.invoices.insertOne(invoiceData);
+
+    return {
+      ...invoice,
+      id: nextId,
+      invoiceNumber: invoice.invoiceNumber || `INV-${new Date().getFullYear()}-${nextId}`,
+      status: invoice.status || "pending",
+      paidAmount: invoice.paidAmount || "0",
+      createdAt: new Date(),
+    } as Invoice;
+  }
+
+  async updateInvoice(id: number, invoiceUpdate: Partial<InsertInvoice>): Promise<Invoice | undefined> {
+    const result = await this.collections.invoices.findOneAndUpdate(
+      { id },
+      {
+        $set: {
+          ...invoiceUpdate,
+        }
+      },
+      { returnDocument: 'after' }
+    );
+
+    return result ? { ...result, id: result.id } as Invoice : undefined;
+  }
+
+  async getAllInvoices(): Promise<Invoice[]> {
+    const results = await this.collections.invoices.find().toArray();
+    return results.map(invoice => {
+      const { _id, ...invoiceData } = invoice;
+      return {
+        ...invoiceData,
+        id: invoice.id,
+      } as Invoice;
+    });
+  }
+
+  async deleteInvoice(id: number): Promise<boolean> {
+    const result = await this.collections.invoices.deleteOne({ id });
+    return result.deletedCount > 0;
+  }
 
   async getPayment(id: number): Promise<Payment | undefined> { return undefined; }
   async createPayment(payment: InsertPayment): Promise<Payment> { throw new Error('Not implemented'); }

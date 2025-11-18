@@ -1,7 +1,7 @@
 // MongoDB Configuration
 export const config = {
   // Set to true to use MongoDB, false to use JSON file storage
-  USE_MONGODB: process.env.USE_MONGODB === 'true' || false,
+  USE_MONGODB: process.env.USE_MONGODB === 'true' || true,
   
   // MongoDB connection settings
   MONGODB_URI: process.env.MONGODB_URI || 'mongodb+srv://vinay:<db_password>@cluster0.5hfxub2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
