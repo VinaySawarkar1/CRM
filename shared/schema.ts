@@ -61,6 +61,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 // Customer schema
 export const customers = pgTable("customers", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id),
   name: text("name").notNull(),
   company: text("company").notNull(),
   email: text("email").notNull(),
@@ -113,6 +114,7 @@ export const insertSupplierSchema = createInsertSchema(suppliers).omit({
 // Lead schema (enhanced)
 export const leads = pgTable("leads", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id),
   name: text("name").notNull(),
   company: text("company").notNull(),
   email: text("email").notNull(),
@@ -194,6 +196,7 @@ export const insertLeadSourceSchema = createInsertSchema(leadSources).omit({
 // Quotation schema
 export const quotations = pgTable("quotations", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id),
   quotationNumber: text("quotation_number").notNull().unique(),
   customerId: integer("customer_id").references(() => customers.id),
   leadId: integer("lead_id").references(() => leads.id),
@@ -295,6 +298,7 @@ export const insertProformaSchema = createInsertSchema(proformas).omit({
 // Order schema (enhanced)
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id),
   orderNumber: text("order_number").notNull().unique(),
   customerId: integer("customer_id").references(() => customers.id),
   quotationId: integer("quotation_id").references(() => quotations.id),
@@ -336,6 +340,7 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
 // Invoice schema
 export const invoices = pgTable("invoices", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id),
   invoiceNumber: text("invoice_number").notNull().unique(),
   orderId: integer("order_id").references(() => orders.id),
   customerId: integer("customer_id").references(() => customers.id),
@@ -361,6 +366,7 @@ export const insertInvoiceSchema = createInsertSchema(invoices).omit({
 // Payment schema
 export const payments = pgTable("payments", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id),
   paymentNumber: text("payment_number").notNull().unique(),
   invoiceId: integer("invoice_id").references(() => invoices.id),
   customerId: integer("customer_id").references(() => customers.id),
@@ -382,6 +388,7 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
 // Purchase Order schema
 export const purchaseOrders = pgTable("purchase_orders", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id),
   poNumber: text("po_number").notNull().unique(),
   supplierId: integer("supplier_id").references(() => suppliers.id),
   supplierName: text("supplier_name").notNull(),
@@ -417,6 +424,7 @@ export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrders).omit
 // Inventory schema (enhanced)
 export const inventory = pgTable("inventory", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id),
   name: text("name").notNull(),
   sku: text("sku").notNull().unique(),
   description: text("description"),
@@ -469,6 +477,7 @@ export const insertManufacturingJobSchema = createInsertSchema(manufacturingJobs
 // Task schema (enhanced)
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id),
   title: text("title").notNull(),
   description: text("description"),
   assignedTo: text("assigned_to").notNull(),
@@ -520,6 +529,7 @@ export const salesTargets = pgTable("sales_targets", {
   targetValue: integer("target_value").notNull(),
   actualValue: integer("actual_value").default(0),
   assignedTo: integer("assigned_to").references(() => users.id),
+  companyId: integer("company_id").references(() => companies.id),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

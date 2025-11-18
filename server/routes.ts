@@ -1,14 +1,16 @@
 import { Express } from "express";
 import { Server } from "http";
 import { z } from "zod";
+import { scrypt, randomBytes } from "crypto";
+import { promisify } from "util";
 import { getStorage } from "./storage-init";
-import { 
-  insertCustomerSchema, 
-  insertSupplierSchema, 
-  insertLeadSchema, 
-  insertInventorySchema, 
-  insertTaskSchema, 
-  insertQuotationSchema, 
+import {
+  insertCustomerSchema,
+  insertSupplierSchema,
+  insertLeadSchema,
+  insertInventorySchema,
+  insertTaskSchema,
+  insertQuotationSchema,
   insertOrderSchema,
   insertInvoiceSchema,
   insertPaymentSchema,
@@ -166,10 +168,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'customers:view', 'customers')) return res.status(403).json({ message: 'Forbidden' });
-      
+
       const storage = getStorage();
       const customers = await storage.getAllCustomers();
-      res.json(customers);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? customers : customers.filter(c => c.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -185,19 +189,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pendingCompanies = allCompanies.filter(c => String(c.status || '').toLowerCase() === 'pending');
       const allUsers = await getStorage().getAllUsers();
       const pendingUsers = allUsers.filter(u => u.isActive === false && u.companyId != null);
-      console.log('Pending approvals:', { 
-        companiesCount: pendingCompanies.length, 
-        usersCount: pendingUsers.length, 
+      console.log('Pending approvals:', {
+        companiesCount: pendingCompanies.length,
+        usersCount: pendingUsers.length,
         allCompaniesCount: allCompanies.length,
         allUsersCount: allUsers.length,
         companies: pendingCompanies.map(c => ({ id: c.id, name: c.name, status: c.status })),
         users: pendingUsers.map(u => ({ id: u.id, name: u.name, companyId: u.companyId, isActive: u.isActive }))
       });
+      res.set('Cache-Control', 'no-cache');
       res.json({ companies: pendingCompanies, users: pendingUsers.map(u => ({ ...u, password: undefined })) });
-    } catch (err) { 
+    } catch (err) {
       console.error('Error fetching pending approvals:', err);
-      next(err); 
+      next(err);
     }
+  });
+
+  // Superuser: get all companies
+  app.get("/api/companies", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const me = await getStorage().getUser((req.user as any).id);
+      if (!me || me.role !== 'superuser') return res.status(403).json({ message: "Forbidden" });
+      const companies = await getStorage().getAllCompanies();
+      res.json(companies);
+    } catch (err) { next(err); }
+  });
+
+  // Superuser: update company status
+  app.put("/api/companies/:companyId", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const me = await getStorage().getUser((req.user as any).id);
+      if (!me || me.role !== 'superuser') return res.status(403).json({ message: "Forbidden" });
+      const companyId = parseInt(req.params.companyId);
+      const updates = req.body as { status?: string };
+      const updated = await getStorage().updateCompany(companyId, updates);
+      if (!updated) return res.status(404).json({ message: "Company not found" });
+      res.json(updated);
+    } catch (err) { next(err); }
   });
 
   // Superuser: approve company and activate admin user
@@ -213,8 +243,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Activate the company admin user
       const users = await getStorage().getAllUsers();
       const adminUser = users.find(u => u.companyId === companyId && u.role === 'admin');
+      console.log('Approving company:', companyId, 'adminUser:', adminUser?.id, 'role:', adminUser?.role, 'isActive:', adminUser?.isActive);
       if (adminUser) {
         await getStorage().updateUser(adminUser.id, { isActive: true });
+        console.log('User activated:', adminUser.id);
       }
       res.json({ success: true, message: "Company approved" });
     } catch (err) { next(err); }
@@ -296,8 +328,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Superuser can create any user
       if (me.role === 'superuser') {
         const payload = req.body as any;
-        const { scrypt, randomBytes } = require('crypto');
-        const { promisify } = require('util');
         const scryptAsync = promisify(scrypt);
         const salt = randomBytes(16).toString('hex');
         const buf = (await scryptAsync(payload.password, salt, 64)) as Buffer;
@@ -325,8 +355,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).json({ message: "Maximum 20 users per company reached" });
         }
         const payload = req.body as any;
-        const { scrypt, randomBytes } = require('crypto');
-        const { promisify } = require('util');
         const scryptAsync = promisify(scrypt);
         const salt = randomBytes(16).toString('hex');
         const buf = (await scryptAsync(payload.password, salt, 64)) as Buffer;
@@ -340,7 +368,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           role: 'user', // Company admin can only create regular users
           companyId: me.companyId,
           department: payload.department,
-          isActive: Boolean(payload.isActive),
+          isActive: payload.isActive !== undefined ? Boolean(payload.isActive) : true, // Default to active
           parentUserId: me.id,
           permissions: payload.permissions || null,
         } as any);
@@ -357,7 +385,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'customers:create', 'customers')) return res.status(403).json({ message: 'Forbidden' });
 
-      const customerData = insertCustomerSchema.parse(req.body);
+      const user = req.user as any;
+      const customerData = insertCustomerSchema.parse({ ...req.body, companyId: user.companyId });
       const storage = getStorage();
       const customer = await storage.createCustomer(customerData);
       res.status(201).json(customer);
@@ -436,10 +465,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'leads:view', 'leads')) return res.status(403).json({ message: 'Forbidden' });
-      
+
       const storage = getStorage();
       const leads = await storage.getAllLeads();
-      res.json(leads);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? leads : leads.filter(l => l.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -450,7 +481,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'leads:create', 'leads')) return res.status(403).json({ message: 'Forbidden' });
 
-      const leadData = insertLeadSchema.parse(req.body);
+      const user = req.user as any;
+      const leadData = insertLeadSchema.parse({ ...req.body, companyId: user.companyId });
       const storage = getStorage();
       const lead = await storage.createLead(leadData);
       // Auto task for follow-up in 2 days
@@ -471,7 +503,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch {}
       res.status(201).json(lead);
     } catch (error) {
+      console.error('Lead creation error:', error);
       if (error instanceof z.ZodError) {
+        console.error('Zod validation errors:', error.errors);
         return res.status(400).json({ message: "Validation error", errors: error.errors });
       }
       next(error);
@@ -717,10 +751,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/inventory", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const storage = getStorage();
       const inventory = await storage.getAllInventoryItems();
-      res.json(inventory);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? inventory : inventory.filter(i => i.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -730,7 +766,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
 
-      const inventoryData = insertInventorySchema.parse(req.body);
+      const user = req.user as any;
+      const inventoryData = insertInventorySchema.parse({ ...req.body, companyId: user.companyId });
       const storage = getStorage();
       const item = await storage.createInventoryItem(inventoryData);
       res.status(201).json(item);
@@ -746,10 +783,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/tasks", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const storage = getStorage();
       const tasks = await storage.getAllTasks();
-      res.json(tasks);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? tasks : tasks.filter(t => t.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -759,7 +798,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
 
-      const taskData = insertTaskSchema.parse(req.body);
+      const user = req.user as any;
+      const taskData = insertTaskSchema.parse({ ...req.body, companyId: user.companyId });
       const storage = getStorage();
       const task = await storage.createTask(taskData);
       res.status(201).json(task);
@@ -776,10 +816,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'quotations:view', 'quotations')) return res.status(403).json({ message: 'Forbidden' });
-      
+
       const storage = getStorage();
       const quotations = await storage.getAllQuotations();
-      res.json(quotations);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? quotations : quotations.filter(q => q.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -808,13 +850,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'quotations:create', 'quotations')) return res.status(403).json({ message: 'Forbidden' });
 
+      const user = req.user as any;
       // Auto generate quotation number if missing
       if (!req.body?.quotationNumber) {
         const d = new Date();
         const pad = (n: number) => String(n).padStart(2, '0');
         req.body.quotationNumber = `RX-VQ${String(d.getFullYear()).slice(-2)}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${Date.now()}`;
       }
-      const quotationData = insertQuotationSchema.parse(req.body);
+      const quotationData = insertQuotationSchema.parse({ ...req.body, companyId: user.companyId });
       const storage = getStorage();
       const quotation = await storage.createQuotation(quotationData);
       res.status(201).json(quotation);
@@ -1171,10 +1214,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'orders:view', 'orders')) return res.status(403).json({ message: 'Forbidden' });
-      
+
       const storage = getStorage();
       const orders = await storage.getAllOrders();
-      res.json(orders);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? orders : orders.filter(o => o.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -1185,7 +1230,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'orders:create', 'orders')) return res.status(403).json({ message: 'Forbidden' });
 
-      const orderData = insertOrderSchema.parse(req.body);
+      const user = req.user as any;
+      const orderData = insertOrderSchema.parse({ ...req.body, companyId: user.companyId });
       const storage = getStorage();
       const order = await storage.createOrder(orderData);
       res.status(201).json(order);
@@ -1710,10 +1756,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated?.()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'invoices:view', 'invoices')) return res.status(403).json({ message: 'Forbidden' });
-      
+
       const storage = getStorage();
       const invoices = await storage.getAllInvoices();
-      res.json(invoices);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? invoices : invoices.filter(i => i.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -1746,7 +1794,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'invoices:create', 'invoices')) return res.status(403).json({ message: 'Forbidden' });
 
-      const invoiceData = insertInvoiceSchema.parse(req.body);
+      const user = req.user as any;
+      const invoiceData = insertInvoiceSchema.parse({ ...req.body, companyId: user.companyId });
       const storage = getStorage();
       const invoice = await storage.createInvoice(invoiceData);
       res.status(201).json(invoice);
@@ -1844,11 +1893,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated?.()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'payments:view', 'payments')) return res.status(403).json({ message: 'Forbidden' });
-      
+
       const storage = getStorage();
       const payments = await storage.getAllPayments();
+      const user = req.user as any;
+      const filteredPayments = user.role === 'superuser' ? payments : payments.filter(p => p.companyId === user.companyId);
       // Transform payments to include customerName
-      const paymentsWithCustomer = await Promise.all(payments.map(async (payment: any) => {
+      const paymentsWithCustomer = await Promise.all(filteredPayments.map(async (payment: any) => {
         if (payment.customerId) {
           const customer = await storage.getCustomer(payment.customerId);
           return {
@@ -1896,7 +1947,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'payments:create', 'payments')) return res.status(403).json({ message: 'Forbidden' });
 
-      const paymentData = insertPaymentSchema.parse(req.body);
+      const user = req.user as any;
+      const paymentData = insertPaymentSchema.parse({ ...req.body, companyId: user.companyId });
       const storage = getStorage();
       const payment = await storage.createPayment(paymentData);
       res.status(201).json(payment);
@@ -1961,11 +2013,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated?.()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'sales-targets:view', 'sales-targets')) return res.status(403).json({ message: 'Forbidden' });
-      
+
       const storage = getStorage();
       const targets = await storage.getAllSalesTargets();
+      const user = req.user as any;
+      const filteredTargets = user.role === 'superuser' ? targets : targets.filter(t => t.companyId === user.companyId);
       // Transform targets to match frontend expectations
-      const transformedTargets = await Promise.all(targets.map(async (target: any) => {
+      const transformedTargets = await Promise.all(filteredTargets.map(async (target: any) => {
         let assignedToName = 'Unassigned';
         if (target.assignedTo) {
           const user = await storage.getUser(target.assignedTo);
@@ -2012,6 +2066,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'sales-targets:create', 'sales-targets')) return res.status(403).json({ message: 'Forbidden' });
 
+      const user = req.user as any;
       // Transform frontend data (targetName -> productName, assignedTo string -> id)
       const body = req.body;
       const targetData: any = {
@@ -2021,17 +2076,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         targetValue: typeof body.targetValue === 'string' ? parseInt(body.targetValue) || 0 : (body.targetValue || 0),
         actualValue: typeof body.actualValue === 'string' ? parseInt(body.actualValue) || 0 : (body.actualValue || 0),
         assignedTo: body.assignedToId || (typeof body.assignedTo === 'number' ? body.assignedTo : undefined),
+        companyId: user.companyId,
         notes: body.notes || ''
       };
-      
+
       const storage = getStorage();
       const target = await storage.createSalesTarget(targetData);
       // Return transformed response
-      const user = target.assignedTo ? await storage.getUser(target.assignedTo) : null;
+      const assignedUser = target.assignedTo ? await storage.getUser(target.assignedTo) : null;
       res.status(201).json({
         ...target,
         targetName: target.productName,
-        assignedTo: user?.name || 'Unassigned',
+        assignedTo: assignedUser?.name || 'Unassigned',
         targetValue: target.targetValue?.toString() || "0",
         actualValue: target.actualValue?.toString() || "0"
       });
@@ -2149,7 +2205,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const storage = getStorage();
       const purchaseOrders = await storage.getAllPurchaseOrders();
-      res.json(purchaseOrders);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? purchaseOrders : purchaseOrders.filter(po => po.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -2169,8 +2227,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/purchase-orders", async (req, res, next) => {
     try {
+      const user = req.user as any;
       const storage = getStorage();
-      
+
       // Validate required fields
       if (!req.body.poNumber) {
         return res.status(400).json({ message: "PO Number is required" });
@@ -2184,14 +2243,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!Array.isArray(req.body.items) || req.body.items.length === 0) {
         return res.status(400).json({ message: "At least one item is required" });
       }
-      
+
+      // Calculate totals from items
+      let subtotal = 0;
+      const items = req.body.items.map((item: any) => {
+        const quantity = parseFloat(item.quantity || 1);
+        const rate = parseFloat(item.unitPrice || item.rate || 0);
+        const amount = quantity * rate;
+        subtotal += amount;
+        return {
+          ...item,
+          quantity,
+          unitPrice: rate,
+          amount
+        };
+      });
+
+      // Calculate tax (assuming 18% GST if not specified)
+      const taxRate = parseFloat(req.body.taxRate || 18);
+      const taxAmount = (subtotal * taxRate) / 100;
+      const totalAmount = subtotal + taxAmount;
+
       const purchaseOrderData = {
         ...req.body,
+        items,
+        subtotal: subtotal.toFixed(2),
+        taxAmount: taxAmount.toFixed(2),
+        totalAmount: totalAmount.toFixed(2),
+        companyId: user.companyId,
         createdAt: new Date()
       };
-      
-      console.log('Creating purchase order with data:', JSON.stringify(purchaseOrderData, null, 2));
-      
+
+      console.log('Creating purchase order with calculated data:', JSON.stringify(purchaseOrderData, null, 2));
+
       const purchaseOrder = await storage.createPurchaseOrder(purchaseOrderData);
       res.status(201).json(purchaseOrder);
     } catch (error) {

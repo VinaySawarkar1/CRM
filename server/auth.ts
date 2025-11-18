@@ -131,6 +131,7 @@ export function setupAuth(app: Express) {
         status: "pending", // Awaiting superuser approval
         maxUsers: 20
       });
+      console.log('Company created:', company.id, company.name);
 
       console.log('Creating new user with company...');
       const user = await storage.createUser({

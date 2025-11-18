@@ -443,7 +443,9 @@ export class JSONFileStorage implements IStorage {
   private async saveToFile<T>(filePath: string, map: Map<number, T>): Promise<void> {
     try {
       const data = JSON.stringify(Array.from(map.values()), null, 2);
+      console.log(`Saving ${map.size} items to ${filePath}`);
       await fs.writeFile(filePath, data, 'utf-8');
+      console.log(`Saved to ${filePath} successfully`);
     } catch (error) {
       console.error(`Error saving ${path.basename(filePath)}:`, error);
     }
@@ -764,6 +766,7 @@ export class JSONFileStorage implements IStorage {
   }
 
   async createCompany(insertCompany: InsertCompany): Promise<Company> {
+    console.log('Creating company:', insertCompany.name);
     const id = this.companyIdCounter++;
     const company: Company = {
       ...insertCompany,
@@ -774,6 +777,7 @@ export class JSONFileStorage implements IStorage {
       updatedAt: new Date()
     };
     this.companies.set(id, company);
+    console.log('Company created with id:', id, 'total companies:', this.companies.size);
     await this.saveCompanies();
     return company;
   }

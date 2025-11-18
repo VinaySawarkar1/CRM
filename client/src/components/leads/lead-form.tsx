@@ -457,13 +457,13 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
                 <CardContent className="space-y-4 pt-6">
                   <div className="space-y-2">
                     <Label htmlFor="probability" className="text-sm font-semibold">Probability (%)</Label>
-                    <Input 
-                      id="probability" 
-                      type="number" 
-                      min={0} 
-                      max={100} 
+                    <Input
+                      id="probability"
+                      type="number"
+                      min={0}
+                      max={100}
                       value={(formData as any).probability}
-                      onChange={(e) => handleChange("probability", String(Math.max(0, Math.min(100, Number(e.target.value) || 0))))} 
+                      onChange={(e) => setFormData(prev => ({ ...prev, probability: Math.max(0, Math.min(100, Number(e.target.value) || 0)) }))}
                       className="h-10 transition-all duration-200"
                     />
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
