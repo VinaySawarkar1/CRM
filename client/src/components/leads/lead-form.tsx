@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { X, User, Building, Mail, Phone, MapPin, Target, FileText, Package, CheckCircle2, Save, Loader2, Plus, Trash2, Globe } from "lucide-react";
+import { X, User, Building, Mail, Phone, MapPin, Target, FileText, CheckCircle2, Save, Loader2, Globe } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 interface LeadFormProps {
@@ -69,7 +69,6 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
     notes: "",
     probability: 0,
     opportunityStage: "prospecting",
-    assignedProducts: [],
   });
 
   // Update formData when defaultValues changes
@@ -94,11 +93,9 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
         notes: defaultValues.notes || "",
         probability: (defaultValues as any).probability ?? 0,
         opportunityStage: (defaultValues as any).opportunityStage || "prospecting",
-        assignedProducts: Array.isArray((defaultValues as any).assignedProducts) ? (defaultValues as any).assignedProducts : [],
       });
     }
   }, [defaultValues]);
-  const { data: inventoryItems } = useQuery<any[]>({ queryKey: ["/api/inventory"] });
 
   // Calculate progress
   const calculateProgress = () => {
@@ -134,34 +131,6 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
     setFormData(prev => prev ? { ...prev, [field]: value } : { [field]: value });
   };
 
-  const addAssignedProduct = () => {
-    setFormData((prev: any) => {
-      const currentProducts = Array.isArray(prev?.assignedProducts) ? prev.assignedProducts : [];
-      return { ...prev, assignedProducts: [...currentProducts, { description: "", quantity: 1, unit: "nos", rate: 0 }] };
-    });
-  };
-
-  const updateAssignedProduct = (idx: number, field: string, value: any) => {
-    setFormData((prev: any) => {
-      const currentProducts = Array.isArray(prev?.assignedProducts) ? prev.assignedProducts : [];
-      const items = [...currentProducts];
-      if (items[idx]) {
-        items[idx] = { ...items[idx], [field]: value };
-      }
-      return { ...prev, assignedProducts: items };
-    });
-  };
-
-  const removeAssignedProduct = (idx: number) => {
-    setFormData((prev: any) => {
-      const currentProducts = Array.isArray(prev?.assignedProducts) ? prev.assignedProducts : [];
-      const items = [...currentProducts];
-      if (idx >= 0 && idx < items.length) {
-        items.splice(idx, 1);
-      }
-      return { ...prev, assignedProducts: items };
-    });
-  };
 
   return (
     <div className="w-full animate-fade-in-up">
@@ -195,7 +164,7 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6 bg-gray-100 p-1 rounded-lg">
+          <TabsList className="grid w-full grid-cols-3 mb-6 bg-gray-100 p-1 rounded-lg">
             <TabsTrigger value="basic" className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold">
               <User className="h-4 w-4 mr-2" />
               Basic
@@ -207,10 +176,6 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
             <TabsTrigger value="opportunity" className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold">
               <Target className="h-4 w-4 mr-2" />
               Opportunity
-            </TabsTrigger>
-            <TabsTrigger value="products" className="rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-semibold">
-              <Package className="h-4 w-4 mr-2" />
-              Products
             </TabsTrigger>
           </TabsList>
 
@@ -556,94 +521,6 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
             </Card>
           </TabsContent>
 
-          {/* Products Tab */}
-          <TabsContent value="products" className="space-y-6 animate-fade-in-up">
-            <Card className="border-0 shadow-lg glass-effect card-hover">
-              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-indigo-700">
-                    <Package className="h-5 w-5" />
-                    Assigned Products
-                  </CardTitle>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={addAssignedProduct}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-0"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Product
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-6">
-                {formData && Array.isArray((formData as any).assignedProducts) && (formData as any).assignedProducts.length > 0 ? (
-                  <div className="space-y-3">
-                    {(formData as any).assignedProducts.map((item: any, idx: number) => (
-                      <Card key={idx} className="border border-gray-200 hover:border-blue-300 transition-all duration-200">
-                        <CardContent className="pt-4">
-                          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
-                            <div className="md:col-span-2">
-                              <Label className="text-xs font-semibold text-gray-700">Description</Label>
-                              <Input 
-                                value={item.description || ""} 
-                                onChange={(e) => updateAssignedProduct(idx, "description", e.target.value)}
-                                placeholder="Product description"
-                                className="mt-1"
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-xs font-semibold text-gray-700">Quantity</Label>
-                              <Input 
-                                type="number" 
-                                value={item.quantity || 1} 
-                                onChange={(e) => updateAssignedProduct(idx, "quantity", Number(e.target.value)||1)}
-                                className="mt-1"
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-xs font-semibold text-gray-700">Rate (₹)</Label>
-                              <Input 
-                                type="number" 
-                                value={item.rate || 0} 
-                                onChange={(e) => updateAssignedProduct(idx, "rate", Number(e.target.value)||0)}
-                                className="mt-1"
-                              />
-                            </div>
-                            <div className="flex justify-end">
-                              <Button 
-                                type="button" 
-                                variant="destructive" 
-                                size="sm"
-                                onClick={() => removeAssignedProduct(idx)}
-                                className="h-9"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
-                    <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-sm text-gray-500 mb-4">No products assigned yet</p>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={addAssignedProduct}
-                      className="border-blue-300 text-blue-700 hover:bg-blue-50"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add First Product
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
 
         {/* Form Actions */}

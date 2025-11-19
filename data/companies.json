@@ -3,10 +3,40 @@
     "name": "Reckonix",
     "email": "vinaysawarkar0@gmail.com",
     "phone": "09175240313",
-    "status": "pending",
+    "status": "active",
     "maxUsers": 20,
     "id": 1,
     "createdAt": "2025-11-04T17:53:27.078Z",
-    "updatedAt": "2025-11-04T17:53:27.078Z"
+    "updatedAt": "2025-11-18T19:14:19.903Z"
+  },
+  {
+    "name": "Recon Calibration & Test Labs LLP",
+    "email": "sales@reconcalibration.com",
+    "phone": "",
+    "status": "active",
+    "maxUsers": 20,
+    "id": 2,
+    "createdAt": "2025-11-18T19:05:56.049Z",
+    "updatedAt": "2025-11-18T19:14:17.432Z"
+  },
+  {
+    "name": "Reckonix",
+    "email": "sales@reckonix.co.in",
+    "phone": "9175240313",
+    "status": "pending",
+    "maxUsers": 20,
+    "id": 3,
+    "createdAt": "2025-11-18T19:49:18.402Z",
+    "updatedAt": "2025-11-18T19:49:18.402Z"
+  },
+  {
+    "name": "Reckonix",
+    "email": "datascientist.vinay@gmail.com",
+    "phone": "",
+    "status": "pending",
+    "maxUsers": 20,
+    "id": 4,
+    "createdAt": "2025-11-19T18:36:37.879Z",
+    "updatedAt": "2025-11-19T18:36:37.879Z"
   }
 ]

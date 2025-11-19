@@ -30,8 +30,7 @@ import {
   Calendar,
   MessageSquare,
   Plus,
-  Loader2,
-  Package
+  Loader2
 } from "lucide-react";
 
 interface LeadDetailsDialogProps {
@@ -47,8 +46,6 @@ export default function LeadDetailsDialog({ lead, open, onOpenChange }: LeadDeta
   const [outcome, setOutcome] = useState("neutral");
   const [nextAction, setNextAction] = useState("");
 
-  const assignedProducts = Array.isArray(lead.assignedProducts) ? lead.assignedProducts : [];
-  const hasAssignedProducts = assignedProducts.length > 0;
 
   // Get discussions for this lead
   const { data: discussions, isLoading: isLoadingDiscussions } = useQuery<LeadDiscussion[]>({
@@ -254,43 +251,6 @@ export default function LeadDetailsDialog({ lead, open, onOpenChange }: LeadDeta
             </CardContent>
           </Card>
 
-          {/* Assigned Products */}
-          {hasAssignedProducts && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  Assigned Products
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {assignedProducts.map((product: any, index: number) => (
-                    <div key={index} className="border rounded-lg p-3 bg-gray-50">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                        <div>
-                          <label className="text-sm font-medium text-gray-700">Description</label>
-                          <p className="text-gray-900">{product.description || 'N/A'}</p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-700">Quantity</label>
-                          <p className="text-gray-900">{product.quantity || 0} {product.unit || 'pcs'}</p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-700">Rate</label>
-                          <p className="text-gray-900">₹{product.rate || 0}</p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-700">Amount</label>
-                          <p className="text-gray-900">₹{((product.quantity || 0) * (product.rate || 0)).toFixed(2)}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Discussions */}
           <Card>

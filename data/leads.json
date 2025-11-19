@@ -5738,5 +5738,66 @@
     "address": "5A,2nd Floor, Kamaraj Nagar, 2nd Street,\nKorattur, Chennai - 600 080.",
     "id": 632,
     "createdAt": "2025-10-18T09:11:47.978Z"
+  },
+  {
+    "name": "Vinay Sawarkar",
+    "company": "Reckonix",
+    "email": "vinaysawarkar19@gmail.com",
+    "phone": "08329925318",
+    "position": "",
+    "status": "new",
+    "category": "industry",
+    "source": "website",
+    "probability": 50,
+    "opportunityStage": "prospecting",
+    "assignedProducts": [
+      {
+        "description": "sapmple",
+        "quantity": 1,
+        "unit": "nos",
+        "rate": 1000
+      }
+    ],
+    "notes": null,
+    "address": "Indrayani Nagar, Bhosari, Pune",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "pincode": "411026",
+    "gstNumber": "",
+    "panNumber": "",
+    "id": 633,
+    "createdAt": "2025-11-18T18:54:55.953Z"
+  },
+  {
+    "companyId": 2,
+    "name": "Vinay Sawarkar",
+    "company": "Reckonix",
+    "email": "vinaysawarkar19@gmail.com",
+    "phone": "08329925318",
+    "position": "",
+    "status": "new",
+    "category": "industry",
+    "source": "website",
+    "probability": 0,
+    "opportunityStage": "prospecting",
+    "assignedProducts": [
+      {
+        "description": "sample",
+        "quantity": 1,
+        "unit": "nos",
+        "rate": 1000
+      }
+    ],
+    "notes": null,
+    "address": "Indrayani Nagar, Bhosari, Pune",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "pincode": "411026",
+    "gstNumber": "",
+    "panNumber": "",
+    "id": 634,
+    "createdAt": "2025-11-18T19:58:36.388Z"
   }
 ]

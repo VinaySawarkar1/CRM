@@ -31,5 +31,48 @@
     "department": "",
     "id": 3,
     "createdAt": "2025-11-04T17:53:27.166Z"
+  },
+  {
+    "username": "Recon",
+    "password": "d35d6e66e50f613edb238ac9af8c40f67a6830f114b00b7c4201c14fd2fb0ce1e5f928210ef048b1e9b21b64628f3fa9311b3a09f97398a040bec09cac480266.50ffa144556dfb64e64db5be8d75b085",
+    "name": "Sachin",
+    "email": "sales@reconcalibration.com",
+    "phone": "",
+    "role": "admin",
+    "companyId": 2,
+    "isActive": true,
+    "department": "",
+    "id": 4,
+    "createdAt": "2025-11-18T19:05:56.129Z"
+  },
+  {
+    "username": "Recon Sales",
+    "password": "5de2c46265c399538b94198c9d5ef99c232637e93e04d20a369fc0f757a67d12f86f297dbdb728e9ba83047e6f702a067910eacdd9a66f3963f1b54ea6c2c15f.06436e90f5f4ae5de7856da9384cc618",
+    "name": "Sachin",
+    "email": "sales@reconcalibration.com",
+    "phone": "9175240313",
+    "role": "user",
+    "companyId": 2,
+    "department": "Sales",
+    "isActive": true,
+    "parentUserId": 4,
+    "permissions": [
+      "leads"
+    ],
+    "id": 5,
+    "createdAt": "2025-11-18T19:45:33.926Z"
+  },
+  {
+    "username": "Reckonix",
+    "password": "7a8840efa19426a2ed86cb0f4ff6ea5d9ad978009b6f562ec52abdc4fcb510112f040b058ede1cd32f5edf18661ab1a8552ab3c8b32befc1081f89b9e6d80c2e.067cd059e5baa487d3f87159a07f0892",
+    "name": "Vinay Ravindra Sawarkar",
+    "email": "datascientist.vinay@gmail.com",
+    "phone": "",
+    "role": "admin",
+    "companyId": 4,
+    "isActive": false,
+    "department": "",
+    "id": 6,
+    "createdAt": "2025-11-19T18:36:38.053Z"
   }
 ]

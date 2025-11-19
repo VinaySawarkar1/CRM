@@ -129,7 +129,6 @@ export const leads = pgTable("leads", {
   // Opportunity fields
   probability: integer("probability"), // 0-100 probability percentage
   opportunityStage: text("opportunity_stage"), // prospecting, qualified, proposal, negotiation, won, lost
-  assignedProducts: json("assigned_products"), // items intended for quotation generation
   nextFollowUp: timestamp("next_follow_up"),
   notes: text("notes"),
   address: text("address"),
