@@ -182,6 +182,13 @@ export interface IStorage {
   // Captured Leads operations
   getAllCapturedLeads(): Promise<any[]>;
 
+  // Company operations (for pending approvals)
+  createCompany(company: any): Promise<any>;
+  getAllCompanies(): Promise<any[]>;
+  getCompany(id: number): Promise<any | undefined>;
+  updateCompany(id: number, updates: any): Promise<any | undefined>;
+  getUsersByCompanyId(companyId: number): Promise<any[]>;
+
   // Company Settings operations
   getCompanySettings(): Promise<any | undefined>;
   updateCompanySettings(settings: any): Promise<any>;
@@ -1039,6 +1046,22 @@ export class MongoDBStorage implements IStorage {
   async deleteContract(id: number): Promise<boolean> { return false; }
 
   // Company operations (for pending approvals)
+  async createCompany(company: any): Promise<any> {
+    const result = await this.collections.companySettings.insertOne({
+      ...company,
+      id: Date.now(), // Generate numeric ID
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    return {
+      ...company,
+      id: Date.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any;
+  }
+
   async getAllCompanies(): Promise<any[]> {
     const results = await this.collections.companySettings.find().toArray();
     return results.map(company => ({
