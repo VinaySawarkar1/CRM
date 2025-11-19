@@ -47,8 +47,8 @@ export default function LeadDetailsDialog({ lead, open, onOpenChange }: LeadDeta
   const [outcome, setOutcome] = useState("neutral");
   const [nextAction, setNextAction] = useState("");
 
-  const assignedProducts = lead.assignedProducts as any[];
-  const hasAssignedProducts = assignedProducts && Array.isArray(assignedProducts) && assignedProducts.length > 0;
+  const assignedProducts = Array.isArray(lead.assignedProducts) ? lead.assignedProducts : [];
+  const hasAssignedProducts = assignedProducts.length > 0;
 
   // Get discussions for this lead
   const { data: discussions, isLoading: isLoadingDiscussions } = useQuery<LeadDiscussion[]>({
