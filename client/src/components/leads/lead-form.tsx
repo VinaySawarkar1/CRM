@@ -51,26 +51,53 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
   const [activeTab, setActiveTab] = useState("basic");
   const [autoSaved, setAutoSaved] = useState(false);
   const [formData, setFormData] = useState<any>({
-    name: defaultValues?.name || "",
-    email: defaultValues?.email || "",
-    phone: defaultValues?.phone || "",
-    company: defaultValues?.company || "",
-    position: defaultValues?.position || "",
-    address: defaultValues?.address || "",
-    city: defaultValues?.city || "",
-    state: defaultValues?.state || "",
-    country: defaultValues?.country || "India",
-    pincode: defaultValues?.pincode || "",
-    gstNumber: defaultValues?.gstNumber || "",
-    panNumber: defaultValues?.panNumber || "",
-    category: defaultValues?.category || "industry",
-    source: defaultValues?.source || "website",
-    status: defaultValues?.status || "new",
-    notes: defaultValues?.notes || "",
-    probability: (defaultValues as any)?.probability ?? 0,
-    opportunityStage: (defaultValues as any)?.opportunityStage || "prospecting",
-    assignedProducts: Array.isArray((defaultValues as any)?.assignedProducts) ? (defaultValues as any)?.assignedProducts : [],
+    name: "",
+    email: "",
+    phone: "",
+    company: "",
+    position: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "India",
+    pincode: "",
+    gstNumber: "",
+    panNumber: "",
+    category: "industry",
+    source: "website",
+    status: "new",
+    notes: "",
+    probability: 0,
+    opportunityStage: "prospecting",
+    assignedProducts: [],
   });
+
+  // Update formData when defaultValues changes
+  useEffect(() => {
+    if (defaultValues) {
+      setFormData({
+        name: defaultValues.name || "",
+        email: defaultValues.email || "",
+        phone: defaultValues.phone || "",
+        company: defaultValues.company || "",
+        position: defaultValues.position || "",
+        address: defaultValues.address || "",
+        city: defaultValues.city || "",
+        state: defaultValues.state || "",
+        country: defaultValues.country || "India",
+        pincode: defaultValues.pincode || "",
+        gstNumber: defaultValues.gstNumber || "",
+        panNumber: defaultValues.panNumber || "",
+        category: defaultValues.category || "industry",
+        source: defaultValues.source || "website",
+        status: defaultValues.status || "new",
+        notes: defaultValues.notes || "",
+        probability: (defaultValues as any).probability ?? 0,
+        opportunityStage: (defaultValues as any).opportunityStage || "prospecting",
+        assignedProducts: Array.isArray((defaultValues as any).assignedProducts) ? (defaultValues as any).assignedProducts : [],
+      });
+    }
+  }, [defaultValues]);
   const { data: inventoryItems } = useQuery<any[]>({ queryKey: ["/api/inventory"] });
 
   // Calculate progress
@@ -96,29 +123,42 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData) {
+      console.error('Form data is null or undefined');
+      return;
+    }
     onSubmit(formData as unknown as Omit<Lead, "id" | "createdAt">);
   };
 
   const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => prev ? { ...prev, [field]: value } : { [field]: value });
   };
 
   const addAssignedProduct = () => {
-    setFormData((prev: any) => ({ ...prev, assignedProducts: [...(prev.assignedProducts as any[]), { description: "", quantity: 1, unit: "nos", rate: 0 }] }));
+    setFormData((prev: any) => {
+      const currentProducts = Array.isArray(prev?.assignedProducts) ? prev.assignedProducts : [];
+      return { ...prev, assignedProducts: [...currentProducts, { description: "", quantity: 1, unit: "nos", rate: 0 }] };
+    });
   };
 
   const updateAssignedProduct = (idx: number, field: string, value: any) => {
     setFormData((prev: any) => {
-      const items = [...(prev.assignedProducts as any[])];
-      items[idx] = { ...items[idx], [field]: value };
+      const currentProducts = Array.isArray(prev?.assignedProducts) ? prev.assignedProducts : [];
+      const items = [...currentProducts];
+      if (items[idx]) {
+        items[idx] = { ...items[idx], [field]: value };
+      }
       return { ...prev, assignedProducts: items };
     });
   };
 
   const removeAssignedProduct = (idx: number) => {
     setFormData((prev: any) => {
-      const items = [...(prev.assignedProducts as any[])];
-      items.splice(idx, 1);
+      const currentProducts = Array.isArray(prev?.assignedProducts) ? prev.assignedProducts : [];
+      const items = [...currentProducts];
+      if (idx >= 0 && idx < items.length) {
+        items.splice(idx, 1);
+      }
       return { ...prev, assignedProducts: items };
     });
   };
