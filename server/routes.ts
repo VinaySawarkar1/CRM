@@ -189,13 +189,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pendingCompanies = allCompanies.filter(c => String(c.status || '').toLowerCase() === 'pending');
       const allUsers = await getStorage().getAllUsers();
       const pendingUsers = allUsers.filter(u => u.isActive === false && u.companyId != null);
-      console.log('Pending approvals:', {
-        companiesCount: pendingCompanies.length,
-        usersCount: pendingUsers.length,
+      console.log('Pending approvals debug:', {
+        userRole: me.role,
         allCompaniesCount: allCompanies.length,
         allUsersCount: allUsers.length,
-        companies: pendingCompanies.map(c => ({ id: c.id, name: c.name, status: c.status })),
-        users: pendingUsers.map(u => ({ id: u.id, name: u.name, companyId: u.companyId, isActive: u.isActive }))
+        allCompanies: allCompanies.map(c => ({ id: c.id, name: c.name, status: c.status })),
+        allUsers: allUsers.map(u => ({ id: u.id, name: u.name, companyId: u.companyId, isActive: u.isActive, role: u.role })),
+        pendingCompaniesCount: pendingCompanies.length,
+        pendingUsersCount: pendingUsers.length,
+        pendingCompanies: pendingCompanies.map(c => ({ id: c.id, name: c.name, status: c.status })),
+        pendingUsers: pendingUsers.map(u => ({ id: u.id, name: u.name, companyId: u.companyId, isActive: u.isActive, role: u.role }))
       });
       res.set('Cache-Control', 'no-cache');
       res.json({ companies: pendingCompanies, users: pendingUsers.map(u => ({ ...u, password: undefined })) });
