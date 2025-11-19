@@ -1038,6 +1038,37 @@ export class MongoDBStorage implements IStorage {
   async getAllContracts(): Promise<Contract[]> { return []; }
   async deleteContract(id: number): Promise<boolean> { return false; }
 
+  // Company operations (for pending approvals)
+  async getAllCompanies(): Promise<any[]> {
+    const results = await this.collections.companySettings.find().toArray();
+    return results.map(company => ({
+      ...company,
+      id: this.convertToNumberId(company._id),
+    })) as any[];
+  }
+
+  async getCompany(id: number): Promise<any | undefined> {
+    const result = await this.collections.companySettings.findOne({ id });
+    return result ? { ...result, id: result.id } as any : undefined;
+  }
+
+  async updateCompany(id: number, updates: any): Promise<any | undefined> {
+    const result = await this.collections.companySettings.findOneAndUpdate(
+      { id },
+      { $set: { ...updates, updatedAt: new Date() } },
+      { returnDocument: 'after' }
+    );
+    return result ? { ...result, id: result.id } as any : undefined;
+  }
+
+  async getUsersByCompanyId(companyId: number): Promise<any[]> {
+    const results = await this.collections.users.find({ companyId }).toArray();
+    return results.map(user => ({
+      ...user,
+      id: user.id,
+    })) as any[];
+  }
+
   async getAllProducts(): Promise<any[]> { return []; }
   async getAllRawMaterials(): Promise<any[]> { return []; }
   async getAllQuotationTemplates(): Promise<any[]> { return []; }

@@ -69,7 +69,7 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
     notes: defaultValues?.notes || "",
     probability: (defaultValues as any)?.probability ?? 0,
     opportunityStage: (defaultValues as any)?.opportunityStage || "prospecting",
-    assignedProducts: Array.isArray((defaultValues as any)?.assignedProducts) ? (defaultValues as any).assignedProducts : [],
+    assignedProducts: Array.isArray((defaultValues as any)?.assignedProducts) ? (defaultValues as any)?.assignedProducts : [],
   });
   const { data: inventoryItems } = useQuery<any[]>({ queryKey: ["/api/inventory"] });
 
