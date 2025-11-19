@@ -179,12 +179,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Superuser: list all pending companies/users for approval
+  // Admin/Superuser: list all pending companies/users for approval
   app.get("/api/pending-approvals", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const me = await getStorage().getUser((req.user as any).id);
-      if (!me || me.role !== 'superuser') return res.status(403).json({ message: "Forbidden" });
+      if (!me || (me.role !== 'superuser' && me.role !== 'admin')) return res.status(403).json({ message: "Forbidden" });
       const allCompanies = await getStorage().getAllCompanies();
       const pendingCompanies = allCompanies.filter(c => String(c.status || '').toLowerCase() === 'pending');
       const allUsers = await getStorage().getAllUsers();
