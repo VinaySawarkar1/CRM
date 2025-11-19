@@ -75,6 +75,7 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
 
   // Calculate progress
   const calculateProgress = () => {
+    if (!formData) return 0;
     const required = ['name', 'email', 'company', 'category', 'source', 'status'];
     const filled = required.filter(f => formData[f] && formData[f].toString().trim() !== '');
     return Math.round((filled.length / required.length) * 100);
@@ -536,7 +537,7 @@ export default function LeadForm({ defaultValues, onSubmit, isSubmitting, mode }
                 </div>
               </CardHeader>
               <CardContent className="pt-6">
-                {Array.isArray((formData as any).assignedProducts) && (formData as any).assignedProducts.length > 0 ? (
+                {formData && Array.isArray((formData as any).assignedProducts) && (formData as any).assignedProducts.length > 0 ? (
                   <div className="space-y-3">
                     {(formData as any).assignedProducts.map((item: any, idx: number) => (
                       <Card key={idx} className="border border-gray-200 hover:border-blue-300 transition-all duration-200">
