@@ -185,8 +185,8 @@ export interface IStorage {
   // Company operations (for pending approvals)
   createCompany(company: any): Promise<any>;
   getAllCompanies(): Promise<any[]>;
-  getCompany(id: number): Promise<any | undefined>;
-  updateCompany(id: number, updates: any): Promise<any | undefined>;
+  getCompany(id: number | string): Promise<any | undefined>;
+  updateCompany(id: number | string, updates: any): Promise<any | undefined>;
   getUsersByCompanyId(companyId: number): Promise<any[]>;
 
   // Company Settings operations
@@ -1070,18 +1070,48 @@ export class MongoDBStorage implements IStorage {
     })) as any[];
   }
 
-  async getCompany(id: number): Promise<any | undefined> {
-    const result = await this.collections.companySettings.findOne({ id });
+  async getCompany(id: number | string): Promise<any | undefined> {
+    // Handle both numeric IDs and MongoDB ObjectIds
+    if (typeof id === 'string' && id.length === 24) {
+      // It's likely a MongoDB ObjectId
+      try {
+        const objectId = new ObjectId(id);
+        const result = await this.collections.companySettings.findOne({ _id: objectId });
+        return result ? { ...result, id: this.convertToNumberId(result._id) } as any : undefined;
+      } catch (err) {
+        // Not a valid ObjectId, fall through to numeric search
+      }
+    }
+
+    // Try numeric ID search
+    const result = await this.collections.companySettings.findOne({ id: typeof id === 'string' ? parseInt(id) : id });
     return result ? { ...result, id: result.id } as any : undefined;
   }
 
-  async updateCompany(id: number, updates: any): Promise<any | undefined> {
+  async updateCompany(id: number | string, updates: any): Promise<any | undefined> {
+    let filter: any = {};
+
+    // Handle both numeric IDs and MongoDB ObjectIds
+    if (typeof id === 'string' && id.length === 24) {
+      // It's likely a MongoDB ObjectId
+      try {
+        const objectId = new ObjectId(id);
+        filter = { _id: objectId };
+      } catch (err) {
+        // Not a valid ObjectId, fall through to numeric search
+        filter = { id: parseInt(id) };
+      }
+    } else {
+      // Numeric ID
+      filter = { id: typeof id === 'string' ? parseInt(id) : id };
+    }
+
     const result = await this.collections.companySettings.findOneAndUpdate(
-      { id },
+      filter,
       { $set: { ...updates, updatedAt: new Date() } },
       { returnDocument: 'after' }
     );
-    return result ? { ...result, id: result.id } as any : undefined;
+    return result ? { ...result, id: result.id || this.convertToNumberId(result._id) } as any : undefined;
   }
 
   async getUsersByCompanyId(companyId: number): Promise<any[]> {
