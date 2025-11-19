@@ -38,5 +38,15 @@
     "id": 4,
     "createdAt": "2025-11-19T18:36:37.879Z",
     "updatedAt": "2025-11-19T18:36:37.879Z"
+  },
+  {
+    "name": "Reckonix",
+    "email": "test@gmail.com",
+    "phone": "",
+    "status": "pending",
+    "maxUsers": 20,
+    "id": 5,
+    "createdAt": "2025-11-19T18:50:12.447Z",
+    "updatedAt": "2025-11-19T18:50:12.447Z"
   }
 ]

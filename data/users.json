@@ -74,5 +74,18 @@
     "department": "",
     "id": 6,
     "createdAt": "2025-11-19T18:36:38.053Z"
+  },
+  {
+    "username": "test",
+    "password": "f9559dd68951e415bf03d2bef296535d85e52b3a51fe8e57748fa384f7e54cfe6a49e9bc1fd813814d0cb7b6343651034f556c5185514fee29f1bffb1c851925.54ef81d5f7fa72cf74b41a7fb6fe211c",
+    "name": "Vinay Ravindra Sawarkar",
+    "email": "test@gmail.com",
+    "phone": "",
+    "role": "admin",
+    "companyId": 5,
+    "isActive": false,
+    "department": "",
+    "id": 7,
+    "createdAt": "2025-11-19T18:50:12.535Z"
   }
 ]

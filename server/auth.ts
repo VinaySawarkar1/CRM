@@ -4,7 +4,7 @@ import { Express } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { storage } from "./storage";
+import { getStorage } from "./storage-init";
 import { User as SelectUser } from "@shared/schema";
 
 declare global {
@@ -37,7 +37,8 @@ async function comparePasswords(supplied: string, stored: string) {
   return result;
 }
 
-export function setupAuth(app: Express) {
+export async function setupAuth(app: Express) {
+  const storage = getStorage();
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || 'business-ai-app-secret',
     resave: false,

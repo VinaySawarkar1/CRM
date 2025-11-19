@@ -42,9 +42,9 @@ app.use((req, res, next) => {
 (async () => {
   // Initialize storage before setting up routes
   await initializeStorage();
-  
+
   // Setup authentication
-  setupAuth(app);
+  await setupAuth(app);
   
   const server = await registerRoutes(app);
 
