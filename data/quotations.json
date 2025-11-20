@@ -76,7 +76,8 @@
     "status": "sent",
     "createdAt": "2025-08-12T06:43:00.624Z",
     "leadId": null,
-    "customerCompany": "Poonam Insturmentation Services"
+    "customerCompany": "Poonam Insturmentation Services",
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-164",
@@ -155,7 +156,8 @@
     "id": 2,
     "status": "sent",
     "createdAt": "2025-08-14T04:26:22.651Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-163",
@@ -219,7 +221,8 @@
     "id": 3,
     "status": "sent",
     "createdAt": "2025-08-16T04:16:57.276Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-1755318925063",
@@ -298,7 +301,8 @@
     "id": 4,
     "status": "accepted",
     "createdAt": "2025-08-16T04:43:00.496Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-165",
@@ -404,7 +408,8 @@
     "id": 5,
     "status": "draft",
     "createdAt": "2025-08-16T07:44:17.768Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-166",
@@ -481,7 +486,8 @@
     "id": 6,
     "status": "draft",
     "createdAt": "2025-08-16T11:15:45.584Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-167",
@@ -614,7 +620,8 @@
     "id": 7,
     "status": "draft",
     "createdAt": "2025-08-16T11:45:01.253Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-1755345577457",
@@ -738,7 +745,8 @@
     "id": 8,
     "status": "draft",
     "createdAt": "2025-08-16T12:40:41.763Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-168",
@@ -877,7 +885,8 @@
     "id": 9,
     "status": "draft",
     "createdAt": "2025-08-18T09:38:55.818Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-1755602683384",
@@ -971,7 +980,8 @@
     "id": 10,
     "status": "draft",
     "createdAt": "2025-08-19T11:34:10.599Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-1755688560389",
@@ -1333,7 +1343,8 @@
     "id": 11,
     "status": "draft",
     "createdAt": "2025-08-20T12:36:50.928Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-171",
@@ -1410,7 +1421,8 @@
     "id": 12,
     "status": "draft",
     "createdAt": "2025-08-21T10:25:34.807Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-74",
@@ -1519,7 +1531,8 @@
     "id": 13,
     "status": "draft",
     "createdAt": "2025-08-21T11:02:48.251Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-172",
@@ -1582,7 +1595,8 @@
     "id": 14,
     "status": "draft",
     "createdAt": "2025-08-21T11:15:07.243Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-173",
@@ -1673,7 +1687,8 @@
     "id": 15,
     "status": "draft",
     "createdAt": "2025-08-21T12:48:57.923Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-175",
@@ -1778,7 +1793,8 @@
     "id": 16,
     "status": "draft",
     "createdAt": "2025-08-25T09:59:34.511Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-176",
@@ -1872,7 +1888,8 @@
     "id": 17,
     "status": "draft",
     "createdAt": "2025-08-25T12:29:47.948Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-178",
@@ -1949,7 +1966,8 @@
     "id": 18,
     "status": "draft",
     "createdAt": "2025-08-26T12:49:11.632Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-179",
@@ -2043,7 +2061,8 @@
     "id": 19,
     "status": "draft",
     "createdAt": "2025-08-29T04:21:45.555Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-180",
@@ -2137,7 +2156,8 @@
     "id": 20,
     "status": "draft",
     "createdAt": "2025-08-29T06:15:51.617Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-181",
@@ -2261,7 +2281,8 @@
     "id": 21,
     "status": "draft",
     "createdAt": "2025-08-29T06:23:54.583Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-182",
@@ -2340,7 +2361,8 @@
     "id": 22,
     "status": "draft",
     "createdAt": "2025-08-29T06:26:08.343Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-183",
@@ -2419,7 +2441,8 @@
     "id": 23,
     "status": "draft",
     "createdAt": "2025-08-29T06:27:20.177Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-184",
@@ -2528,7 +2551,8 @@
     "id": 24,
     "status": "draft",
     "createdAt": "2025-08-29T06:30:33.775Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-185",
@@ -2622,7 +2646,8 @@
     "id": 25,
     "status": "draft",
     "createdAt": "2025-08-29T06:32:50.208Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-186",
@@ -2685,7 +2710,8 @@
     "id": 26,
     "status": "draft",
     "createdAt": "2025-08-29T08:35:50.834Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-187",
@@ -2748,7 +2774,8 @@
     "id": 27,
     "status": "draft",
     "createdAt": "2025-08-29T08:39:41.170Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-188",
@@ -2988,7 +3015,8 @@
     "id": 28,
     "status": "draft",
     "createdAt": "2025-08-29T08:45:52.517Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-189",
@@ -3170,7 +3198,8 @@
     "id": 29,
     "status": "draft",
     "createdAt": "2025-08-29T08:46:08.098Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-190",
@@ -3320,7 +3349,8 @@
     "id": 30,
     "status": "draft",
     "createdAt": "2025-08-29T08:56:49.374Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-191",
@@ -3474,7 +3504,8 @@
     "id": 31,
     "status": "draft",
     "createdAt": "2025-08-29T09:27:36.250Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-192",
@@ -3553,7 +3584,8 @@
     "id": 32,
     "status": "draft",
     "createdAt": "2025-08-29T11:01:43.805Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-08-193",
@@ -3632,7 +3664,8 @@
     "id": 33,
     "status": "draft",
     "createdAt": "2025-08-29T11:59:17.591Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-194",
@@ -3740,7 +3773,8 @@
     "id": 34,
     "status": "draft",
     "createdAt": "2025-09-01T08:57:20.589Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-198",
@@ -3817,7 +3851,8 @@
     "id": 35,
     "status": "draft",
     "createdAt": "2025-09-04T05:37:40.324Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-194",
@@ -3926,7 +3961,8 @@
     "id": 36,
     "status": "draft",
     "createdAt": "2025-09-05T03:46:53.954Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09_195",
@@ -4020,7 +4056,8 @@
     "id": 37,
     "status": "draft",
     "createdAt": "2025-09-05T03:50:46.647Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09_196",
@@ -4114,7 +4151,8 @@
     "id": 38,
     "status": "draft",
     "createdAt": "2025-09-05T04:00:01.483Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-197",
@@ -4193,7 +4231,8 @@
     "id": 39,
     "status": "draft",
     "createdAt": "2025-09-06T07:00:16.285Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-199",
@@ -4257,7 +4296,8 @@
     "id": 40,
     "status": "draft",
     "createdAt": "2025-09-06T07:35:39.908Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-200",
@@ -4335,7 +4375,8 @@
     "id": 41,
     "status": "draft",
     "createdAt": "2025-09-08T09:13:29.454Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-201",
@@ -4398,7 +4439,8 @@
     "id": 42,
     "status": "draft",
     "createdAt": "2025-09-08T10:29:44.423Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-202",
@@ -4462,7 +4504,8 @@
     "id": 43,
     "status": "draft",
     "createdAt": "2025-09-08T11:15:42.519Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-203",
@@ -4570,7 +4613,8 @@
     "id": 44,
     "status": "draft",
     "createdAt": "2025-09-08T11:28:42.553Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-204",
@@ -4634,7 +4678,8 @@
     "id": 45,
     "status": "draft",
     "createdAt": "2025-09-10T04:50:55.288Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-205",
@@ -4772,7 +4817,8 @@
     "id": 46,
     "status": "draft",
     "createdAt": "2025-09-10T12:44:40.889Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-206",
@@ -4866,7 +4912,8 @@
     "id": 47,
     "status": "draft",
     "createdAt": "2025-09-11T12:31:59.075Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-207",
@@ -4960,7 +5007,8 @@
     "id": 48,
     "status": "draft",
     "createdAt": "2025-09-11T12:38:55.539Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09_208",
@@ -5054,7 +5102,8 @@
     "id": 49,
     "status": "draft",
     "createdAt": "2025-09-11T12:42:35.048Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-209",
@@ -5178,7 +5227,8 @@
     "id": 50,
     "status": "draft",
     "createdAt": "2025-09-12T06:18:53.369Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-210",
@@ -5257,7 +5307,8 @@
     "id": 51,
     "status": "draft",
     "createdAt": "2025-09-12T06:21:43.600Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-211",
@@ -5351,7 +5402,8 @@
     "id": 52,
     "status": "draft",
     "createdAt": "2025-09-12T06:38:51.566Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-212",
@@ -5460,7 +5512,8 @@
     "id": 53,
     "status": "draft",
     "createdAt": "2025-09-12T07:10:20.676Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09_213",
@@ -5524,7 +5577,8 @@
     "id": 54,
     "status": "draft",
     "createdAt": "2025-09-12T10:17:08.513Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-214",
@@ -5615,7 +5669,8 @@
     "id": 55,
     "status": "draft",
     "createdAt": "2025-09-12T11:16:44.678Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-215",
@@ -5679,7 +5734,8 @@
     "id": 56,
     "status": "draft",
     "createdAt": "2025-09-12T12:00:09.315Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-216",
@@ -5778,7 +5834,8 @@
     "id": 57,
     "status": "draft",
     "createdAt": "2025-09-13T05:31:55.689Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-079-217",
@@ -5872,7 +5929,8 @@
     "id": 58,
     "status": "draft",
     "createdAt": "2025-09-13T05:35:47.698Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-218",
@@ -5966,7 +6024,8 @@
     "id": 59,
     "status": "draft",
     "createdAt": "2025-09-16T11:04:42.255Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-182",
@@ -6045,7 +6104,8 @@
     "id": 60,
     "status": "draft",
     "createdAt": "2025-09-16T12:40:44.046Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09_219",
@@ -6109,7 +6169,8 @@
     "id": 61,
     "status": "draft",
     "createdAt": "2025-09-17T11:08:04.325Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-220",
@@ -6203,7 +6264,8 @@
     "id": 62,
     "status": "draft",
     "createdAt": "2025-09-18T05:11:22.555Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-221",
@@ -6384,7 +6446,8 @@
     "id": 63,
     "status": "draft",
     "createdAt": "2025-09-19T06:11:57.058Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-222",
@@ -6476,7 +6539,8 @@
     "id": 64,
     "status": "draft",
     "createdAt": "2025-09-19T07:39:29.519Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-223",
@@ -6540,7 +6604,8 @@
     "id": 65,
     "status": "draft",
     "createdAt": "2025-09-19T07:43:06.030Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-00-224",
@@ -6663,7 +6728,8 @@
     "id": 66,
     "status": "draft",
     "createdAt": "2025-09-20T05:20:41.770Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-225",
@@ -6742,7 +6808,8 @@
     "id": 67,
     "status": "draft",
     "createdAt": "2025-09-23T04:24:28.796Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-226",
@@ -6806,7 +6873,8 @@
     "id": 68,
     "status": "draft",
     "createdAt": "2025-09-23T05:06:53.008Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-227",
@@ -6943,7 +7011,8 @@
     "id": 69,
     "status": "draft",
     "createdAt": "2025-09-23T06:01:50.235Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-228",
@@ -7007,7 +7076,8 @@
     "id": 70,
     "status": "draft",
     "createdAt": "2025-09-23T06:22:23.425Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-229",
@@ -7131,7 +7201,8 @@
     "id": 71,
     "status": "draft",
     "createdAt": "2025-09-23T06:33:20.675Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-230",
@@ -7270,7 +7341,8 @@
     "id": 72,
     "status": "draft",
     "createdAt": "2025-09-23T09:01:23.440Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-231",
@@ -7334,7 +7406,8 @@
     "id": 73,
     "status": "draft",
     "createdAt": "2025-09-24T04:54:56.688Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-232",
@@ -7458,7 +7531,8 @@
     "id": 74,
     "status": "draft",
     "createdAt": "2025-09-24T07:39:05.832Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-233",
@@ -7597,7 +7671,8 @@
     "id": 75,
     "status": "draft",
     "createdAt": "2025-09-25T11:34:27.324Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-234",
@@ -7736,7 +7811,8 @@
     "id": 76,
     "status": "draft",
     "createdAt": "2025-09-25T11:36:04.979Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-235",
@@ -7815,7 +7891,8 @@
     "id": 77,
     "status": "draft",
     "createdAt": "2025-09-26T06:51:24.593Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-236",
@@ -7981,7 +8058,8 @@
     "id": 78,
     "status": "draft",
     "createdAt": "2025-09-26T06:57:31.907Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-237",
@@ -8045,7 +8123,8 @@
     "id": 79,
     "status": "draft",
     "createdAt": "2025-09-26T07:16:27.222Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-259",
@@ -8109,7 +8188,8 @@
     "id": 80,
     "status": "draft",
     "createdAt": "2025-09-26T07:25:10.634Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-239",
@@ -8173,7 +8253,8 @@
     "id": 81,
     "status": "draft",
     "createdAt": "2025-09-26T10:38:49.462Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-240",
@@ -8252,7 +8333,8 @@
     "id": 82,
     "status": "draft",
     "createdAt": "2025-09-26T11:11:17.949Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09 241",
@@ -8331,7 +8413,8 @@
     "id": 83,
     "status": "draft",
     "createdAt": "2025-09-26T12:12:13.105Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-242",
@@ -8485,7 +8568,8 @@
     "id": 84,
     "status": "draft",
     "createdAt": "2025-09-28T06:19:51.033Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-243",
@@ -8669,7 +8753,8 @@
     "id": 85,
     "status": "draft",
     "createdAt": "2025-09-28T06:35:54.206Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-244",
@@ -8882,7 +8967,8 @@
     "id": 86,
     "status": "draft",
     "createdAt": "2025-09-28T06:52:17.556Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-245",
@@ -8990,7 +9076,8 @@
     "id": 87,
     "status": "draft",
     "createdAt": "2025-09-28T07:00:05.367Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-246",
@@ -9069,7 +9156,8 @@
     "id": 88,
     "status": "draft",
     "createdAt": "2025-09-29T05:45:20.572Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-258",
@@ -9133,7 +9221,8 @@
     "id": 89,
     "status": "draft",
     "createdAt": "2025-09-29T07:27:44.957Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-248",
@@ -9929,7 +10018,8 @@
     "id": 90,
     "status": "draft",
     "createdAt": "2025-09-29T09:51:36.406Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-249",
@@ -9993,7 +10083,8 @@
     "id": 91,
     "status": "draft",
     "createdAt": "2025-09-30T09:12:00.839Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-250",
@@ -10087,7 +10178,8 @@
     "id": 92,
     "status": "draft",
     "createdAt": "2025-09-30T11:12:19.506Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-251",
@@ -10226,7 +10318,8 @@
     "id": 93,
     "status": "draft",
     "createdAt": "2025-10-04T09:18:04.749Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-252",
@@ -10305,7 +10398,8 @@
     "id": 94,
     "status": "draft",
     "createdAt": "2025-10-04T10:30:41.681Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-09-253",
@@ -10382,7 +10476,8 @@
     "id": 95,
     "status": "draft",
     "createdAt": "2025-10-04T10:49:54.289Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-254",
@@ -10445,7 +10540,8 @@
     "id": 96,
     "status": "draft",
     "createdAt": "2025-10-07T09:24:34.170Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-255",
@@ -10509,7 +10605,8 @@
     "id": 97,
     "status": "draft",
     "createdAt": "2025-10-08T11:07:28.144Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-256",
@@ -10603,7 +10700,8 @@
     "id": 98,
     "status": "draft",
     "createdAt": "2025-10-08T11:27:27.454Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-257",
@@ -10712,7 +10810,8 @@
     "id": 99,
     "status": "draft",
     "createdAt": "2025-10-09T04:23:13.007Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-260",
@@ -10776,7 +10875,8 @@
     "id": 100,
     "status": "draft",
     "createdAt": "2025-10-15T07:17:27.153Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-261",
@@ -10956,7 +11056,8 @@
     "id": 101,
     "status": "draft",
     "createdAt": "2025-10-16T04:13:31.674Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-1760607115943",
@@ -11050,7 +11151,8 @@
     "id": 102,
     "status": "draft",
     "createdAt": "2025-10-16T09:33:00.939Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-1760607702081",
@@ -11129,7 +11231,8 @@
     "id": 103,
     "status": "draft",
     "createdAt": "2025-10-16T09:42:22.406Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-261",
@@ -11221,7 +11324,8 @@
     "id": 104,
     "status": "draft",
     "createdAt": "2025-10-17T11:28:49.855Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-10-262",
@@ -11358,7 +11462,8 @@
     "id": 105,
     "status": "draft",
     "createdAt": "2025-10-18T04:48:41.136Z",
-    "leadId": null
+    "leadId": null,
+    "companyId": 1
   },
   {
     "quotationNumber": "RX-VQ25-25-07-1763200454899",
@@ -11420,6 +11525,7 @@
     "createdBy": 1,
     "id": 106,
     "status": "draft",
-    "createdAt": "2025-11-15T09:54:40.103Z"
+    "createdAt": "2025-11-15T09:54:40.103Z",
+    "companyId": 1
   }
 ]

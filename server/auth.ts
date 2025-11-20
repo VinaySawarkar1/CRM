@@ -57,26 +57,44 @@ export async function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
+        console.log('Authenticating user:', username);
         const user = await storage.getUserByUsername(username);
+        console.log('User found:', user ? { id: user.id, username: user.username, isActive: user.isActive, role: user.role, companyId: user.companyId } : 'null');
+
         if (!user || !(await comparePasswords(password, user.password))) {
+          console.log('Authentication failed: user not found or password mismatch');
           return done(null, false);
         } else {
+          console.log('Password matched, checking user status...');
           // Superuser bypasses company checks
           if (user.role === 'superuser') {
+            console.log('Superuser login successful');
             return done(null, user);
           }
           // Only allow active (approved) users
-          if (user.isActive === false) return done(null, false);
+          if (user.isActive === false) {
+            console.log('Login failed: User is not active');
+            return done(null, false);
+          }
+          console.log('User is active, checking company...');
           // Check if company is active (if user has companyId)
           if (user.companyId) {
+            console.log('Checking company status for companyId:', user.companyId);
             const company = await storage.getCompany(user.companyId);
-            if (!company || company.status !== 'active') {
-              return done(null, false);
+            console.log('Company found:', company ? { id: company.id, name: company.name, status: company.status } : 'null');
+            if (!company) {
+              console.log('Company not found, allowing login for pending approval');
+              // Allow login if company not found (might be pending creation)
+            } else if (company.status !== 'active') {
+              console.log('Company status is', company.status, ', allowing login for pending approval');
+              // Allow login for pending companies so users can access the system
             }
           }
+          console.log('All checks passed, login successful');
           return done(null, user);
         }
       } catch (err) {
+        console.log('Authentication error:', err);
         return done(err);
       }
     }),

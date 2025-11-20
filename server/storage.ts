@@ -74,9 +74,9 @@ const COMPANY_FILE = path.join(DATA_DIR, 'companies.json');
 // Interface for all storage operations
 export interface IStorage {
   // Company operations
-  getCompany(id: number): Promise<Company | undefined>;
+  getCompany(id: number | string): Promise<Company | undefined>;
   createCompany(company: InsertCompany): Promise<Company>;
-  updateCompany(id: number, company: Partial<InsertCompany>): Promise<Company | undefined>;
+  updateCompany(id: number | string, company: Partial<InsertCompany>): Promise<Company | undefined>;
   getAllCompanies(): Promise<Company[]>;
   getUsersByCompanyId(companyId: number): Promise<User[]>;
   
@@ -98,7 +98,7 @@ export interface IStorage {
   getSupplier(id: number): Promise<Supplier | undefined>;
   createSupplier(supplier: InsertSupplier): Promise<Supplier>;
   updateSupplier(id: number, supplier: Partial<InsertSupplier>): Promise<Supplier | undefined>;
-  getAllSuppliers(): Promise<Supplier[]>;
+  getAllSuppliers(companyId?: number): Promise<Supplier[]>;
   deleteSupplier(id: number): Promise<boolean>;
 
   // Lead operations
@@ -115,11 +115,11 @@ export interface IStorage {
   deleteLeadDiscussion(id: number): Promise<boolean>;
 
   // Lead Category operations
-  getAllLeadCategories(): Promise<LeadCategory[]>;
+  getAllLeadCategories(companyId?: number): Promise<LeadCategory[]>;
   createLeadCategory(c: InsertLeadCategory): Promise<LeadCategory>;
   updateLeadCategory(id: number, c: Partial<InsertLeadCategory>): Promise<LeadCategory | undefined>;
   deleteLeadCategory(id: number): Promise<boolean>;
-  getAllLeadSources(): Promise<LeadSource[]>;
+  getAllLeadSources(companyId?: number): Promise<LeadSource[]>;
   createLeadSource(c: InsertLeadSource): Promise<LeadSource>;
   updateLeadSource(id: number, c: Partial<InsertLeadSource>): Promise<LeadSource | undefined>;
   deleteLeadSource(id: number): Promise<boolean>;
@@ -575,14 +575,14 @@ export class JSONFileStorage implements IStorage {
       this.leadCategoryIdCounter = maxId + 1;
     } catch {
       const defaults: LeadCategory[] = [
-        { id: 1, key: 'industry', name: 'Industry', isActive: true, createdAt: new Date() },
-        { id: 2, key: 'calibration_labs', name: 'Calibration Labs', isActive: true, createdAt: new Date() },
-        { id: 3, key: 'vision_measuring_machine', name: 'Vision Measuring Machine', isActive: true, createdAt: new Date() },
-        { id: 4, key: 'data_logger', name: 'Data Logger', isActive: true, createdAt: new Date() },
-        { id: 5, key: 'calibration_software', name: 'Calibration Software', isActive: true, createdAt: new Date() },
-        { id: 6, key: 'meatest', name: 'Meatest', isActive: true, createdAt: new Date() },
-        { id: 7, key: 'finalization', name: 'Finalization', isActive: true, createdAt: new Date() },
-        { id: 8, key: 'waiting_for_po', name: 'Waiting for PO', isActive: true, createdAt: new Date() },
+        { id: 1, companyId: null, key: 'industry', name: 'Industry', isActive: true, createdAt: new Date() },
+        { id: 2, companyId: null, key: 'calibration_labs', name: 'Calibration Labs', isActive: true, createdAt: new Date() },
+        { id: 3, companyId: null, key: 'vision_measuring_machine', name: 'Vision Measuring Machine', isActive: true, createdAt: new Date() },
+        { id: 4, companyId: null, key: 'data_logger', name: 'Data Logger', isActive: true, createdAt: new Date() },
+        { id: 5, companyId: null, key: 'calibration_software', name: 'Calibration Software', isActive: true, createdAt: new Date() },
+        { id: 6, companyId: null, key: 'meatest', name: 'Meatest', isActive: true, createdAt: new Date() },
+        { id: 7, companyId: null, key: 'finalization', name: 'Finalization', isActive: true, createdAt: new Date() },
+        { id: 8, companyId: null, key: 'waiting_for_po', name: 'Waiting for PO', isActive: true, createdAt: new Date() },
       ];
       this.leadCategories.clear();
       defaults.forEach((c) => this.leadCategories.set(c.id, c));
@@ -620,15 +620,15 @@ export class JSONFileStorage implements IStorage {
       this.leadSourceIdCounter = maxId + 1;
     } catch {
       const defaults: LeadSource[] = [
-        { id: 1, key: 'website', name: 'Website', isActive: true, createdAt: new Date() },
-        { id: 2, key: 'referral', name: 'Referral', isActive: true, createdAt: new Date() },
-        { id: 3, key: 'social_media', name: 'Social Media', isActive: true, createdAt: new Date() },
-        { id: 4, key: 'email_campaign', name: 'Email Campaign', isActive: true, createdAt: new Date() },
-        { id: 5, key: 'cold_call', name: 'Cold Call', isActive: true, createdAt: new Date() },
-        { id: 6, key: 'trade_show', name: 'Trade Show', isActive: true, createdAt: new Date() },
-        { id: 7, key: 'partner', name: 'Partner', isActive: true, createdAt: new Date() },
-        { id: 8, key: 'online_ad', name: 'Online Advertisement', isActive: true, createdAt: new Date() },
-        { id: 9, key: 'other', name: 'Other', isActive: true, createdAt: new Date() },
+        { id: 1, companyId: null, key: 'website', name: 'Website', isActive: true, createdAt: new Date() },
+        { id: 2, companyId: null, key: 'referral', name: 'Referral', isActive: true, createdAt: new Date() },
+        { id: 3, companyId: null, key: 'social_media', name: 'Social Media', isActive: true, createdAt: new Date() },
+        { id: 4, companyId: null, key: 'email_campaign', name: 'Email Campaign', isActive: true, createdAt: new Date() },
+        { id: 5, companyId: null, key: 'cold_call', name: 'Cold Call', isActive: true, createdAt: new Date() },
+        { id: 6, companyId: null, key: 'trade_show', name: 'Trade Show', isActive: true, createdAt: new Date() },
+        { id: 7, companyId: null, key: 'partner', name: 'Partner', isActive: true, createdAt: new Date() },
+        { id: 8, companyId: null, key: 'online_ad', name: 'Online Advertisement', isActive: true, createdAt: new Date() },
+        { id: 9, companyId: null, key: 'other', name: 'Other', isActive: true, createdAt: new Date() },
       ];
       this.leadSources.clear();
       defaults.forEach((c) => this.leadSources.set(c.id, c));
@@ -761,8 +761,9 @@ export class JSONFileStorage implements IStorage {
   }
 
   // Company methods
-  async getCompany(id: number): Promise<Company | undefined> {
-    return this.companies.get(id);
+  async getCompany(id: number | string): Promise<Company | undefined> {
+    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+    return this.companies.get(numericId);
   }
 
   async createCompany(insertCompany: InsertCompany): Promise<Company> {
@@ -782,11 +783,12 @@ export class JSONFileStorage implements IStorage {
     return company;
   }
 
-  async updateCompany(id: number, companyUpdate: Partial<InsertCompany>): Promise<Company | undefined> {
-    const company = this.companies.get(id);
+  async updateCompany(id: number | string, companyUpdate: Partial<InsertCompany>): Promise<Company | undefined> {
+    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+    const company = this.companies.get(numericId);
     if (!company) return undefined;
     const updated: Company = { ...company, ...companyUpdate, updatedAt: new Date() } as Company;
-    this.companies.set(id, updated);
+    this.companies.set(numericId, updated);
     await this.saveCompanies();
     return updated;
   }
@@ -848,8 +850,8 @@ export class JSONFileStorage implements IStorage {
 
   async createSupplier(insertSupplier: InsertSupplier): Promise<Supplier> {
     const id = this.supplierIdCounter++;
-    const supplier: Supplier = { 
-      ...insertSupplier, 
+    const supplier: Supplier = {
+      ...insertSupplier,
       id,
       status: insertSupplier.status || "active",
       createdAt: new Date()
@@ -871,8 +873,12 @@ export class JSONFileStorage implements IStorage {
     return updatedSupplier;
   }
 
-  async getAllSuppliers(): Promise<Supplier[]> {
-    return Array.from(this.suppliers.values());
+  async getAllSuppliers(companyId?: number): Promise<Supplier[]> {
+    const all = Array.from(this.suppliers.values());
+    if (companyId) {
+      return all.filter(s => s.companyId === companyId);
+    }
+    return all;
   }
 
   async deleteSupplier(id: number): Promise<boolean> {
@@ -929,14 +935,19 @@ export class JSONFileStorage implements IStorage {
   }
 
   // Lead Category methods
-  async getAllLeadCategories(): Promise<LeadCategory[]> {
-    return Array.from(this.leadCategories.values());
+  async getAllLeadCategories(companyId?: number): Promise<LeadCategory[]> {
+    const all = Array.from(this.leadCategories.values());
+    if (companyId) {
+      return all.filter(c => c.companyId === companyId);
+    }
+    return all;
   }
 
   async createLeadCategory(insert: InsertLeadCategory): Promise<LeadCategory> {
     const id = this.leadCategoryIdCounter++;
     const rec: LeadCategory = {
       id,
+      companyId: insert.companyId ?? null,
       key: insert.key,
       name: insert.name,
       isActive: typeof insert.isActive === 'boolean' ? insert.isActive : true,
@@ -966,14 +977,19 @@ export class JSONFileStorage implements IStorage {
   }
 
   // Lead Source operations
-  async getAllLeadSources(): Promise<LeadSource[]> {
-    return Array.from(this.leadSources.values());
+  async getAllLeadSources(companyId?: number): Promise<LeadSource[]> {
+    const all = Array.from(this.leadSources.values());
+    if (companyId) {
+      return all.filter(s => s.companyId === companyId);
+    }
+    return all;
   }
 
   async createLeadSource(insert: InsertLeadSource): Promise<LeadSource> {
     const id = this.leadSourceIdCounter++;
     const rec: LeadSource = {
       id,
+      companyId: insert.companyId,
       key: insert.key,
       name: insert.name,
       isActive: insert.isActive ?? true,
@@ -1728,9 +1744,9 @@ export class JSONFileStorage implements IStorage {
   }
 
   // Lead Discussion methods
-  async getLeadDiscussions(leadId: number): Promise<LeadDiscussion[]> {
+  async getLeadDiscussions(leadId: number, companyId?: number): Promise<LeadDiscussion[]> {
     const discussions = Array.from(this.leadDiscussions.values()).filter(
-      discussion => discussion.leadId === leadId
+      discussion => discussion.leadId === leadId && (companyId ? discussion.companyId === companyId : true)
     );
     return discussions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
@@ -1739,9 +1755,10 @@ export class JSONFileStorage implements IStorage {
     const discussion: LeadDiscussion = {
       id: this.leadDiscussionIdCounter++,
       ...insertDiscussion,
+      companyId: insertDiscussion.companyId ?? null,
       createdAt: new Date(),
     };
-    
+
     this.leadDiscussions.set(discussion.id, discussion);
     await this.saveLeadDiscussions();
     return discussion;

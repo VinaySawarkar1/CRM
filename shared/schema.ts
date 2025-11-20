@@ -1,10 +1,10 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, decimal, date } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, decimal, date, bigint } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Company/Tenant schema
 export const companies = pgTable("companies", {
-  id: serial("id").primaryKey(),
+  id: bigint("id", { mode: "number" }).primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull(),
   phone: text("phone"),
@@ -28,17 +28,17 @@ export const insertCompanySchema = createInsertSchema(companies).omit({
 
 // User schema
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: bigint("id", { mode: "number" }).primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   phone: text("phone"),
   role: text("role").notNull().default("user"), // superuser, admin, user
-  companyId: integer("company_id").references(() => companies.id),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   department: text("department"),
   isActive: boolean("is_active").notNull().default(false),
-  parentUserId: integer("parent_user_id").references(() => users.id),
+  parentUserId: bigint("parent_user_id", { mode: "number" }).references(() => users.id),
   permissions: json("permissions"),
   lastLogin: timestamp("last_login"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -60,8 +60,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 // Customer schema
 export const customers = pgTable("customers", {
-  id: serial("id").primaryKey(),
-  companyId: integer("company_id").references(() => companies.id),
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   name: text("name").notNull(),
   company: text("company").notNull(),
   email: text("email").notNull(),
@@ -88,6 +88,7 @@ export const insertCustomerSchema = createInsertSchema(customers).omit({
 // Supplier schema
 export const suppliers = pgTable("suppliers", {
   id: serial("id").primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   name: text("name").notNull(),
   company: text("company").notNull(),
   email: text("email").notNull(),
@@ -113,8 +114,8 @@ export const insertSupplierSchema = createInsertSchema(suppliers).omit({
 
 // Lead schema (enhanced)
 export const leads = pgTable("leads", {
-  id: serial("id").primaryKey(),
-  companyId: integer("company_id").references(() => companies.id),
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   name: text("name").notNull(),
   company: text("company").notNull(),
   email: text("email").notNull(),
@@ -144,6 +145,7 @@ export const leads = pgTable("leads", {
 // Lead Discussion schema
 export const leadDiscussions = pgTable("lead_discussions", {
   id: serial("id").primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   leadId: integer("lead_id").notNull().references(() => leads.id, { onDelete: "cascade" }),
   discussion: text("discussion").notNull(),
   discussionType: text("discussion_type").notNull().default("general"), // general, call, email, meeting, follow_up
@@ -167,7 +169,8 @@ export const insertLeadDiscussionSchema = createInsertSchema(leadDiscussions).om
 // Lead Category schema
 export const leadCategories = pgTable("lead_categories", {
   id: serial("id").primaryKey(),
-  key: text("key").notNull().unique(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
+  key: text("key").notNull(),
   name: text("name").notNull(),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -181,7 +184,8 @@ export const insertLeadCategorySchema = createInsertSchema(leadCategories).omit(
 // Lead Source schema
 export const leadSources = pgTable("lead_sources", {
   id: serial("id").primaryKey(),
-  key: text("key").notNull().unique(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
+  key: text("key").notNull(),
   name: text("name").notNull(),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -194,11 +198,11 @@ export const insertLeadSourceSchema = createInsertSchema(leadSources).omit({
 
 // Quotation schema
 export const quotations = pgTable("quotations", {
-  id: serial("id").primaryKey(),
-  companyId: integer("company_id").references(() => companies.id),
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   quotationNumber: text("quotation_number").notNull().unique(),
-  customerId: integer("customer_id").references(() => customers.id),
-  leadId: integer("lead_id").references(() => leads.id),
+  customerId: bigint("customer_id", { mode: "number" }).references(() => customers.id),
+  leadId: bigint("lead_id", { mode: "number" }).references(() => leads.id),
   quotationDate: date("quotation_date").notNull(),
   validUntil: date("valid_until").notNull(),
   reference: text("reference"),
@@ -246,6 +250,7 @@ export const insertQuotationSchema = createInsertSchema(quotations).omit({
 // Proforma Invoice schema (separate from quotations)
 export const proformas = pgTable("proformas", {
   id: serial("id").primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   proformaNumber: text("proforma_number").notNull().unique(),
   quotationId: integer("quotation_id").references(() => quotations.id),
   customerId: integer("customer_id").references(() => customers.id),
@@ -296,11 +301,11 @@ export const insertProformaSchema = createInsertSchema(proformas).omit({
 
 // Order schema (enhanced)
 export const orders = pgTable("orders", {
-  id: serial("id").primaryKey(),
-  companyId: integer("company_id").references(() => companies.id),
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   orderNumber: text("order_number").notNull().unique(),
-  customerId: integer("customer_id").references(() => customers.id),
-  quotationId: integer("quotation_id").references(() => quotations.id),
+  customerId: bigint("customer_id", { mode: "number" }).references(() => customers.id),
+  quotationId: bigint("quotation_id", { mode: "number" }).references(() => quotations.id),
   customerName: text("customer_name").notNull(),
   customerCompany: text("customer_company").notNull(),
   poNumber: text("po_number"),
@@ -338,11 +343,11 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
 
 // Invoice schema
 export const invoices = pgTable("invoices", {
-  id: serial("id").primaryKey(),
-  companyId: integer("company_id").references(() => companies.id),
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   invoiceNumber: text("invoice_number").notNull().unique(),
-  orderId: integer("order_id").references(() => orders.id),
-  customerId: integer("customer_id").references(() => customers.id),
+  orderId: bigint("order_id", { mode: "number" }).references(() => orders.id),
+  customerId: bigint("customer_id", { mode: "number" }).references(() => customers.id),
   invoiceDate: date("invoice_date").notNull(),
   dueDate: date("due_date").notNull(),
   items: json("items").notNull(),
@@ -364,11 +369,11 @@ export const insertInvoiceSchema = createInsertSchema(invoices).omit({
 
 // Payment schema
 export const payments = pgTable("payments", {
-  id: serial("id").primaryKey(),
-  companyId: integer("company_id").references(() => companies.id),
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   paymentNumber: text("payment_number").notNull().unique(),
-  invoiceId: integer("invoice_id").references(() => invoices.id),
-  customerId: integer("customer_id").references(() => customers.id),
+  invoiceId: bigint("invoice_id", { mode: "number" }).references(() => invoices.id),
+  customerId: bigint("customer_id", { mode: "number" }).references(() => customers.id),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   paymentDate: date("payment_date").notNull(),
   paymentMethod: text("payment_method").notNull(),
@@ -422,8 +427,8 @@ export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrders).omit
 
 // Inventory schema (enhanced)
 export const inventory = pgTable("inventory", {
-  id: serial("id").primaryKey(),
-  companyId: integer("company_id").references(() => companies.id),
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   name: text("name").notNull(),
   sku: text("sku").notNull().unique(),
   description: text("description"),
@@ -434,7 +439,7 @@ export const inventory = pgTable("inventory", {
   costPrice: decimal("cost_price", { precision: 10, scale: 2 }).notNull(),
   sellingPrice: decimal("selling_price", { precision: 10, scale: 2 }).notNull(),
   taxRate: decimal("tax_rate", { precision: 5, scale: 2 }).default("18"),
-  supplierId: integer("supplier_id").references(() => suppliers.id),
+  supplierId: bigint("supplier_id", { mode: "number" }).references(() => suppliers.id),
   location: text("location"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -448,6 +453,7 @@ export const insertInventorySchema = createInsertSchema(inventory).omit({
 // Manufacturing Job schema
 export const manufacturingJobs = pgTable("manufacturing_jobs", {
   id: serial("id").primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   jobNumber: text("job_number").notNull().unique(),
   productName: text("product_name").notNull(),
   orderId: integer("order_id").references(() => orders.id),
@@ -475,19 +481,19 @@ export const insertManufacturingJobSchema = createInsertSchema(manufacturingJobs
 
 // Task schema (enhanced)
 export const tasks = pgTable("tasks", {
-  id: serial("id").primaryKey(),
-  companyId: integer("company_id").references(() => companies.id),
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   title: text("title").notNull(),
   description: text("description"),
   assignedTo: text("assigned_to").notNull(),
-  assignedById: integer("assigned_by_id").references(() => users.id),
+  assignedById: bigint("assigned_by_id", { mode: "number" }).references(() => users.id),
   priority: text("priority").notNull().default("medium"),
   status: text("status").notNull().default("pending"),
   dueDate: timestamp("due_date").notNull(),
   completedDate: timestamp("completed_date"),
   category: text("category"),
   relatedTo: text("related_to"), // lead, order, customer, etc.
-  relatedId: integer("related_id"),
+  relatedId: bigint("related_id", { mode: "number" }),
   estimatedHours: decimal("estimated_hours", { precision: 5, scale: 2 }),
   actualHours: decimal("actual_hours", { precision: 5, scale: 2 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -501,6 +507,7 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
 // Employee Activities schema (enhanced)
 export const employeeActivities = pgTable("employee_activities", {
   id: serial("id").primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   employeeId: integer("employee_id").references(() => users.id),
   employeeName: text("employee_name").notNull(),
   date: timestamp("date").defaultNow().notNull(),
@@ -541,6 +548,7 @@ export const insertSalesTargetSchema = createInsertSchema(salesTargets).omit({
 // Manufacturing Forecast schema (enhanced)
 export const manufacturingForecasts = pgTable("manufacturing_forecasts", {
   id: serial("id").primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   productName: text("product_name").notNull(),
   forecastMonth: text("forecast_month").notNull(),
   forecastYear: text("forecast_year").notNull(),
@@ -558,6 +566,7 @@ export const insertManufacturingForecastSchema = createInsertSchema(manufacturin
 // Support Tickets schema
 export const supportTickets = pgTable("support_tickets", {
   id: serial("id").primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   ticketNumber: text("ticket_number").notNull().unique(),
   customerId: integer("customer_id").references(() => customers.id),
   orderId: integer("order_id").references(() => orders.id),
@@ -581,6 +590,7 @@ export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit
 // Contracts/AMC schema
 export const contracts = pgTable("contracts", {
   id: serial("id").primaryKey(),
+  companyId: bigint("company_id", { mode: "number" }).references(() => companies.id),
   contractNumber: text("contract_number").notNull().unique(),
   customerId: integer("customer_id").references(() => customers.id),
   contractType: text("contract_type").notNull(), // AMC, Service, etc.
@@ -681,6 +691,12 @@ export const companySettings = pgTable("company_settings", {
     branch?: string;
     upi?: string;
     swift?: string;
+  }>(),
+  integrations: json("integrations").$type<{
+    indiaMart?: {
+      apiKey?: string;
+      lastSyncedAt?: string;
+    };
   }>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

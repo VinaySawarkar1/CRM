@@ -27,7 +27,7 @@
     "phone": "09175240313",
     "role": "admin",
     "companyId": 1,
-    "isActive": false,
+    "isActive": true,
     "department": "",
     "id": 3,
     "createdAt": "2025-11-04T17:53:27.166Z"

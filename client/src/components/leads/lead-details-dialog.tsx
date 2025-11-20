@@ -49,7 +49,7 @@ export default function LeadDetailsDialog({ lead, open, onOpenChange }: LeadDeta
 
   // Get discussions for this lead
   const { data: discussions, isLoading: isLoadingDiscussions } = useQuery<LeadDiscussion[]>({
-    queryKey: [`/api/leads/${lead?.id}/discussions`],
+    queryKey: lead?.id ? [`/api/leads/${lead.id}/discussions`] : [],
     enabled: !!lead?.id,
   });
 
@@ -176,6 +176,9 @@ export default function LeadDetailsDialog({ lead, open, onOpenChange }: LeadDeta
             View and manage lead information and discussions
           </DialogDescription>
         </DialogHeader>
+        <div id="lead-details-description" className="sr-only">
+          Detailed view of lead information including contact details, status, category, and discussion history.
+        </div>
 
         <div className="space-y-6">
           {/* Lead Information */}

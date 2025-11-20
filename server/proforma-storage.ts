@@ -11,6 +11,7 @@ export type ProformaRecord = {
   proformaNumber?: string; // optional explicit field
   customerId?: number | null;
   leadId?: number | null;
+  companyId?: number | null;
   contactPersonTitle?: string | null;
   contactPerson: string;
   customerCompany?: string;

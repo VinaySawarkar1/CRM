@@ -41,7 +41,8 @@
     "country": "India",
     "pincode": null,
     "gstNumber": null,
-    "panNumber": null
+    "panNumber": null,
+    "companyId": 1
   },
   {
     "orderNumber": "ORD-1759124676170",
@@ -151,7 +152,8 @@
     "listPrice": null,
     "purchasePrice": null,
     "profit": null,
-    "poFile": null
+    "poFile": null,
+    "companyId": 1
   },
   {
     "orderNumber": "ORD-1759124736427",
@@ -207,7 +209,8 @@
     "listPrice": null,
     "purchasePrice": null,
     "profit": null,
-    "poFile": null
+    "poFile": null,
+    "companyId": 1
   },
   {
     "orderNumber": "ORD-1759124984392",
@@ -248,6 +251,7 @@
     "listPrice": null,
     "purchasePrice": null,
     "profit": null,
-    "poFile": null
+    "poFile": null,
+    "companyId": 1
   }
 ]

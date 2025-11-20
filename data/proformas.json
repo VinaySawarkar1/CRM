@@ -62,7 +62,8 @@
     "quotationDate": "2025-08-16",
     "reference": "",
     "salesCredit": "",
-    "sameAsBilling": true
+    "sameAsBilling": true,
+    "companyId": 1
   },
   {
     "id": 2,
@@ -142,7 +143,8 @@
     "quotationDate": "2025-08-16",
     "reference": "",
     "salesCredit": "",
-    "sameAsBilling": true
+    "sameAsBilling": true,
+    "companyId": 1
   },
   {
     "id": 3,
@@ -201,7 +203,8 @@
     "taxableTotal": "739620",
     "totalAmount": "1051380",
     "status": "draft",
-    "createdAt": "2025-08-17T19:37:30.778Z"
+    "createdAt": "2025-08-17T19:37:30.778Z",
+    "companyId": 1
   },
   {
     "id": 4,
@@ -330,7 +333,8 @@
     "taxableTotal": "276586",
     "totalAmount": "398014",
     "status": "draft",
-    "createdAt": "2025-08-21T11:08:22.551Z"
+    "createdAt": "2025-08-21T11:08:22.551Z",
+    "companyId": 1
   },
   {
     "id": 5,
@@ -419,7 +423,8 @@
     "quotationDate": "2025-09-10",
     "reference": "",
     "salesCredit": "",
-    "sameAsBilling": true
+    "sameAsBilling": true,
+    "companyId": 1
   },
   {
     "id": 6,
@@ -479,7 +484,8 @@
     "taxableTotal": "15260",
     "totalAmount": "21240",
     "status": "draft",
-    "createdAt": "2025-09-17T11:12:03.889Z"
+    "createdAt": "2025-09-17T11:12:03.889Z",
+    "companyId": 1
   },
   {
     "id": 7,
@@ -559,7 +565,8 @@
     "quotationDate": "2025-09-29",
     "reference": "",
     "salesCredit": "",
-    "sameAsBilling": true
+    "sameAsBilling": true,
+    "companyId": 1
   },
   {
     "id": 8,
@@ -619,7 +626,8 @@
     "taxableTotal": "77900",
     "totalAmount": "112100",
     "status": "draft",
-    "createdAt": "2025-10-07T04:27:54.368Z"
+    "createdAt": "2025-10-07T04:27:54.368Z",
+    "companyId": 1
   },
   {
     "id": 9,
@@ -804,7 +812,8 @@
     "quotationDate": "2025-10-16",
     "reference": "",
     "salesCredit": "",
-    "sameAsBilling": true
+    "sameAsBilling": true,
+    "companyId": 1
   },
   {
     "id": 10,
@@ -891,7 +900,8 @@
     "taxableTotal": "282900",
     "totalAmount": "407100",
     "status": "draft",
-    "createdAt": "2025-10-17T07:46:36.931Z"
+    "createdAt": "2025-10-17T07:46:36.931Z",
+    "companyId": 1
   },
   {
     "id": 11,
@@ -1101,6 +1111,7 @@
     "taxableTotal": "4861340",
     "totalAmount": "5442160",
     "status": "draft",
-    "createdAt": "2025-10-17T10:51:27.199Z"
+    "createdAt": "2025-10-17T10:51:27.199Z",
+    "companyId": 1
   }
 ]

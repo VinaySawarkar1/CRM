@@ -355,6 +355,21 @@ export class MongoDBStorage implements IStorage {
     })) as User[];
   }
 
+  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    const result = await this.collections.users.findOneAndUpdate(
+      { id },
+      {
+        $set: {
+          ...updates,
+          updatedAt: new Date()
+        }
+      },
+      { returnDocument: 'after' }
+    );
+
+    return result ? { ...result, id: result.id } as User : undefined;
+  }
+
   // Customer operations
   async getCustomer(id: number): Promise<Customer | undefined> {
     const result = await this.collections.customers.findOne({ id });

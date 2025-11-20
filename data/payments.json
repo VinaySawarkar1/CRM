@@ -17,7 +17,8 @@
     "transactionId": "HDFC20250125123456",
     "notes": "Payment received for Steel Fabrication Kit",
     "createdAt": "2024-01-25T10:30:00Z",
-    "updatedAt": "2024-01-25T10:30:00Z"
+    "updatedAt": "2024-01-25T10:30:00Z",
+    "companyId": 1
   },
   {
     "id": "pay-002",
@@ -37,7 +38,8 @@
     "chequeNumber": "123456",
     "notes": "Advance payment for Industrial Pump",
     "createdAt": "2024-01-28T14:15:00Z",
-    "updatedAt": "2024-01-28T14:15:00Z"
+    "updatedAt": "2024-01-28T14:15:00Z",
+    "companyId": 1
   },
   {
     "id": "pay-003",
@@ -56,7 +58,8 @@
     "gatewayFee": 1575,
     "notes": "Online payment for Welding Machines",
     "createdAt": "2024-01-30T16:45:00Z",
-    "updatedAt": "2024-01-30T16:45:00Z"
+    "updatedAt": "2024-01-30T16:45:00Z",
+    "companyId": 1
   },
   {
     "id": "pay-004",
@@ -73,7 +76,8 @@
     "referenceNumber": "CASH20250201123456",
     "notes": "Cash payment for Conveyor Belt System",
     "createdAt": "2024-02-01T11:20:00Z",
-    "updatedAt": "2024-02-01T11:20:00Z"
+    "updatedAt": "2024-02-01T11:20:00Z",
+    "companyId": 1
   },
   {
     "id": "pay-005",
@@ -90,6 +94,7 @@
     "referenceNumber": "",
     "notes": "Payment cancelled - order rejected",
     "createdAt": "2024-01-23T09:45:00Z",
-    "updatedAt": "2024-01-23T09:45:00Z"
+    "updatedAt": "2024-01-23T09:45:00Z",
+    "companyId": 1
   }
-] 
+]

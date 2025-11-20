@@ -16,7 +16,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "Key technology partner",
-    "createdAt": "2025-01-01T10:00:00Z"
+    "createdAt": "2025-01-01T10:00:00Z",
+    "companyId": 1
   },
   {
     "id": 2,
@@ -35,7 +36,8 @@
     "paymentTerms": "45 days",
     "status": "active",
     "notes": "Large manufacturing client",
-    "createdAt": "2025-01-02T11:00:00Z"
+    "createdAt": "2025-01-02T11:00:00Z",
+    "companyId": 1
   },
   {
     "id": 3,
@@ -54,7 +56,8 @@
     "paymentTerms": "60 days",
     "status": "active",
     "notes": "International business partner",
-    "createdAt": "2025-01-03T12:00:00Z"
+    "createdAt": "2025-01-03T12:00:00Z",
+    "companyId": 1
   },
   {
     "id": 4,
@@ -73,7 +76,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "Digital transformation partner",
-    "createdAt": "2025-01-04T13:00:00Z"
+    "createdAt": "2025-01-04T13:00:00Z",
+    "companyId": 1
   },
   {
     "id": 5,
@@ -92,7 +96,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "Startup technology company",
-    "createdAt": "2025-01-05T14:00:00Z"
+    "createdAt": "2025-01-05T14:00:00Z",
+    "companyId": 1
   },
   {
     "name": "Vinay",
@@ -111,7 +116,8 @@
     "status": "active",
     "notes": "",
     "id": 6,
-    "createdAt": "2025-08-11T18:08:18.775Z"
+    "createdAt": "2025-08-11T18:08:18.775Z",
+    "companyId": 1
   },
   {
     "id": 7,
@@ -130,7 +136,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.381Z"
+    "createdAt": "2025-08-11T19:45:38.381Z",
+    "companyId": 1
   },
   {
     "id": 8,
@@ -149,7 +156,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.382Z"
+    "createdAt": "2025-08-11T19:45:38.382Z",
+    "companyId": 1
   },
   {
     "id": 9,
@@ -168,7 +176,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.382Z"
+    "createdAt": "2025-08-11T19:45:38.382Z",
+    "companyId": 1
   },
   {
     "id": 10,
@@ -187,7 +196,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.383Z"
+    "createdAt": "2025-08-11T19:45:38.383Z",
+    "companyId": 1
   },
   {
     "id": 11,
@@ -206,7 +216,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.383Z"
+    "createdAt": "2025-08-11T19:45:38.383Z",
+    "companyId": 1
   },
   {
     "id": 12,
@@ -225,7 +236,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.383Z"
+    "createdAt": "2025-08-11T19:45:38.383Z",
+    "companyId": 1
   },
   {
     "id": 13,
@@ -244,7 +256,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.384Z"
+    "createdAt": "2025-08-11T19:45:38.384Z",
+    "companyId": 1
   },
   {
     "id": 14,
@@ -263,7 +276,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.384Z"
+    "createdAt": "2025-08-11T19:45:38.384Z",
+    "companyId": 1
   },
   {
     "id": 15,
@@ -282,7 +296,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.385Z"
+    "createdAt": "2025-08-11T19:45:38.385Z",
+    "companyId": 1
   },
   {
     "id": 16,
@@ -301,7 +316,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.385Z"
+    "createdAt": "2025-08-11T19:45:38.385Z",
+    "companyId": 1
   },
   {
     "id": 17,
@@ -320,7 +336,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.386Z"
+    "createdAt": "2025-08-11T19:45:38.386Z",
+    "companyId": 1
   },
   {
     "id": 18,
@@ -339,7 +356,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.390Z"
+    "createdAt": "2025-08-11T19:45:38.390Z",
+    "companyId": 1
   },
   {
     "id": 19,
@@ -358,7 +376,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.393Z"
+    "createdAt": "2025-08-11T19:45:38.393Z",
+    "companyId": 1
   },
   {
     "id": 20,
@@ -377,7 +396,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.393Z"
+    "createdAt": "2025-08-11T19:45:38.393Z",
+    "companyId": 1
   },
   {
     "id": 21,
@@ -396,7 +416,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.394Z"
+    "createdAt": "2025-08-11T19:45:38.394Z",
+    "companyId": 1
   },
   {
     "id": 22,
@@ -415,7 +436,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.395Z"
+    "createdAt": "2025-08-11T19:45:38.395Z",
+    "companyId": 1
   },
   {
     "id": 23,
@@ -434,7 +456,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.396Z"
+    "createdAt": "2025-08-11T19:45:38.396Z",
+    "companyId": 1
   },
   {
     "id": 24,
@@ -453,7 +476,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.396Z"
+    "createdAt": "2025-08-11T19:45:38.396Z",
+    "companyId": 1
   },
   {
     "id": 25,
@@ -472,7 +496,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.397Z"
+    "createdAt": "2025-08-11T19:45:38.397Z",
+    "companyId": 1
   },
   {
     "id": 26,
@@ -491,7 +516,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.397Z"
+    "createdAt": "2025-08-11T19:45:38.397Z",
+    "companyId": 1
   },
   {
     "id": 27,
@@ -510,7 +536,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.397Z"
+    "createdAt": "2025-08-11T19:45:38.397Z",
+    "companyId": 1
   },
   {
     "id": 28,
@@ -529,7 +556,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.397Z"
+    "createdAt": "2025-08-11T19:45:38.397Z",
+    "companyId": 1
   },
   {
     "id": 29,
@@ -548,7 +576,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.398Z"
+    "createdAt": "2025-08-11T19:45:38.398Z",
+    "companyId": 1
   },
   {
     "id": 30,
@@ -567,7 +596,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.398Z"
+    "createdAt": "2025-08-11T19:45:38.398Z",
+    "companyId": 1
   },
   {
     "id": 31,
@@ -586,7 +616,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.398Z"
+    "createdAt": "2025-08-11T19:45:38.398Z",
+    "companyId": 1
   },
   {
     "id": 32,
@@ -605,7 +636,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.399Z"
+    "createdAt": "2025-08-11T19:45:38.399Z",
+    "companyId": 1
   },
   {
     "id": 33,
@@ -624,7 +656,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.399Z"
+    "createdAt": "2025-08-11T19:45:38.399Z",
+    "companyId": 1
   },
   {
     "id": 34,
@@ -643,7 +676,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.399Z"
+    "createdAt": "2025-08-11T19:45:38.399Z",
+    "companyId": 1
   },
   {
     "id": 35,
@@ -662,7 +696,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.399Z"
+    "createdAt": "2025-08-11T19:45:38.399Z",
+    "companyId": 1
   },
   {
     "id": 36,
@@ -681,7 +716,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.400Z"
+    "createdAt": "2025-08-11T19:45:38.400Z",
+    "companyId": 1
   },
   {
     "id": 37,
@@ -700,7 +736,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.400Z"
+    "createdAt": "2025-08-11T19:45:38.400Z",
+    "companyId": 1
   },
   {
     "id": 38,
@@ -719,7 +756,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.400Z"
+    "createdAt": "2025-08-11T19:45:38.400Z",
+    "companyId": 1
   },
   {
     "id": 39,
@@ -738,7 +776,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.401Z"
+    "createdAt": "2025-08-11T19:45:38.401Z",
+    "companyId": 1
   },
   {
     "id": 40,
@@ -757,7 +796,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.401Z"
+    "createdAt": "2025-08-11T19:45:38.401Z",
+    "companyId": 1
   },
   {
     "id": 41,
@@ -776,7 +816,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.401Z"
+    "createdAt": "2025-08-11T19:45:38.401Z",
+    "companyId": 1
   },
   {
     "id": 42,
@@ -795,7 +836,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.401Z"
+    "createdAt": "2025-08-11T19:45:38.401Z",
+    "companyId": 1
   },
   {
     "id": 43,
@@ -814,7 +856,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.402Z"
+    "createdAt": "2025-08-11T19:45:38.402Z",
+    "companyId": 1
   },
   {
     "id": 44,
@@ -833,7 +876,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.402Z"
+    "createdAt": "2025-08-11T19:45:38.402Z",
+    "companyId": 1
   },
   {
     "id": 45,
@@ -852,7 +896,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.402Z"
+    "createdAt": "2025-08-11T19:45:38.402Z",
+    "companyId": 1
   },
   {
     "id": 46,
@@ -871,7 +916,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.402Z"
+    "createdAt": "2025-08-11T19:45:38.402Z",
+    "companyId": 1
   },
   {
     "id": 47,
@@ -890,7 +936,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.404Z"
+    "createdAt": "2025-08-11T19:45:38.404Z",
+    "companyId": 1
   },
   {
     "id": 48,
@@ -909,7 +956,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.407Z"
+    "createdAt": "2025-08-11T19:45:38.407Z",
+    "companyId": 1
   },
   {
     "id": 49,
@@ -928,7 +976,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.410Z"
+    "createdAt": "2025-08-11T19:45:38.410Z",
+    "companyId": 1
   },
   {
     "id": 50,
@@ -947,7 +996,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.411Z"
+    "createdAt": "2025-08-11T19:45:38.411Z",
+    "companyId": 1
   },
   {
     "id": 51,
@@ -966,7 +1016,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.412Z"
+    "createdAt": "2025-08-11T19:45:38.412Z",
+    "companyId": 1
   },
   {
     "id": 52,
@@ -985,7 +1036,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.412Z"
+    "createdAt": "2025-08-11T19:45:38.412Z",
+    "companyId": 1
   },
   {
     "id": 53,
@@ -1004,7 +1056,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.412Z"
+    "createdAt": "2025-08-11T19:45:38.412Z",
+    "companyId": 1
   },
   {
     "id": 54,
@@ -1023,7 +1076,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.413Z"
+    "createdAt": "2025-08-11T19:45:38.413Z",
+    "companyId": 1
   },
   {
     "id": 55,
@@ -1042,7 +1096,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "Done",
-    "createdAt": "2025-08-11T19:45:38.413Z"
+    "createdAt": "2025-08-11T19:45:38.413Z",
+    "companyId": 1
   },
   {
     "id": 56,
@@ -1061,7 +1116,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.414Z"
+    "createdAt": "2025-08-11T19:45:38.414Z",
+    "companyId": 1
   },
   {
     "id": 57,
@@ -1080,7 +1136,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.414Z"
+    "createdAt": "2025-08-11T19:45:38.414Z",
+    "companyId": 1
   },
   {
     "id": 58,
@@ -1099,7 +1156,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.414Z"
+    "createdAt": "2025-08-11T19:45:38.414Z",
+    "companyId": 1
   },
   {
     "id": 59,
@@ -1118,7 +1176,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.415Z"
+    "createdAt": "2025-08-11T19:45:38.415Z",
+    "companyId": 1
   },
   {
     "id": 60,
@@ -1137,7 +1196,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.415Z"
+    "createdAt": "2025-08-11T19:45:38.415Z",
+    "companyId": 1
   },
   {
     "id": 61,
@@ -1156,7 +1216,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.415Z"
+    "createdAt": "2025-08-11T19:45:38.415Z",
+    "companyId": 1
   },
   {
     "id": 62,
@@ -1175,7 +1236,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.415Z"
+    "createdAt": "2025-08-11T19:45:38.415Z",
+    "companyId": 1
   },
   {
     "id": 63,
@@ -1194,7 +1256,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.416Z"
+    "createdAt": "2025-08-11T19:45:38.416Z",
+    "companyId": 1
   },
   {
     "id": 64,
@@ -1213,7 +1276,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.416Z"
+    "createdAt": "2025-08-11T19:45:38.416Z",
+    "companyId": 1
   },
   {
     "id": 65,
@@ -1232,7 +1296,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.416Z"
+    "createdAt": "2025-08-11T19:45:38.416Z",
+    "companyId": 1
   },
   {
     "id": 66,
@@ -1251,7 +1316,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.417Z"
+    "createdAt": "2025-08-11T19:45:38.417Z",
+    "companyId": 1
   },
   {
     "id": 67,
@@ -1270,7 +1336,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.417Z"
+    "createdAt": "2025-08-11T19:45:38.417Z",
+    "companyId": 1
   },
   {
     "id": 68,
@@ -1289,7 +1356,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.417Z"
+    "createdAt": "2025-08-11T19:45:38.417Z",
+    "companyId": 1
   },
   {
     "id": 69,
@@ -1308,7 +1376,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.418Z"
+    "createdAt": "2025-08-11T19:45:38.418Z",
+    "companyId": 1
   },
   {
     "id": 70,
@@ -1327,7 +1396,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.419Z"
+    "createdAt": "2025-08-11T19:45:38.419Z",
+    "companyId": 1
   },
   {
     "id": 71,
@@ -1346,7 +1416,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.419Z"
+    "createdAt": "2025-08-11T19:45:38.419Z",
+    "companyId": 1
   },
   {
     "id": 72,
@@ -1365,7 +1436,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.427Z"
+    "createdAt": "2025-08-11T19:45:38.427Z",
+    "companyId": 1
   },
   {
     "id": 73,
@@ -1384,7 +1456,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.429Z"
+    "createdAt": "2025-08-11T19:45:38.429Z",
+    "companyId": 1
   },
   {
     "id": 74,
@@ -1403,7 +1476,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.430Z"
+    "createdAt": "2025-08-11T19:45:38.430Z",
+    "companyId": 1
   },
   {
     "id": 75,
@@ -1422,7 +1496,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.430Z"
+    "createdAt": "2025-08-11T19:45:38.430Z",
+    "companyId": 1
   },
   {
     "id": 76,
@@ -1441,7 +1516,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.431Z"
+    "createdAt": "2025-08-11T19:45:38.431Z",
+    "companyId": 1
   },
   {
     "id": 77,
@@ -1460,7 +1536,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.431Z"
+    "createdAt": "2025-08-11T19:45:38.431Z",
+    "companyId": 1
   },
   {
     "id": 78,
@@ -1479,7 +1556,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.431Z"
+    "createdAt": "2025-08-11T19:45:38.431Z",
+    "companyId": 1
   },
   {
     "id": 79,
@@ -1498,7 +1576,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.432Z"
+    "createdAt": "2025-08-11T19:45:38.432Z",
+    "companyId": 1
   },
   {
     "id": 80,
@@ -1517,7 +1596,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.432Z"
+    "createdAt": "2025-08-11T19:45:38.432Z",
+    "companyId": 1
   },
   {
     "id": 81,
@@ -1536,7 +1616,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.432Z"
+    "createdAt": "2025-08-11T19:45:38.432Z",
+    "companyId": 1
   },
   {
     "id": 82,
@@ -1555,7 +1636,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.432Z"
+    "createdAt": "2025-08-11T19:45:38.432Z",
+    "companyId": 1
   },
   {
     "id": 83,
@@ -1574,7 +1656,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.433Z"
+    "createdAt": "2025-08-11T19:45:38.433Z",
+    "companyId": 1
   },
   {
     "id": 84,
@@ -1593,7 +1676,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.433Z"
+    "createdAt": "2025-08-11T19:45:38.433Z",
+    "companyId": 1
   },
   {
     "id": 85,
@@ -1612,7 +1696,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.433Z"
+    "createdAt": "2025-08-11T19:45:38.433Z",
+    "companyId": 1
   },
   {
     "id": 86,
@@ -1631,7 +1716,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.434Z"
+    "createdAt": "2025-08-11T19:45:38.434Z",
+    "companyId": 1
   },
   {
     "id": 87,
@@ -1650,7 +1736,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.434Z"
+    "createdAt": "2025-08-11T19:45:38.434Z",
+    "companyId": 1
   },
   {
     "id": 88,
@@ -1669,7 +1756,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.434Z"
+    "createdAt": "2025-08-11T19:45:38.434Z",
+    "companyId": 1
   },
   {
     "id": 89,
@@ -1688,7 +1776,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.434Z"
+    "createdAt": "2025-08-11T19:45:38.434Z",
+    "companyId": 1
   },
   {
     "id": 90,
@@ -1707,7 +1796,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.435Z"
+    "createdAt": "2025-08-11T19:45:38.435Z",
+    "companyId": 1
   },
   {
     "id": 91,
@@ -1726,7 +1816,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.435Z"
+    "createdAt": "2025-08-11T19:45:38.435Z",
+    "companyId": 1
   },
   {
     "id": 92,
@@ -1745,7 +1836,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.435Z"
+    "createdAt": "2025-08-11T19:45:38.435Z",
+    "companyId": 1
   },
   {
     "id": 93,
@@ -1764,7 +1856,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.436Z"
+    "createdAt": "2025-08-11T19:45:38.436Z",
+    "companyId": 1
   },
   {
     "id": 94,
@@ -1783,7 +1876,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.436Z"
+    "createdAt": "2025-08-11T19:45:38.436Z",
+    "companyId": 1
   },
   {
     "id": 95,
@@ -1802,7 +1896,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.438Z"
+    "createdAt": "2025-08-11T19:45:38.438Z",
+    "companyId": 1
   },
   {
     "id": 96,
@@ -1821,7 +1916,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.440Z"
+    "createdAt": "2025-08-11T19:45:38.440Z",
+    "companyId": 1
   },
   {
     "id": 97,
@@ -1840,7 +1936,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.443Z"
+    "createdAt": "2025-08-11T19:45:38.443Z",
+    "companyId": 1
   },
   {
     "id": 98,
@@ -1859,7 +1956,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.444Z"
+    "createdAt": "2025-08-11T19:45:38.444Z",
+    "companyId": 1
   },
   {
     "id": 99,
@@ -1878,7 +1976,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.445Z"
+    "createdAt": "2025-08-11T19:45:38.445Z",
+    "companyId": 1
   },
   {
     "id": 100,
@@ -1897,7 +1996,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.445Z"
+    "createdAt": "2025-08-11T19:45:38.445Z",
+    "companyId": 1
   },
   {
     "id": 101,
@@ -1916,7 +2016,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.446Z"
+    "createdAt": "2025-08-11T19:45:38.446Z",
+    "companyId": 1
   },
   {
     "id": 102,
@@ -1935,7 +2036,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.446Z"
+    "createdAt": "2025-08-11T19:45:38.446Z",
+    "companyId": 1
   },
   {
     "id": 103,
@@ -1954,7 +2056,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.447Z"
+    "createdAt": "2025-08-11T19:45:38.447Z",
+    "companyId": 1
   },
   {
     "id": 104,
@@ -1973,7 +2076,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.447Z"
+    "createdAt": "2025-08-11T19:45:38.447Z",
+    "companyId": 1
   },
   {
     "id": 105,
@@ -1992,7 +2096,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.447Z"
+    "createdAt": "2025-08-11T19:45:38.447Z",
+    "companyId": 1
   },
   {
     "id": 106,
@@ -2011,7 +2116,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.448Z"
+    "createdAt": "2025-08-11T19:45:38.448Z",
+    "companyId": 1
   },
   {
     "id": 107,
@@ -2030,7 +2136,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.448Z"
+    "createdAt": "2025-08-11T19:45:38.448Z",
+    "companyId": 1
   },
   {
     "id": 108,
@@ -2049,7 +2156,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.448Z"
+    "createdAt": "2025-08-11T19:45:38.448Z",
+    "companyId": 1
   },
   {
     "id": 109,
@@ -2068,7 +2176,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.448Z"
+    "createdAt": "2025-08-11T19:45:38.448Z",
+    "companyId": 1
   },
   {
     "id": 110,
@@ -2087,7 +2196,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.449Z"
+    "createdAt": "2025-08-11T19:45:38.449Z",
+    "companyId": 1
   },
   {
     "id": 111,
@@ -2106,7 +2216,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.449Z"
+    "createdAt": "2025-08-11T19:45:38.449Z",
+    "companyId": 1
   },
   {
     "id": 112,
@@ -2125,7 +2236,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.450Z"
+    "createdAt": "2025-08-11T19:45:38.450Z",
+    "companyId": 1
   },
   {
     "id": 113,
@@ -2144,7 +2256,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.450Z"
+    "createdAt": "2025-08-11T19:45:38.450Z",
+    "companyId": 1
   },
   {
     "id": 114,
@@ -2163,7 +2276,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.450Z"
+    "createdAt": "2025-08-11T19:45:38.450Z",
+    "companyId": 1
   },
   {
     "id": 115,
@@ -2182,7 +2296,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.450Z"
+    "createdAt": "2025-08-11T19:45:38.450Z",
+    "companyId": 1
   },
   {
     "id": 116,
@@ -2201,7 +2316,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.450Z"
+    "createdAt": "2025-08-11T19:45:38.450Z",
+    "companyId": 1
   },
   {
     "id": 117,
@@ -2220,7 +2336,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.451Z"
+    "createdAt": "2025-08-11T19:45:38.451Z",
+    "companyId": 1
   },
   {
     "id": 118,
@@ -2239,7 +2356,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.451Z"
+    "createdAt": "2025-08-11T19:45:38.451Z",
+    "companyId": 1
   },
   {
     "id": 119,
@@ -2258,7 +2376,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.451Z"
+    "createdAt": "2025-08-11T19:45:38.451Z",
+    "companyId": 1
   },
   {
     "id": 120,
@@ -2277,7 +2396,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.452Z"
+    "createdAt": "2025-08-11T19:45:38.452Z",
+    "companyId": 1
   },
   {
     "id": 121,
@@ -2296,7 +2416,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.452Z"
+    "createdAt": "2025-08-11T19:45:38.452Z",
+    "companyId": 1
   },
   {
     "id": 122,
@@ -2315,7 +2436,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.453Z"
+    "createdAt": "2025-08-11T19:45:38.453Z",
+    "companyId": 1
   },
   {
     "id": 123,
@@ -2334,7 +2456,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.460Z"
+    "createdAt": "2025-08-11T19:45:38.460Z",
+    "companyId": 1
   },
   {
     "id": 124,
@@ -2353,7 +2476,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.461Z"
+    "createdAt": "2025-08-11T19:45:38.461Z",
+    "companyId": 1
   },
   {
     "id": 125,
@@ -2372,7 +2496,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.461Z"
+    "createdAt": "2025-08-11T19:45:38.461Z",
+    "companyId": 1
   },
   {
     "id": 126,
@@ -2391,7 +2516,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.462Z"
+    "createdAt": "2025-08-11T19:45:38.462Z",
+    "companyId": 1
   },
   {
     "id": 127,
@@ -2410,7 +2536,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.462Z"
+    "createdAt": "2025-08-11T19:45:38.462Z",
+    "companyId": 1
   },
   {
     "id": 128,
@@ -2429,7 +2556,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.463Z"
+    "createdAt": "2025-08-11T19:45:38.463Z",
+    "companyId": 1
   },
   {
     "id": 129,
@@ -2448,7 +2576,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.464Z"
+    "createdAt": "2025-08-11T19:45:38.464Z",
+    "companyId": 1
   },
   {
     "id": 130,
@@ -2467,7 +2596,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.466Z"
+    "createdAt": "2025-08-11T19:45:38.466Z",
+    "companyId": 1
   },
   {
     "id": 131,
@@ -2486,7 +2616,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.468Z"
+    "createdAt": "2025-08-11T19:45:38.468Z",
+    "companyId": 1
   },
   {
     "id": 132,
@@ -2505,7 +2636,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.469Z"
+    "createdAt": "2025-08-11T19:45:38.469Z",
+    "companyId": 1
   },
   {
     "id": 133,
@@ -2524,7 +2656,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.481Z"
+    "createdAt": "2025-08-11T19:45:38.481Z",
+    "companyId": 1
   },
   {
     "id": 134,
@@ -2543,7 +2676,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.481Z"
+    "createdAt": "2025-08-11T19:45:38.481Z",
+    "companyId": 1
   },
   {
     "id": 135,
@@ -2562,7 +2696,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.481Z"
+    "createdAt": "2025-08-11T19:45:38.481Z",
+    "companyId": 1
   },
   {
     "id": 136,
@@ -2581,7 +2716,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.482Z"
+    "createdAt": "2025-08-11T19:45:38.482Z",
+    "companyId": 1
   },
   {
     "id": 137,
@@ -2600,7 +2736,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.482Z"
+    "createdAt": "2025-08-11T19:45:38.482Z",
+    "companyId": 1
   },
   {
     "id": 138,
@@ -2619,7 +2756,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.482Z"
+    "createdAt": "2025-08-11T19:45:38.482Z",
+    "companyId": 1
   },
   {
     "id": 139,
@@ -2638,7 +2776,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.482Z"
+    "createdAt": "2025-08-11T19:45:38.482Z",
+    "companyId": 1
   },
   {
     "id": 140,
@@ -2657,7 +2796,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.483Z"
+    "createdAt": "2025-08-11T19:45:38.483Z",
+    "companyId": 1
   },
   {
     "id": 141,
@@ -2676,7 +2816,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.483Z"
+    "createdAt": "2025-08-11T19:45:38.483Z",
+    "companyId": 1
   },
   {
     "id": 142,
@@ -2695,7 +2836,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.483Z"
+    "createdAt": "2025-08-11T19:45:38.483Z",
+    "companyId": 1
   },
   {
     "id": 143,
@@ -2714,7 +2856,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.484Z"
+    "createdAt": "2025-08-11T19:45:38.484Z",
+    "companyId": 1
   },
   {
     "id": 144,
@@ -2733,7 +2876,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.484Z"
+    "createdAt": "2025-08-11T19:45:38.484Z",
+    "companyId": 1
   },
   {
     "id": 145,
@@ -2752,7 +2896,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.484Z"
+    "createdAt": "2025-08-11T19:45:38.484Z",
+    "companyId": 1
   },
   {
     "id": 146,
@@ -2771,7 +2916,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.484Z"
+    "createdAt": "2025-08-11T19:45:38.484Z",
+    "companyId": 1
   },
   {
     "id": 147,
@@ -2790,7 +2936,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.485Z"
+    "createdAt": "2025-08-11T19:45:38.485Z",
+    "companyId": 1
   },
   {
     "id": 148,
@@ -2809,7 +2956,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.485Z"
+    "createdAt": "2025-08-11T19:45:38.485Z",
+    "companyId": 1
   },
   {
     "id": 149,
@@ -2828,7 +2976,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.494Z"
+    "createdAt": "2025-08-11T19:45:38.494Z",
+    "companyId": 1
   },
   {
     "id": 150,
@@ -2847,7 +2996,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.495Z"
+    "createdAt": "2025-08-11T19:45:38.495Z",
+    "companyId": 1
   },
   {
     "id": 151,
@@ -2866,7 +3016,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.496Z"
+    "createdAt": "2025-08-11T19:45:38.496Z",
+    "companyId": 1
   },
   {
     "id": 152,
@@ -2885,7 +3036,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.496Z"
+    "createdAt": "2025-08-11T19:45:38.496Z",
+    "companyId": 1
   },
   {
     "id": 153,
@@ -2904,7 +3056,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.497Z"
+    "createdAt": "2025-08-11T19:45:38.497Z",
+    "companyId": 1
   },
   {
     "id": 154,
@@ -2923,7 +3076,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.497Z"
+    "createdAt": "2025-08-11T19:45:38.497Z",
+    "companyId": 1
   },
   {
     "id": 155,
@@ -2942,7 +3096,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.498Z"
+    "createdAt": "2025-08-11T19:45:38.498Z",
+    "companyId": 1
   },
   {
     "id": 156,
@@ -2961,7 +3116,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.498Z"
+    "createdAt": "2025-08-11T19:45:38.498Z",
+    "companyId": 1
   },
   {
     "id": 157,
@@ -2980,7 +3136,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.499Z"
+    "createdAt": "2025-08-11T19:45:38.499Z",
+    "companyId": 1
   },
   {
     "id": 158,
@@ -2999,7 +3156,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.499Z"
+    "createdAt": "2025-08-11T19:45:38.499Z",
+    "companyId": 1
   },
   {
     "id": 159,
@@ -3018,7 +3176,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.499Z"
+    "createdAt": "2025-08-11T19:45:38.499Z",
+    "companyId": 1
   },
   {
     "id": 160,
@@ -3037,7 +3196,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.499Z"
+    "createdAt": "2025-08-11T19:45:38.499Z",
+    "companyId": 1
   },
   {
     "id": 161,
@@ -3056,7 +3216,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.500Z"
+    "createdAt": "2025-08-11T19:45:38.500Z",
+    "companyId": 1
   },
   {
     "id": 162,
@@ -3075,7 +3236,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.500Z"
+    "createdAt": "2025-08-11T19:45:38.500Z",
+    "companyId": 1
   },
   {
     "id": 163,
@@ -3094,7 +3256,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.501Z"
+    "createdAt": "2025-08-11T19:45:38.501Z",
+    "companyId": 1
   },
   {
     "id": 164,
@@ -3113,7 +3276,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.501Z"
+    "createdAt": "2025-08-11T19:45:38.501Z",
+    "companyId": 1
   },
   {
     "id": 165,
@@ -3132,7 +3296,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.502Z"
+    "createdAt": "2025-08-11T19:45:38.502Z",
+    "companyId": 1
   },
   {
     "id": 166,
@@ -3151,7 +3316,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.512Z"
+    "createdAt": "2025-08-11T19:45:38.512Z",
+    "companyId": 1
   },
   {
     "id": 167,
@@ -3170,7 +3336,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.513Z"
+    "createdAt": "2025-08-11T19:45:38.513Z",
+    "companyId": 1
   },
   {
     "id": 168,
@@ -3189,7 +3356,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.514Z"
+    "createdAt": "2025-08-11T19:45:38.514Z",
+    "companyId": 1
   },
   {
     "id": 169,
@@ -3208,7 +3376,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.514Z"
+    "createdAt": "2025-08-11T19:45:38.514Z",
+    "companyId": 1
   },
   {
     "id": 170,
@@ -3227,7 +3396,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.515Z"
+    "createdAt": "2025-08-11T19:45:38.515Z",
+    "companyId": 1
   },
   {
     "id": 171,
@@ -3246,7 +3416,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.515Z"
+    "createdAt": "2025-08-11T19:45:38.515Z",
+    "companyId": 1
   },
   {
     "id": 172,
@@ -3265,7 +3436,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.516Z"
+    "createdAt": "2025-08-11T19:45:38.516Z",
+    "companyId": 1
   },
   {
     "id": 173,
@@ -3284,7 +3456,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.516Z"
+    "createdAt": "2025-08-11T19:45:38.516Z",
+    "companyId": 1
   },
   {
     "id": 174,
@@ -3303,7 +3476,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.517Z"
+    "createdAt": "2025-08-11T19:45:38.517Z",
+    "companyId": 1
   },
   {
     "id": 175,
@@ -3322,7 +3496,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.517Z"
+    "createdAt": "2025-08-11T19:45:38.517Z",
+    "companyId": 1
   },
   {
     "id": 176,
@@ -3341,7 +3516,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.517Z"
+    "createdAt": "2025-08-11T19:45:38.517Z",
+    "companyId": 1
   },
   {
     "id": 177,
@@ -3360,7 +3536,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.518Z"
+    "createdAt": "2025-08-11T19:45:38.518Z",
+    "companyId": 1
   },
   {
     "id": 178,
@@ -3379,7 +3556,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.518Z"
+    "createdAt": "2025-08-11T19:45:38.518Z",
+    "companyId": 1
   },
   {
     "id": 179,
@@ -3398,7 +3576,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.519Z"
+    "createdAt": "2025-08-11T19:45:38.519Z",
+    "companyId": 1
   },
   {
     "id": 180,
@@ -3417,7 +3596,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.519Z"
+    "createdAt": "2025-08-11T19:45:38.519Z",
+    "companyId": 1
   },
   {
     "id": 181,
@@ -3436,7 +3616,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.530Z"
+    "createdAt": "2025-08-11T19:45:38.530Z",
+    "companyId": 1
   },
   {
     "id": 182,
@@ -3455,7 +3636,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.531Z"
+    "createdAt": "2025-08-11T19:45:38.531Z",
+    "companyId": 1
   },
   {
     "id": 183,
@@ -3474,7 +3656,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.532Z"
+    "createdAt": "2025-08-11T19:45:38.532Z",
+    "companyId": 1
   },
   {
     "id": 184,
@@ -3493,7 +3676,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.532Z"
+    "createdAt": "2025-08-11T19:45:38.532Z",
+    "companyId": 1
   },
   {
     "id": 185,
@@ -3512,7 +3696,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.533Z"
+    "createdAt": "2025-08-11T19:45:38.533Z",
+    "companyId": 1
   },
   {
     "id": 186,
@@ -3531,7 +3716,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.533Z"
+    "createdAt": "2025-08-11T19:45:38.533Z",
+    "companyId": 1
   },
   {
     "id": 187,
@@ -3550,7 +3736,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.533Z"
+    "createdAt": "2025-08-11T19:45:38.533Z",
+    "companyId": 1
   },
   {
     "id": 188,
@@ -3569,7 +3756,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.534Z"
+    "createdAt": "2025-08-11T19:45:38.534Z",
+    "companyId": 1
   },
   {
     "id": 189,
@@ -3588,7 +3776,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.534Z"
+    "createdAt": "2025-08-11T19:45:38.534Z",
+    "companyId": 1
   },
   {
     "id": 190,
@@ -3607,7 +3796,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.535Z"
+    "createdAt": "2025-08-11T19:45:38.535Z",
+    "companyId": 1
   },
   {
     "id": 191,
@@ -3626,7 +3816,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.535Z"
+    "createdAt": "2025-08-11T19:45:38.535Z",
+    "companyId": 1
   },
   {
     "id": 192,
@@ -3645,7 +3836,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.544Z"
+    "createdAt": "2025-08-11T19:45:38.544Z",
+    "companyId": 1
   },
   {
     "id": 193,
@@ -3664,7 +3856,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.545Z"
+    "createdAt": "2025-08-11T19:45:38.545Z",
+    "companyId": 1
   },
   {
     "id": 194,
@@ -3683,7 +3876,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.546Z"
+    "createdAt": "2025-08-11T19:45:38.546Z",
+    "companyId": 1
   },
   {
     "id": 195,
@@ -3702,7 +3896,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.546Z"
+    "createdAt": "2025-08-11T19:45:38.546Z",
+    "companyId": 1
   },
   {
     "id": 196,
@@ -3721,7 +3916,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.547Z"
+    "createdAt": "2025-08-11T19:45:38.547Z",
+    "companyId": 1
   },
   {
     "id": 197,
@@ -3740,7 +3936,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.547Z"
+    "createdAt": "2025-08-11T19:45:38.547Z",
+    "companyId": 1
   },
   {
     "id": 198,
@@ -3759,7 +3956,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.547Z"
+    "createdAt": "2025-08-11T19:45:38.547Z",
+    "companyId": 1
   },
   {
     "id": 199,
@@ -3778,7 +3976,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.547Z"
+    "createdAt": "2025-08-11T19:45:38.547Z",
+    "companyId": 1
   },
   {
     "id": 200,
@@ -3797,7 +3996,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.548Z"
+    "createdAt": "2025-08-11T19:45:38.548Z",
+    "companyId": 1
   },
   {
     "id": 201,
@@ -3816,7 +4016,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.548Z"
+    "createdAt": "2025-08-11T19:45:38.548Z",
+    "companyId": 1
   },
   {
     "id": 202,
@@ -3835,7 +4036,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.548Z"
+    "createdAt": "2025-08-11T19:45:38.548Z",
+    "companyId": 1
   },
   {
     "id": 203,
@@ -3854,7 +4056,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.549Z"
+    "createdAt": "2025-08-11T19:45:38.549Z",
+    "companyId": 1
   },
   {
     "id": 204,
@@ -3873,7 +4076,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.550Z"
+    "createdAt": "2025-08-11T19:45:38.550Z",
+    "companyId": 1
   },
   {
     "id": 205,
@@ -3892,7 +4096,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.550Z"
+    "createdAt": "2025-08-11T19:45:38.550Z",
+    "companyId": 1
   },
   {
     "id": 206,
@@ -3911,7 +4116,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.550Z"
+    "createdAt": "2025-08-11T19:45:38.550Z",
+    "companyId": 1
   },
   {
     "id": 207,
@@ -3930,7 +4136,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.551Z"
+    "createdAt": "2025-08-11T19:45:38.551Z",
+    "companyId": 1
   },
   {
     "id": 208,
@@ -3949,7 +4156,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.551Z"
+    "createdAt": "2025-08-11T19:45:38.551Z",
+    "companyId": 1
   },
   {
     "id": 209,
@@ -3968,7 +4176,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.552Z"
+    "createdAt": "2025-08-11T19:45:38.552Z",
+    "companyId": 1
   },
   {
     "id": 210,
@@ -3987,7 +4196,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.552Z"
+    "createdAt": "2025-08-11T19:45:38.552Z",
+    "companyId": 1
   },
   {
     "id": 211,
@@ -4006,7 +4216,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.561Z"
+    "createdAt": "2025-08-11T19:45:38.561Z",
+    "companyId": 1
   },
   {
     "id": 212,
@@ -4025,7 +4236,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.562Z"
+    "createdAt": "2025-08-11T19:45:38.562Z",
+    "companyId": 1
   },
   {
     "id": 213,
@@ -4044,7 +4256,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.562Z"
+    "createdAt": "2025-08-11T19:45:38.562Z",
+    "companyId": 1
   },
   {
     "id": 214,
@@ -4063,7 +4276,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.563Z"
+    "createdAt": "2025-08-11T19:45:38.563Z",
+    "companyId": 1
   },
   {
     "id": 215,
@@ -4082,7 +4296,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.563Z"
+    "createdAt": "2025-08-11T19:45:38.563Z",
+    "companyId": 1
   },
   {
     "id": 216,
@@ -4101,7 +4316,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.563Z"
+    "createdAt": "2025-08-11T19:45:38.563Z",
+    "companyId": 1
   },
   {
     "id": 217,
@@ -4120,7 +4336,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.564Z"
+    "createdAt": "2025-08-11T19:45:38.564Z",
+    "companyId": 1
   },
   {
     "id": 218,
@@ -4139,7 +4356,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.564Z"
+    "createdAt": "2025-08-11T19:45:38.564Z",
+    "companyId": 1
   },
   {
     "id": 219,
@@ -4158,7 +4376,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.564Z"
+    "createdAt": "2025-08-11T19:45:38.564Z",
+    "companyId": 1
   },
   {
     "id": 220,
@@ -4177,7 +4396,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.564Z"
+    "createdAt": "2025-08-11T19:45:38.564Z",
+    "companyId": 1
   },
   {
     "id": 221,
@@ -4196,7 +4416,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.565Z"
+    "createdAt": "2025-08-11T19:45:38.565Z",
+    "companyId": 1
   },
   {
     "id": 222,
@@ -4215,7 +4436,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.565Z"
+    "createdAt": "2025-08-11T19:45:38.565Z",
+    "companyId": 1
   },
   {
     "id": 223,
@@ -4234,7 +4456,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.565Z"
+    "createdAt": "2025-08-11T19:45:38.565Z",
+    "companyId": 1
   },
   {
     "id": 224,
@@ -4253,7 +4476,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.565Z"
+    "createdAt": "2025-08-11T19:45:38.565Z",
+    "companyId": 1
   },
   {
     "id": 225,
@@ -4272,7 +4496,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.566Z"
+    "createdAt": "2025-08-11T19:45:38.566Z",
+    "companyId": 1
   },
   {
     "id": 226,
@@ -4291,7 +4516,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.566Z"
+    "createdAt": "2025-08-11T19:45:38.566Z",
+    "companyId": 1
   },
   {
     "id": 227,
@@ -4310,7 +4536,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.566Z"
+    "createdAt": "2025-08-11T19:45:38.566Z",
+    "companyId": 1
   },
   {
     "id": 228,
@@ -4329,7 +4556,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.567Z"
+    "createdAt": "2025-08-11T19:45:38.567Z",
+    "companyId": 1
   },
   {
     "id": 229,
@@ -4348,7 +4576,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.567Z"
+    "createdAt": "2025-08-11T19:45:38.567Z",
+    "companyId": 1
   },
   {
     "id": 230,
@@ -4367,7 +4596,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.568Z"
+    "createdAt": "2025-08-11T19:45:38.568Z",
+    "companyId": 1
   },
   {
     "id": 231,
@@ -4386,7 +4616,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.569Z"
+    "createdAt": "2025-08-11T19:45:38.569Z",
+    "companyId": 1
   },
   {
     "id": 232,
@@ -4405,7 +4636,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.578Z"
+    "createdAt": "2025-08-11T19:45:38.578Z",
+    "companyId": 1
   },
   {
     "id": 233,
@@ -4424,7 +4656,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.579Z"
+    "createdAt": "2025-08-11T19:45:38.579Z",
+    "companyId": 1
   },
   {
     "id": 234,
@@ -4443,7 +4676,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.579Z"
+    "createdAt": "2025-08-11T19:45:38.579Z",
+    "companyId": 1
   },
   {
     "id": 235,
@@ -4462,7 +4696,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.580Z"
+    "createdAt": "2025-08-11T19:45:38.580Z",
+    "companyId": 1
   },
   {
     "id": 236,
@@ -4481,7 +4716,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.580Z"
+    "createdAt": "2025-08-11T19:45:38.580Z",
+    "companyId": 1
   },
   {
     "id": 237,
@@ -4500,7 +4736,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.580Z"
+    "createdAt": "2025-08-11T19:45:38.580Z",
+    "companyId": 1
   },
   {
     "id": 238,
@@ -4519,7 +4756,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.580Z"
+    "createdAt": "2025-08-11T19:45:38.580Z",
+    "companyId": 1
   },
   {
     "id": 239,
@@ -4538,7 +4776,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.581Z"
+    "createdAt": "2025-08-11T19:45:38.581Z",
+    "companyId": 1
   },
   {
     "id": 240,
@@ -4557,7 +4796,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.581Z"
+    "createdAt": "2025-08-11T19:45:38.581Z",
+    "companyId": 1
   },
   {
     "id": 241,
@@ -4576,7 +4816,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.581Z"
+    "createdAt": "2025-08-11T19:45:38.581Z",
+    "companyId": 1
   },
   {
     "id": 242,
@@ -4595,7 +4836,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.581Z"
+    "createdAt": "2025-08-11T19:45:38.581Z",
+    "companyId": 1
   },
   {
     "id": 243,
@@ -4614,7 +4856,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.582Z"
+    "createdAt": "2025-08-11T19:45:38.582Z",
+    "companyId": 1
   },
   {
     "id": 244,
@@ -4633,7 +4876,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.582Z"
+    "createdAt": "2025-08-11T19:45:38.582Z",
+    "companyId": 1
   },
   {
     "id": 245,
@@ -4652,7 +4896,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.582Z"
+    "createdAt": "2025-08-11T19:45:38.582Z",
+    "companyId": 1
   },
   {
     "id": 246,
@@ -4671,7 +4916,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.583Z"
+    "createdAt": "2025-08-11T19:45:38.583Z",
+    "companyId": 1
   },
   {
     "id": 247,
@@ -4690,7 +4936,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.583Z"
+    "createdAt": "2025-08-11T19:45:38.583Z",
+    "companyId": 1
   },
   {
     "id": 248,
@@ -4709,7 +4956,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.583Z"
+    "createdAt": "2025-08-11T19:45:38.583Z",
+    "companyId": 1
   },
   {
     "id": 249,
@@ -4728,7 +4976,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.583Z"
+    "createdAt": "2025-08-11T19:45:38.583Z",
+    "companyId": 1
   },
   {
     "id": 250,
@@ -4747,7 +4996,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.584Z"
+    "createdAt": "2025-08-11T19:45:38.584Z",
+    "companyId": 1
   },
   {
     "id": 251,
@@ -4766,7 +5016,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.584Z"
+    "createdAt": "2025-08-11T19:45:38.584Z",
+    "companyId": 1
   },
   {
     "id": 252,
@@ -4785,7 +5036,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.584Z"
+    "createdAt": "2025-08-11T19:45:38.584Z",
+    "companyId": 1
   },
   {
     "id": 253,
@@ -4804,7 +5056,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.584Z"
+    "createdAt": "2025-08-11T19:45:38.584Z",
+    "companyId": 1
   },
   {
     "id": 254,
@@ -4823,7 +5076,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.585Z"
+    "createdAt": "2025-08-11T19:45:38.585Z",
+    "companyId": 1
   },
   {
     "id": 255,
@@ -4842,7 +5096,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.585Z"
+    "createdAt": "2025-08-11T19:45:38.585Z",
+    "companyId": 1
   },
   {
     "id": 256,
@@ -4861,7 +5116,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.585Z"
+    "createdAt": "2025-08-11T19:45:38.585Z",
+    "companyId": 1
   },
   {
     "id": 257,
@@ -4880,7 +5136,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.585Z"
+    "createdAt": "2025-08-11T19:45:38.585Z",
+    "companyId": 1
   },
   {
     "id": 258,
@@ -4899,7 +5156,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.585Z"
+    "createdAt": "2025-08-11T19:45:38.585Z",
+    "companyId": 1
   },
   {
     "id": 259,
@@ -4918,7 +5176,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.586Z"
+    "createdAt": "2025-08-11T19:45:38.586Z",
+    "companyId": 1
   },
   {
     "id": 260,
@@ -4937,7 +5196,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.586Z"
+    "createdAt": "2025-08-11T19:45:38.586Z",
+    "companyId": 1
   },
   {
     "id": 261,
@@ -4956,7 +5216,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.593Z"
+    "createdAt": "2025-08-11T19:45:38.593Z",
+    "companyId": 1
   },
   {
     "id": 262,
@@ -4975,7 +5236,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.593Z"
+    "createdAt": "2025-08-11T19:45:38.593Z",
+    "companyId": 1
   },
   {
     "id": 263,
@@ -4994,7 +5256,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.594Z"
+    "createdAt": "2025-08-11T19:45:38.594Z",
+    "companyId": 1
   },
   {
     "id": 264,
@@ -5013,7 +5276,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.594Z"
+    "createdAt": "2025-08-11T19:45:38.594Z",
+    "companyId": 1
   },
   {
     "id": 265,
@@ -5032,7 +5296,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.595Z"
+    "createdAt": "2025-08-11T19:45:38.595Z",
+    "companyId": 1
   },
   {
     "id": 266,
@@ -5051,7 +5316,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.595Z"
+    "createdAt": "2025-08-11T19:45:38.595Z",
+    "companyId": 1
   },
   {
     "id": 267,
@@ -5070,7 +5336,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.596Z"
+    "createdAt": "2025-08-11T19:45:38.596Z",
+    "companyId": 1
   },
   {
     "id": 268,
@@ -5089,7 +5356,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.596Z"
+    "createdAt": "2025-08-11T19:45:38.596Z",
+    "companyId": 1
   },
   {
     "id": 269,
@@ -5108,7 +5376,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.596Z"
+    "createdAt": "2025-08-11T19:45:38.596Z",
+    "companyId": 1
   },
   {
     "id": 270,
@@ -5127,7 +5396,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.597Z"
+    "createdAt": "2025-08-11T19:45:38.597Z",
+    "companyId": 1
   },
   {
     "id": 271,
@@ -5146,7 +5416,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.597Z"
+    "createdAt": "2025-08-11T19:45:38.597Z",
+    "companyId": 1
   },
   {
     "id": 272,
@@ -5165,7 +5436,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.597Z"
+    "createdAt": "2025-08-11T19:45:38.597Z",
+    "companyId": 1
   },
   {
     "id": 273,
@@ -5184,7 +5456,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.598Z"
+    "createdAt": "2025-08-11T19:45:38.598Z",
+    "companyId": 1
   },
   {
     "id": 274,
@@ -5203,7 +5476,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.598Z"
+    "createdAt": "2025-08-11T19:45:38.598Z",
+    "companyId": 1
   },
   {
     "id": 275,
@@ -5222,7 +5496,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.598Z"
+    "createdAt": "2025-08-11T19:45:38.598Z",
+    "companyId": 1
   },
   {
     "id": 276,
@@ -5241,7 +5516,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.598Z"
+    "createdAt": "2025-08-11T19:45:38.598Z",
+    "companyId": 1
   },
   {
     "id": 277,
@@ -5260,7 +5536,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.599Z"
+    "createdAt": "2025-08-11T19:45:38.599Z",
+    "companyId": 1
   },
   {
     "id": 278,
@@ -5279,7 +5556,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.599Z"
+    "createdAt": "2025-08-11T19:45:38.599Z",
+    "companyId": 1
   },
   {
     "id": 279,
@@ -5298,7 +5576,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.599Z"
+    "createdAt": "2025-08-11T19:45:38.599Z",
+    "companyId": 1
   },
   {
     "id": 280,
@@ -5317,7 +5596,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.599Z"
+    "createdAt": "2025-08-11T19:45:38.599Z",
+    "companyId": 1
   },
   {
     "id": 281,
@@ -5336,7 +5616,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.600Z"
+    "createdAt": "2025-08-11T19:45:38.600Z",
+    "companyId": 1
   },
   {
     "id": 282,
@@ -5355,7 +5636,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.600Z"
+    "createdAt": "2025-08-11T19:45:38.600Z",
+    "companyId": 1
   },
   {
     "id": 283,
@@ -5374,7 +5656,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.601Z"
+    "createdAt": "2025-08-11T19:45:38.601Z",
+    "companyId": 1
   },
   {
     "id": 284,
@@ -5393,7 +5676,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.601Z"
+    "createdAt": "2025-08-11T19:45:38.601Z",
+    "companyId": 1
   },
   {
     "id": 285,
@@ -5412,7 +5696,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.602Z"
+    "createdAt": "2025-08-11T19:45:38.602Z",
+    "companyId": 1
   },
   {
     "id": 286,
@@ -5431,7 +5716,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.602Z"
+    "createdAt": "2025-08-11T19:45:38.602Z",
+    "companyId": 1
   },
   {
     "id": 287,
@@ -5450,7 +5736,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.606Z"
+    "createdAt": "2025-08-11T19:45:38.606Z",
+    "companyId": 1
   },
   {
     "id": 288,
@@ -5469,7 +5756,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.607Z"
+    "createdAt": "2025-08-11T19:45:38.607Z",
+    "companyId": 1
   },
   {
     "id": 289,
@@ -5488,7 +5776,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.611Z"
+    "createdAt": "2025-08-11T19:45:38.611Z",
+    "companyId": 1
   },
   {
     "id": 290,
@@ -5507,7 +5796,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.612Z"
+    "createdAt": "2025-08-11T19:45:38.612Z",
+    "companyId": 1
   },
   {
     "id": 291,
@@ -5526,7 +5816,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.612Z"
+    "createdAt": "2025-08-11T19:45:38.612Z",
+    "companyId": 1
   },
   {
     "id": 292,
@@ -5545,7 +5836,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.612Z"
+    "createdAt": "2025-08-11T19:45:38.612Z",
+    "companyId": 1
   },
   {
     "id": 293,
@@ -5564,7 +5856,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.613Z"
+    "createdAt": "2025-08-11T19:45:38.613Z",
+    "companyId": 1
   },
   {
     "id": 294,
@@ -5583,7 +5876,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.613Z"
+    "createdAt": "2025-08-11T19:45:38.613Z",
+    "companyId": 1
   },
   {
     "id": 295,
@@ -5602,7 +5896,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.613Z"
+    "createdAt": "2025-08-11T19:45:38.613Z",
+    "companyId": 1
   },
   {
     "id": 296,
@@ -5621,7 +5916,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.614Z"
+    "createdAt": "2025-08-11T19:45:38.614Z",
+    "companyId": 1
   },
   {
     "id": 297,
@@ -5640,7 +5936,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.614Z"
+    "createdAt": "2025-08-11T19:45:38.614Z",
+    "companyId": 1
   },
   {
     "id": 298,
@@ -5659,7 +5956,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.614Z"
+    "createdAt": "2025-08-11T19:45:38.614Z",
+    "companyId": 1
   },
   {
     "id": 299,
@@ -5678,7 +5976,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.614Z"
+    "createdAt": "2025-08-11T19:45:38.614Z",
+    "companyId": 1
   },
   {
     "id": 300,
@@ -5697,7 +5996,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.614Z"
+    "createdAt": "2025-08-11T19:45:38.614Z",
+    "companyId": 1
   },
   {
     "id": 301,
@@ -5716,7 +6016,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.615Z"
+    "createdAt": "2025-08-11T19:45:38.615Z",
+    "companyId": 1
   },
   {
     "id": 302,
@@ -5735,7 +6036,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.615Z"
+    "createdAt": "2025-08-11T19:45:38.615Z",
+    "companyId": 1
   },
   {
     "id": 303,
@@ -5754,7 +6056,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.615Z"
+    "createdAt": "2025-08-11T19:45:38.615Z",
+    "companyId": 1
   },
   {
     "id": 304,
@@ -5773,7 +6076,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.615Z"
+    "createdAt": "2025-08-11T19:45:38.615Z",
+    "companyId": 1
   },
   {
     "id": 305,
@@ -5792,7 +6096,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.616Z"
+    "createdAt": "2025-08-11T19:45:38.616Z",
+    "companyId": 1
   },
   {
     "id": 306,
@@ -5811,7 +6116,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.616Z"
+    "createdAt": "2025-08-11T19:45:38.616Z",
+    "companyId": 1
   },
   {
     "id": 307,
@@ -5830,7 +6136,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.617Z"
+    "createdAt": "2025-08-11T19:45:38.617Z",
+    "companyId": 1
   },
   {
     "id": 308,
@@ -5849,7 +6156,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.617Z"
+    "createdAt": "2025-08-11T19:45:38.617Z",
+    "companyId": 1
   },
   {
     "id": 309,
@@ -5868,7 +6176,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.618Z"
+    "createdAt": "2025-08-11T19:45:38.618Z",
+    "companyId": 1
   },
   {
     "id": 310,
@@ -5887,7 +6196,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.618Z"
+    "createdAt": "2025-08-11T19:45:38.618Z",
+    "companyId": 1
   },
   {
     "id": 311,
@@ -5906,7 +6216,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.619Z"
+    "createdAt": "2025-08-11T19:45:38.619Z",
+    "companyId": 1
   },
   {
     "id": 312,
@@ -5925,7 +6236,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.619Z"
+    "createdAt": "2025-08-11T19:45:38.619Z",
+    "companyId": 1
   },
   {
     "id": 313,
@@ -5944,7 +6256,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.619Z"
+    "createdAt": "2025-08-11T19:45:38.619Z",
+    "companyId": 1
   },
   {
     "id": 314,
@@ -5963,7 +6276,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.627Z"
+    "createdAt": "2025-08-11T19:45:38.627Z",
+    "companyId": 1
   },
   {
     "id": 315,
@@ -5982,7 +6296,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.628Z"
+    "createdAt": "2025-08-11T19:45:38.628Z",
+    "companyId": 1
   },
   {
     "id": 316,
@@ -6001,7 +6316,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.628Z"
+    "createdAt": "2025-08-11T19:45:38.628Z",
+    "companyId": 1
   },
   {
     "id": 317,
@@ -6020,7 +6336,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.629Z"
+    "createdAt": "2025-08-11T19:45:38.629Z",
+    "companyId": 1
   },
   {
     "id": 318,
@@ -6039,7 +6356,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.629Z"
+    "createdAt": "2025-08-11T19:45:38.629Z",
+    "companyId": 1
   },
   {
     "id": 319,
@@ -6058,7 +6376,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.630Z"
+    "createdAt": "2025-08-11T19:45:38.630Z",
+    "companyId": 1
   },
   {
     "id": 320,
@@ -6077,7 +6396,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.630Z"
+    "createdAt": "2025-08-11T19:45:38.630Z",
+    "companyId": 1
   },
   {
     "id": 321,
@@ -6096,7 +6416,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.630Z"
+    "createdAt": "2025-08-11T19:45:38.630Z",
+    "companyId": 1
   },
   {
     "id": 322,
@@ -6115,7 +6436,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.631Z"
+    "createdAt": "2025-08-11T19:45:38.631Z",
+    "companyId": 1
   },
   {
     "id": 323,
@@ -6134,7 +6456,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.631Z"
+    "createdAt": "2025-08-11T19:45:38.631Z",
+    "companyId": 1
   },
   {
     "id": 324,
@@ -6153,7 +6476,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.631Z"
+    "createdAt": "2025-08-11T19:45:38.631Z",
+    "companyId": 1
   },
   {
     "id": 325,
@@ -6172,7 +6496,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.631Z"
+    "createdAt": "2025-08-11T19:45:38.631Z",
+    "companyId": 1
   },
   {
     "id": 326,
@@ -6191,7 +6516,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.632Z"
+    "createdAt": "2025-08-11T19:45:38.632Z",
+    "companyId": 1
   },
   {
     "id": 327,
@@ -6210,7 +6536,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.632Z"
+    "createdAt": "2025-08-11T19:45:38.632Z",
+    "companyId": 1
   },
   {
     "id": 328,
@@ -6229,7 +6556,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.633Z"
+    "createdAt": "2025-08-11T19:45:38.633Z",
+    "companyId": 1
   },
   {
     "id": 329,
@@ -6248,7 +6576,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.634Z"
+    "createdAt": "2025-08-11T19:45:38.634Z",
+    "companyId": 1
   },
   {
     "id": 330,
@@ -6267,7 +6596,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.634Z"
+    "createdAt": "2025-08-11T19:45:38.634Z",
+    "companyId": 1
   },
   {
     "id": 331,
@@ -6286,7 +6616,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.634Z"
+    "createdAt": "2025-08-11T19:45:38.634Z",
+    "companyId": 1
   },
   {
     "id": 332,
@@ -6305,7 +6636,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.634Z"
+    "createdAt": "2025-08-11T19:45:38.634Z",
+    "companyId": 1
   },
   {
     "id": 333,
@@ -6324,7 +6656,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.635Z"
+    "createdAt": "2025-08-11T19:45:38.635Z",
+    "companyId": 1
   },
   {
     "id": 334,
@@ -6343,7 +6676,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.635Z"
+    "createdAt": "2025-08-11T19:45:38.635Z",
+    "companyId": 1
   },
   {
     "id": 335,
@@ -6362,7 +6696,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.635Z"
+    "createdAt": "2025-08-11T19:45:38.635Z",
+    "companyId": 1
   },
   {
     "id": 336,
@@ -6381,7 +6716,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.636Z"
+    "createdAt": "2025-08-11T19:45:38.636Z",
+    "companyId": 1
   },
   {
     "id": 337,
@@ -6400,7 +6736,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.646Z"
+    "createdAt": "2025-08-11T19:45:38.646Z",
+    "companyId": 1
   },
   {
     "id": 338,
@@ -6419,7 +6756,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.646Z"
+    "createdAt": "2025-08-11T19:45:38.646Z",
+    "companyId": 1
   },
   {
     "id": 339,
@@ -6438,7 +6776,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.646Z"
+    "createdAt": "2025-08-11T19:45:38.646Z",
+    "companyId": 1
   },
   {
     "id": 340,
@@ -6457,7 +6796,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.647Z"
+    "createdAt": "2025-08-11T19:45:38.647Z",
+    "companyId": 1
   },
   {
     "id": 341,
@@ -6476,7 +6816,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.647Z"
+    "createdAt": "2025-08-11T19:45:38.647Z",
+    "companyId": 1
   },
   {
     "id": 342,
@@ -6495,7 +6836,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.648Z"
+    "createdAt": "2025-08-11T19:45:38.648Z",
+    "companyId": 1
   },
   {
     "id": 343,
@@ -6514,7 +6856,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.649Z"
+    "createdAt": "2025-08-11T19:45:38.649Z",
+    "companyId": 1
   },
   {
     "id": 344,
@@ -6533,7 +6876,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.650Z"
+    "createdAt": "2025-08-11T19:45:38.650Z",
+    "companyId": 1
   },
   {
     "id": 345,
@@ -6552,7 +6896,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.651Z"
+    "createdAt": "2025-08-11T19:45:38.651Z",
+    "companyId": 1
   },
   {
     "id": 346,
@@ -6571,7 +6916,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.651Z"
+    "createdAt": "2025-08-11T19:45:38.651Z",
+    "companyId": 1
   },
   {
     "id": 347,
@@ -6590,7 +6936,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.652Z"
+    "createdAt": "2025-08-11T19:45:38.652Z",
+    "companyId": 1
   },
   {
     "id": 348,
@@ -6609,7 +6956,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.652Z"
+    "createdAt": "2025-08-11T19:45:38.652Z",
+    "companyId": 1
   },
   {
     "id": 349,
@@ -6628,7 +6976,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.652Z"
+    "createdAt": "2025-08-11T19:45:38.652Z",
+    "companyId": 1
   },
   {
     "id": 350,
@@ -6647,7 +6996,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.658Z"
+    "createdAt": "2025-08-11T19:45:38.658Z",
+    "companyId": 1
   },
   {
     "id": 351,
@@ -6666,7 +7016,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.660Z"
+    "createdAt": "2025-08-11T19:45:38.660Z",
+    "companyId": 1
   },
   {
     "id": 352,
@@ -6685,7 +7036,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.661Z"
+    "createdAt": "2025-08-11T19:45:38.661Z",
+    "companyId": 1
   },
   {
     "id": 353,
@@ -6704,7 +7056,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.661Z"
+    "createdAt": "2025-08-11T19:45:38.661Z",
+    "companyId": 1
   },
   {
     "id": 354,
@@ -6723,7 +7076,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.662Z"
+    "createdAt": "2025-08-11T19:45:38.662Z",
+    "companyId": 1
   },
   {
     "id": 355,
@@ -6742,7 +7096,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.662Z"
+    "createdAt": "2025-08-11T19:45:38.662Z",
+    "companyId": 1
   },
   {
     "id": 356,
@@ -6761,7 +7116,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.662Z"
+    "createdAt": "2025-08-11T19:45:38.662Z",
+    "companyId": 1
   },
   {
     "id": 357,
@@ -6780,7 +7136,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.663Z"
+    "createdAt": "2025-08-11T19:45:38.663Z",
+    "companyId": 1
   },
   {
     "id": 358,
@@ -6799,7 +7156,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.663Z"
+    "createdAt": "2025-08-11T19:45:38.663Z",
+    "companyId": 1
   },
   {
     "id": 359,
@@ -6818,7 +7176,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.663Z"
+    "createdAt": "2025-08-11T19:45:38.663Z",
+    "companyId": 1
   },
   {
     "id": 360,
@@ -6837,7 +7196,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.664Z"
+    "createdAt": "2025-08-11T19:45:38.664Z",
+    "companyId": 1
   },
   {
     "id": 361,
@@ -6856,7 +7216,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.664Z"
+    "createdAt": "2025-08-11T19:45:38.664Z",
+    "companyId": 1
   },
   {
     "id": 362,
@@ -6875,7 +7236,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.664Z"
+    "createdAt": "2025-08-11T19:45:38.664Z",
+    "companyId": 1
   },
   {
     "id": 363,
@@ -6894,7 +7256,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.664Z"
+    "createdAt": "2025-08-11T19:45:38.664Z",
+    "companyId": 1
   },
   {
     "id": 364,
@@ -6913,7 +7276,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.665Z"
+    "createdAt": "2025-08-11T19:45:38.665Z",
+    "companyId": 1
   },
   {
     "id": 365,
@@ -6932,7 +7296,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.665Z"
+    "createdAt": "2025-08-11T19:45:38.665Z",
+    "companyId": 1
   },
   {
     "id": 366,
@@ -6951,7 +7316,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.665Z"
+    "createdAt": "2025-08-11T19:45:38.665Z",
+    "companyId": 1
   },
   {
     "id": 367,
@@ -6970,7 +7336,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.667Z"
+    "createdAt": "2025-08-11T19:45:38.667Z",
+    "companyId": 1
   },
   {
     "id": 368,
@@ -6989,7 +7356,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.667Z"
+    "createdAt": "2025-08-11T19:45:38.667Z",
+    "companyId": 1
   },
   {
     "id": 369,
@@ -7008,7 +7376,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.667Z"
+    "createdAt": "2025-08-11T19:45:38.667Z",
+    "companyId": 1
   },
   {
     "id": 370,
@@ -7027,7 +7396,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.667Z"
+    "createdAt": "2025-08-11T19:45:38.667Z",
+    "companyId": 1
   },
   {
     "id": 371,
@@ -7046,7 +7416,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.668Z"
+    "createdAt": "2025-08-11T19:45:38.668Z",
+    "companyId": 1
   },
   {
     "id": 372,
@@ -7065,7 +7436,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.668Z"
+    "createdAt": "2025-08-11T19:45:38.668Z",
+    "companyId": 1
   },
   {
     "id": 373,
@@ -7084,7 +7456,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.668Z"
+    "createdAt": "2025-08-11T19:45:38.668Z",
+    "companyId": 1
   },
   {
     "id": 374,
@@ -7103,7 +7476,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.669Z"
+    "createdAt": "2025-08-11T19:45:38.669Z",
+    "companyId": 1
   },
   {
     "id": 375,
@@ -7122,7 +7496,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.669Z"
+    "createdAt": "2025-08-11T19:45:38.669Z",
+    "companyId": 1
   },
   {
     "id": 376,
@@ -7141,7 +7516,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.669Z"
+    "createdAt": "2025-08-11T19:45:38.669Z",
+    "companyId": 1
   },
   {
     "id": 377,
@@ -7160,7 +7536,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.677Z"
+    "createdAt": "2025-08-11T19:45:38.677Z",
+    "companyId": 1
   },
   {
     "id": 378,
@@ -7179,7 +7556,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.677Z"
+    "createdAt": "2025-08-11T19:45:38.677Z",
+    "companyId": 1
   },
   {
     "id": 379,
@@ -7198,7 +7576,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.677Z"
+    "createdAt": "2025-08-11T19:45:38.677Z",
+    "companyId": 1
   },
   {
     "id": 380,
@@ -7217,7 +7596,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.678Z"
+    "createdAt": "2025-08-11T19:45:38.678Z",
+    "companyId": 1
   },
   {
     "id": 381,
@@ -7236,7 +7616,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.678Z"
+    "createdAt": "2025-08-11T19:45:38.678Z",
+    "companyId": 1
   },
   {
     "id": 382,
@@ -7255,7 +7636,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.680Z"
+    "createdAt": "2025-08-11T19:45:38.680Z",
+    "companyId": 1
   },
   {
     "id": 383,
@@ -7274,7 +7656,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.680Z"
+    "createdAt": "2025-08-11T19:45:38.680Z",
+    "companyId": 1
   },
   {
     "id": 384,
@@ -7293,7 +7676,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.681Z"
+    "createdAt": "2025-08-11T19:45:38.681Z",
+    "companyId": 1
   },
   {
     "id": 385,
@@ -7312,7 +7696,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.681Z"
+    "createdAt": "2025-08-11T19:45:38.681Z",
+    "companyId": 1
   },
   {
     "id": 386,
@@ -7331,7 +7716,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.681Z"
+    "createdAt": "2025-08-11T19:45:38.681Z",
+    "companyId": 1
   },
   {
     "id": 387,
@@ -7350,7 +7736,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.681Z"
+    "createdAt": "2025-08-11T19:45:38.681Z",
+    "companyId": 1
   },
   {
     "id": 388,
@@ -7369,7 +7756,8 @@
     "paymentTerms": "30 days",
     "status": "active",
     "notes": "-",
-    "createdAt": "2025-08-11T19:45:38.682Z"
+    "createdAt": "2025-08-11T19:45:38.682Z",
+    "companyId": 1
   },
   {
     "name": "Imran Shaikh",
@@ -7388,7 +7776,8 @@
     "status": "active",
     "notes": "",
     "id": 389,
-    "createdAt": "2025-08-12T09:36:15.449Z"
+    "createdAt": "2025-08-12T09:36:15.449Z",
+    "companyId": 1
   },
   {
     "name": "Dr. K. Sulochana",
@@ -7397,7 +7786,8 @@
     "phone": "9444915946",
     "id": 390,
     "status": "active",
-    "createdAt": "2025-08-16T04:13:14.812Z"
+    "createdAt": "2025-08-16T04:13:14.812Z",
+    "companyId": 1
   },
   {
     "name": "Vaibhav",
@@ -7406,7 +7796,8 @@
     "phone": "97025 37531",
     "id": 391,
     "status": "active",
-    "createdAt": "2025-08-16T04:37:20.906Z"
+    "createdAt": "2025-08-16T04:37:20.906Z",
+    "companyId": 1
   },
   {
     "name": "Prashant Mishra",
@@ -7415,7 +7806,8 @@
     "phone": "7410840300",
     "id": 392,
     "status": "active",
-    "createdAt": "2025-08-16T07:38:17.406Z"
+    "createdAt": "2025-08-16T07:38:17.406Z",
+    "companyId": 1
   },
   {
     "name": "Amol",
@@ -7424,7 +7816,8 @@
     "phone": "9356248615",
     "id": 393,
     "status": "active",
-    "createdAt": "2025-08-16T11:05:32.501Z"
+    "createdAt": "2025-08-16T11:05:32.501Z",
+    "companyId": 1
   },
   {
     "name": "Vaibhav",
@@ -7443,7 +7836,8 @@
     "status": "active",
     "notes": "Need comparator stand\n",
     "id": 394,
-    "createdAt": "2025-08-16T11:25:06.073Z"
+    "createdAt": "2025-08-16T11:25:06.073Z",
+    "companyId": 1
   },
   {
     "name": "Sumit Kannaujiya",
@@ -7462,7 +7856,8 @@
     "status": "active",
     "notes": "",
     "id": 395,
-    "createdAt": "2025-08-17T12:09:14.865Z"
+    "createdAt": "2025-08-17T12:09:14.865Z",
+    "companyId": 1
   },
   {
     "name": "Benny",
@@ -7481,7 +7876,8 @@
     "status": "active",
     "notes": "",
     "id": 396,
-    "createdAt": "2025-08-19T11:24:25.542Z"
+    "createdAt": "2025-08-19T11:24:25.542Z",
+    "companyId": 1
   },
   {
     "name": "Arnav",
@@ -7500,7 +7896,8 @@
     "status": "active",
     "notes": "",
     "id": 397,
-    "createdAt": "2025-08-20T11:15:38.533Z"
+    "createdAt": "2025-08-20T11:15:38.533Z",
+    "companyId": 1
   },
   {
     "name": "Chethan",
@@ -7519,7 +7916,8 @@
     "status": "active",
     "notes": "",
     "id": 398,
-    "createdAt": "2025-08-21T10:34:46.047Z"
+    "createdAt": "2025-08-21T10:34:46.047Z",
+    "companyId": 1
   },
   {
     "name": "Seshu Kumar Gottipati",
@@ -7538,7 +7936,8 @@
     "status": "active",
     "notes": "",
     "id": 399,
-    "createdAt": "2025-08-21T11:06:27.881Z"
+    "createdAt": "2025-08-21T11:06:27.881Z",
+    "companyId": 1
   },
   {
     "name": "Hariharan",
@@ -7557,7 +7956,8 @@
     "status": "active",
     "notes": "",
     "id": 400,
-    "createdAt": "2025-08-26T12:43:18.990Z"
+    "createdAt": "2025-08-26T12:43:18.990Z",
+    "companyId": 1
   },
   {
     "name": "Lakshmie",
@@ -7576,7 +7976,8 @@
     "status": "active",
     "notes": "",
     "id": 401,
-    "createdAt": "2025-08-28T11:03:07.843Z"
+    "createdAt": "2025-08-28T11:03:07.843Z",
+    "companyId": 1
   },
   {
     "name": "Pandurang Gujar",
@@ -7595,7 +7996,8 @@
     "status": "active",
     "notes": "",
     "id": 402,
-    "createdAt": "2025-08-28T11:32:14.470Z"
+    "createdAt": "2025-08-28T11:32:14.470Z",
+    "companyId": 1
   },
   {
     "name": "Muragendra G.Hiremath",
@@ -7614,7 +8016,8 @@
     "status": "active",
     "notes": "",
     "id": 403,
-    "createdAt": "2025-08-28T11:40:16.990Z"
+    "createdAt": "2025-08-28T11:40:16.990Z",
+    "companyId": 1
   },
   {
     "name": "MOHD SHADAB",
@@ -7633,7 +8036,8 @@
     "status": "active",
     "notes": "",
     "id": 404,
-    "createdAt": "2025-08-29T08:30:44.761Z"
+    "createdAt": "2025-08-29T08:30:44.761Z",
+    "companyId": 1
   },
   {
     "name": "Saurabh Khona",
@@ -7652,7 +8056,8 @@
     "status": "active",
     "notes": "",
     "id": 405,
-    "createdAt": "2025-09-01T08:56:16.223Z"
+    "createdAt": "2025-09-01T08:56:16.223Z",
+    "companyId": 1
   },
   {
     "name": "Vilas Zinjurde",
@@ -7671,7 +8076,8 @@
     "status": "active",
     "notes": "",
     "id": 406,
-    "createdAt": "2025-09-04T05:22:55.038Z"
+    "createdAt": "2025-09-04T05:22:55.038Z",
+    "companyId": 1
   },
   {
     "name": "Agadh Chukewar",
@@ -7690,7 +8096,8 @@
     "status": "active",
     "notes": "",
     "id": 407,
-    "createdAt": "2025-09-06T07:31:58.909Z"
+    "createdAt": "2025-09-06T07:31:58.909Z",
+    "companyId": 1
   },
   {
     "name": "Kuldip Sindhav",
@@ -7709,7 +8116,8 @@
     "status": "active",
     "notes": "",
     "id": 408,
-    "createdAt": "2025-09-08T09:07:01.333Z"
+    "createdAt": "2025-09-08T09:07:01.333Z",
+    "companyId": 1
   },
   {
     "name": "Ajit Kumar",
@@ -7728,7 +8136,8 @@
     "status": "active",
     "notes": "",
     "id": 409,
-    "createdAt": "2025-09-08T09:53:10.166Z"
+    "createdAt": "2025-09-08T09:53:10.166Z",
+    "companyId": 1
   },
   {
     "name": "Pradeep Mathur",
@@ -7747,7 +8156,8 @@
     "status": "active",
     "notes": "",
     "id": 410,
-    "createdAt": "2025-09-08T11:23:01.193Z"
+    "createdAt": "2025-09-08T11:23:01.193Z",
+    "companyId": 1
   },
   {
     "name": "Rakesh Kumar",
@@ -7766,7 +8176,8 @@
     "status": "active",
     "notes": "",
     "id": 411,
-    "createdAt": "2025-09-10T04:29:44.612Z"
+    "createdAt": "2025-09-10T04:29:44.612Z",
+    "companyId": 1
   },
   {
     "name": "Rishabh Pindwar",
@@ -7785,7 +8196,8 @@
     "status": "active",
     "notes": "",
     "id": 412,
-    "createdAt": "2025-09-10T12:38:46.138Z"
+    "createdAt": "2025-09-10T12:38:46.138Z",
+    "companyId": 1
   },
   {
     "name": "Arjun Kattimani",
@@ -7804,7 +8216,8 @@
     "status": "active",
     "notes": "",
     "id": 413,
-    "createdAt": "2025-09-12T11:12:06.076Z"
+    "createdAt": "2025-09-12T11:12:06.076Z",
+    "companyId": 1
   },
   {
     "name": "Mansuri  Mahammad Arif",
@@ -7823,7 +8236,8 @@
     "status": "active",
     "notes": "",
     "id": 414,
-    "createdAt": "2025-09-12T11:51:31.066Z"
+    "createdAt": "2025-09-12T11:51:31.066Z",
+    "companyId": 1
   },
   {
     "name": "ARTHY K",
@@ -7842,7 +8256,8 @@
     "status": "active",
     "notes": "",
     "id": 415,
-    "createdAt": "2025-09-16T08:33:58.505Z"
+    "createdAt": "2025-09-16T08:33:58.505Z",
+    "companyId": 1
   },
   {
     "name": "Praveen Suttatti",
@@ -7861,7 +8276,8 @@
     "status": "active",
     "notes": "",
     "id": 416,
-    "createdAt": "2025-09-19T07:34:57.899Z"
+    "createdAt": "2025-09-19T07:34:57.899Z",
+    "companyId": 1
   },
   {
     "name": "Sumit Kannaujiya",
@@ -7880,7 +8296,8 @@
     "status": "active",
     "notes": "",
     "id": 417,
-    "createdAt": "2025-09-22T10:07:05.228Z"
+    "createdAt": "2025-09-22T10:07:05.228Z",
+    "companyId": 1
   },
   {
     "name": "Manoj Rohilla",
@@ -7899,7 +8316,8 @@
     "status": "active",
     "notes": "",
     "id": 418,
-    "createdAt": "2025-09-22T11:51:05.742Z"
+    "createdAt": "2025-09-22T11:51:05.742Z",
+    "companyId": 1
   },
   {
     "name": "R K SRIVASTAVA",
@@ -7918,7 +8336,8 @@
     "status": "active",
     "notes": "",
     "id": 419,
-    "createdAt": "2025-09-23T04:57:44.664Z"
+    "createdAt": "2025-09-23T04:57:44.664Z",
+    "companyId": 1
   },
   {
     "name": "R K SRIVASTAVA",
@@ -7937,7 +8356,8 @@
     "status": "active",
     "notes": "",
     "id": 420,
-    "createdAt": "2025-09-23T04:59:29.684Z"
+    "createdAt": "2025-09-23T04:59:29.684Z",
+    "companyId": 1
   },
   {
     "name": "Ritvik ",
@@ -7956,7 +8376,8 @@
     "status": "active",
     "notes": "",
     "id": 421,
-    "createdAt": "2025-09-23T05:20:09.404Z"
+    "createdAt": "2025-09-23T05:20:09.404Z",
+    "companyId": 1
   },
   {
     "name": "K PALANISAMY",
@@ -7975,7 +8396,8 @@
     "status": "active",
     "notes": "",
     "id": 422,
-    "createdAt": "2025-09-23T06:13:54.786Z"
+    "createdAt": "2025-09-23T06:13:54.786Z",
+    "companyId": 1
   },
   {
     "name": "Muthukumar Poomalai",
@@ -7994,7 +8416,8 @@
     "status": "active",
     "notes": "",
     "id": 423,
-    "createdAt": "2025-09-23T06:25:59.736Z"
+    "createdAt": "2025-09-23T06:25:59.736Z",
+    "companyId": 1
   },
   {
     "name": "Divieernraj",
@@ -8013,7 +8436,8 @@
     "status": "active",
     "notes": "",
     "id": 424,
-    "createdAt": "2025-09-24T04:40:26.098Z"
+    "createdAt": "2025-09-24T04:40:26.098Z",
+    "companyId": 1
   },
   {
     "name": "Vijendra Kumar Goswami ",
@@ -8032,7 +8456,8 @@
     "status": "active",
     "notes": "",
     "id": 425,
-    "createdAt": "2025-09-24T07:15:16.539Z"
+    "createdAt": "2025-09-24T07:15:16.539Z",
+    "companyId": 1
   },
   {
     "name": "Udhav Kanase",
@@ -8051,7 +8476,8 @@
     "status": "active",
     "notes": "",
     "id": 426,
-    "createdAt": "2025-09-26T05:20:17.634Z"
+    "createdAt": "2025-09-26T05:20:17.634Z",
+    "companyId": 1
   },
   {
     "name": "JYOTI RANJAN",
@@ -8070,7 +8496,8 @@
     "status": "active",
     "notes": "",
     "id": 427,
-    "createdAt": "2025-09-26T05:20:24.833Z"
+    "createdAt": "2025-09-26T05:20:24.833Z",
+    "companyId": 1
   },
   {
     "name": "B.Saatheesh Kumar",
@@ -8089,7 +8516,8 @@
     "status": "active",
     "notes": "",
     "id": 428,
-    "createdAt": "2025-09-26T05:20:31.014Z"
+    "createdAt": "2025-09-26T05:20:31.014Z",
+    "companyId": 1
   },
   {
     "name": "Sachin Sabnis",
@@ -8108,7 +8536,8 @@
     "status": "active",
     "notes": "",
     "id": 429,
-    "createdAt": "2025-09-26T05:20:34.041Z"
+    "createdAt": "2025-09-26T05:20:34.041Z",
+    "companyId": 1
   },
   {
     "name": "VIJAYKUMAR",
@@ -8127,7 +8556,8 @@
     "status": "active",
     "notes": "mail campion",
     "id": 430,
-    "createdAt": "2025-09-26T05:20:37.449Z"
+    "createdAt": "2025-09-26T05:20:37.449Z",
+    "companyId": 1
   },
   {
     "name": "SHIVAJI SHAHAPURKAR",
@@ -8146,7 +8576,8 @@
     "status": "active",
     "notes": "",
     "id": 431,
-    "createdAt": "2025-09-26T05:20:47.038Z"
+    "createdAt": "2025-09-26T05:20:47.038Z",
+    "companyId": 1
   },
   {
     "name": "RAHUL RAMDAS GUNJAL",
@@ -8165,7 +8596,8 @@
     "status": "active",
     "notes": "",
     "id": 432,
-    "createdAt": "2025-09-26T05:45:27.921Z"
+    "createdAt": "2025-09-26T05:45:27.921Z",
+    "companyId": 1
   },
   {
     "name": "Ashok Ghule",
@@ -8184,7 +8616,8 @@
     "status": "active",
     "notes": "",
     "id": 433,
-    "createdAt": "2025-09-26T05:52:25.776Z"
+    "createdAt": "2025-09-26T05:52:25.776Z",
+    "companyId": 1
   },
   {
     "name": "Vishal Kumbhar",
@@ -8203,7 +8636,8 @@
     "status": "active",
     "notes": "",
     "id": 434,
-    "createdAt": "2025-09-29T06:51:57.583Z"
+    "createdAt": "2025-09-29T06:51:57.583Z",
+    "companyId": 1
   },
   {
     "name": "Sagar kakde",
@@ -8222,7 +8656,8 @@
     "status": "active",
     "notes": "",
     "id": 435,
-    "createdAt": "2025-09-29T07:47:24.063Z"
+    "createdAt": "2025-09-29T07:47:24.063Z",
+    "companyId": 1
   },
   {
     "name": "Rakesh Kumar",
@@ -8241,7 +8676,8 @@
     "status": "active",
     "notes": "",
     "id": 436,
-    "createdAt": "2025-09-30T08:57:54.453Z"
+    "createdAt": "2025-09-30T08:57:54.453Z",
+    "companyId": 1
   },
   {
     "name": "IAHT",
@@ -8260,7 +8696,8 @@
     "status": "active",
     "notes": "",
     "id": 437,
-    "createdAt": "2025-09-30T10:25:14.444Z"
+    "createdAt": "2025-09-30T10:25:14.444Z",
+    "companyId": 1
   },
   {
     "name": "AGASTYA SHARMA",
@@ -8279,7 +8716,8 @@
     "status": "active",
     "notes": "",
     "id": 439,
-    "createdAt": "2025-10-03T12:06:11.636Z"
+    "createdAt": "2025-10-03T12:06:11.636Z",
+    "companyId": 1
   },
   {
     "name": "Poornimaa H",
@@ -8298,7 +8736,8 @@
     "status": "active",
     "notes": "",
     "id": 440,
-    "createdAt": "2025-10-04T09:36:16.218Z"
+    "createdAt": "2025-10-04T09:36:16.218Z",
+    "companyId": 1
   },
   {
     "name": "Helmut Kolar",
@@ -8317,7 +8756,8 @@
     "status": "active",
     "notes": "",
     "id": 441,
-    "createdAt": "2025-10-04T09:36:26.733Z"
+    "createdAt": "2025-10-04T09:36:26.733Z",
+    "companyId": 1
   },
   {
     "name": "Umesh Chandra Sutar",
@@ -8336,7 +8776,8 @@
     "status": "active",
     "notes": "",
     "id": 442,
-    "createdAt": "2025-10-04T10:36:26.021Z"
+    "createdAt": "2025-10-04T10:36:26.021Z",
+    "companyId": 1
   },
   {
     "name": "K PALANISAMY",
@@ -8355,7 +8796,8 @@
     "status": "active",
     "notes": "",
     "id": 443,
-    "createdAt": "2025-10-06T10:33:10.944Z"
+    "createdAt": "2025-10-06T10:33:10.944Z",
+    "companyId": 1
   },
   {
     "name": "Pratik",
@@ -8374,7 +8816,8 @@
     "status": "active",
     "notes": "",
     "id": 444,
-    "createdAt": "2025-10-09T04:19:49.858Z"
+    "createdAt": "2025-10-09T04:19:49.858Z",
+    "companyId": 1
   },
   {
     "name": "J.Arunkumar",
@@ -8393,7 +8836,8 @@
     "status": "active",
     "notes": "",
     "id": 445,
-    "createdAt": "2025-10-14T11:06:13.556Z"
+    "createdAt": "2025-10-14T11:06:13.556Z",
+    "companyId": 1
   },
   {
     "name": "Akshay Tajane",
@@ -8412,7 +8856,8 @@
     "status": "active",
     "notes": "",
     "id": 446,
-    "createdAt": "2025-10-15T06:51:53.186Z"
+    "createdAt": "2025-10-15T06:51:53.186Z",
+    "companyId": 1
   },
   {
     "name": "Vaidyanatheshwara ",
@@ -8431,6 +8876,7 @@
     "status": "active",
     "notes": "",
     "id": 447,
-    "createdAt": "2025-10-18T04:42:44.029Z"
+    "createdAt": "2025-10-18T04:42:44.029Z",
+    "companyId": 1
   }
 ]

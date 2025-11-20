@@ -57,66 +57,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[resolveQuotationIdParam] incoming idParam is not numeric');
     }
 
-    // If storage implements MongoDB helpers, try object id lookup
-    const sAny: any = storage as any;
-    if (typeof sAny.getQuotationByObjectId === 'function') {
-      try {
-        const q = await sAny.getQuotationByObjectId(idParam);
-        console.log(`[resolveQuotationIdParam] objectId lookup for ${idParam} -> ${q ? 'found' : 'not found'}`);
-        if (q && q.id) return q.id;
-      } catch (err) {
-        console.warn('[resolveQuotationIdParam] objectId lookup error', err);
-      }
-    }
-
     // Fallback: search all quotations by string match on id or quotationNumber
     try {
       const all = await storage.getAllQuotations();
       const found = all.find((x: any) => String(x.id) === idParam || String(x.quotationNumber) === idParam || String(x.quoteNumber) === idParam);
-      // If found but no numeric `id` field, attempt to resolve from Mongo `_id` or via storage helpers
-      if (found) {
-        const sAny: any = storage as any;
-        // If the found object already has a numeric id, return it
-        if (found.id !== undefined && found.id !== null) {
-          console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> found id=${found.id}`);
-          return found.id;
-        }
-
-        // If storage supports lookup by object id, try to get a canonical record
-        if (found._id && typeof sAny.getQuotationByObjectId === 'function') {
-          try {
-            const qobj = await sAny.getQuotationByObjectId(String(found._id));
-            if (qobj && qobj.id) {
-              console.log(`[resolveQuotationIdParam] resolved from found._id -> id=${qobj.id}`);
-              return qobj.id;
-            }
-          } catch (err) {
-            console.warn('[resolveQuotationIdParam] getQuotationByObjectId error', err);
-          }
-        }
-
-        // If storage exposes a convertToNumberId helper, use it to derive a numeric id
-        if (found._id && typeof sAny.convertToNumberId === 'function') {
-          try {
-            const numId = sAny.convertToNumberId(found._id);
-            if (numId !== undefined && numId !== null && !isNaN(Number(numId))) {
-              console.log(`[resolveQuotationIdParam] converted found._id -> id=${numId}`);
-              return Number(numId);
-            }
-          } catch (err) {
-            console.warn('[resolveQuotationIdParam] convertToNumberId error', err);
-          }
-        }
-
-        // Last resort: try parsing any id-like string on the found object
-        const fallbackId = parseInt(String(found.id || found._id || ''), 10);
-        if (!isNaN(fallbackId)) {
-          console.log(`[resolveQuotationIdParam] parsed fallback id -> ${fallbackId}`);
-          return fallbackId;
-        }
-
-        console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> found but no usable id`);
-        return undefined;
+      if (found && found.id !== undefined && found.id !== null) {
+        console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> found id=${found.id}`);
+        return found.id;
       }
       console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> not found`);
     } catch (err) {
@@ -239,20 +186,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const me = await getStorage().getUser((req.user as any).id);
       if (!me || me.role !== 'superuser') return res.status(403).json({ message: "Forbidden" });
-      const companyId = parseInt(req.params.companyId);
+      const companyId = req.params.companyId; // Keep as string for ObjectId
       const company = await getStorage().getCompany(companyId);
       if (!company) return res.status(404).json({ message: "Company not found" });
       await getStorage().updateCompany(companyId, { status: 'active' });
       // Activate the company admin user
       const users = await getStorage().getAllUsers();
-      const adminUser = users.find(u => u.companyId === companyId && u.role === 'admin');
-      console.log('Approving company:', companyId, 'adminUser:', adminUser?.id, 'role:', adminUser?.role, 'isActive:', adminUser?.isActive);
+      const adminUser = users.find(u => u.companyId === company.id && u.role === 'admin'); // Use company.id (numeric)
+      console.log('Approving company:', companyId, 'company.id:', company.id, 'adminUser:', adminUser?.id, 'role:', adminUser?.role, 'isActive:', adminUser?.isActive);
       if (adminUser) {
         await getStorage().updateUser(adminUser.id, { isActive: true });
         console.log('User activated:', adminUser.id);
+      } else {
+        console.log('No admin user found for company:', company.id);
       }
       res.json({ success: true, message: "Company approved" });
-    } catch (err) { next(err); }
+    } catch (err) {
+      console.error('Company approval error:', err);
+      next(err);
+    }
   });
 
   // Admin or Parent: list users (filtered by company)
@@ -463,6 +415,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Supplier Management Routes
+  app.get("/api/suppliers", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'suppliers:view', 'suppliers')) return res.status(403).json({ message: 'Forbidden' });
+
+      const storage = getStorage();
+      const suppliers = await storage.getAllSuppliers();
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? suppliers : suppliers.filter(s => s.companyId === user.companyId);
+      res.json(filtered);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/suppliers", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'suppliers:create', 'suppliers')) return res.status(403).json({ message: 'Forbidden' });
+
+      const user = req.user as any;
+      const supplierData = insertSupplierSchema.parse({ ...req.body, companyId: user.companyId });
+      const storage = getStorage();
+      const supplier = await storage.createSupplier(supplierData);
+      res.status(201).json(supplier);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.get("/api/suppliers/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'suppliers:view', 'suppliers')) return res.status(403).json({ message: 'Forbidden' });
+
+      const id = parseInt(req.params.id);
+      const storage = getStorage();
+      const supplier = await storage.getSupplier(id);
+
+      if (!supplier) {
+        return res.status(404).json({ message: "Supplier not found" });
+      }
+
+      res.json(supplier);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put("/api/suppliers/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'suppliers:update', 'suppliers')) return res.status(403).json({ message: 'Forbidden' });
+
+      const id = parseInt(req.params.id);
+      const supplierData = insertSupplierSchema.partial().parse(req.body);
+
+      const storage = getStorage();
+      const updatedSupplier = await storage.updateSupplier(id, supplierData);
+
+      if (!updatedSupplier) {
+        return res.status(404).json({ message: "Supplier not found" });
+      }
+
+      res.json(updatedSupplier);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      next(error);
+    }
+  });
+
+  app.delete("/api/suppliers/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      if (!hasPermission(req, 'suppliers:delete', 'suppliers')) return res.status(403).json({ message: 'Forbidden' });
+
+      const id = parseInt(req.params.id);
+      const storage = getStorage();
+      const deleted = await storage.deleteSupplier(id);
+
+      if (!deleted) {
+        return res.status(404).json({ message: "Supplier not found" });
+      }
+
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  });
+
   // Lead Management Routes
   app.get("/api/leads", async (req, res, next) => {
     try {
@@ -612,11 +660,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/leads/:leadId/discussions", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const leadId = parseInt(req.params.leadId);
       const storage = getStorage();
+      const user = req.user as any;
+
+      // First check if the lead belongs to the user's company
+      const lead = await storage.getLead(leadId);
+      if (!lead) return res.status(404).json({ message: "Lead not found" });
+
+      if (user.role !== 'superuser' && lead.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Lead belongs to different company" });
+      }
+
       const discussions = await storage.getLeadDiscussions(leadId);
-      res.json(discussions);
+      // Filter discussions by companyId (since leadDiscussions now has companyId)
+      const filtered = user.role === 'superuser' ? discussions : discussions.filter(d => d.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) {
       next(error);
     }
@@ -627,7 +687,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const storage = getStorage();
-      const list = await storage.getAllLeadCategories();
+      const user = req.user as any;
+      const list = await storage.getAllLeadCategories(user.role === 'superuser' ? undefined : user.companyId);
       res.json(list);
     } catch (error) { next(error); }
   });
@@ -635,10 +696,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/lead-categories", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const user = req.user as any;
       const payload = insertLeadCategorySchema.partial().parse(req.body);
       const key = payload.key || (payload.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
       if (!payload.name || !key) return res.status(400).json({ message: "name is required" });
-      const created = await getStorage().createLeadCategory({ key, name: payload.name, isActive: payload.isActive ?? true });
+      const created = await getStorage().createLeadCategory({
+        key,
+        name: payload.name,
+        isActive: payload.isActive ?? true,
+        companyId: user.companyId
+      });
       res.status(201).json(created);
     } catch (error) {
       if (error instanceof z.ZodError) return res.status(400).json({ message: "Validation error", errors: error.errors });
@@ -677,7 +744,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const storage = getStorage();
-      const list = await storage.getAllLeadSources();
+      const user = req.user as any;
+      const list = await storage.getAllLeadSources(user.role === 'superuser' ? undefined : user.companyId);
       res.json(list);
     } catch (error) { next(error); }
   });
@@ -685,10 +753,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/lead-sources", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const user = req.user as any;
       const payload = insertLeadSourceSchema.partial().parse(req.body);
       const key = payload.key || (payload.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
       if (!payload.name || !key) return res.status(400).json({ message: "name is required" });
-      const created = await getStorage().createLeadSource({ key, name: payload.name, isActive: payload.isActive ?? true });
+      const created = await getStorage().createLeadSource({
+        key,
+        name: payload.name,
+        isActive: payload.isActive ?? true,
+        companyId: user.companyId
+      });
       res.status(201).json(created);
     } catch (error) {
       if (error instanceof z.ZodError) return res.status(400).json({ message: "Validation error", errors: error.errors });
@@ -725,21 +799,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/leads/:leadId/discussions", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const leadId = parseInt(req.params.leadId);
       const user = req.user as any;
-      
-      // Get user details to set createdBy
+
+      // Check if the lead belongs to the user's company
       const storage = getStorage();
+      const lead = await storage.getLead(leadId);
+      if (!lead) return res.status(404).json({ message: "Lead not found" });
+
+      if (user.role !== 'superuser' && lead.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Lead belongs to different company" });
+      }
+
+      // Get user details to set createdBy
       const userDetails = await storage.getUser(user.id);
       const createdBy = userDetails?.name || userDetails?.username || `User ${user.id}`;
-      
+
       const discussionData = insertLeadDiscussionSchema.parse({
         ...req.body,
         leadId: leadId,
         createdBy: createdBy,
+        companyId: user.companyId
       });
-      
+
       const discussion = await storage.createLeadDiscussion(discussionData);
       res.status(201).json(discussion);
     } catch (error) {
@@ -971,7 +1054,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const list = await ProformaStore.getAll();
-      res.json(list);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? list : list.filter(p => p.companyId === user.companyId);
+      res.json(filtered);
     } catch (error) { next(error); }
   });
       
@@ -1195,7 +1280,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const storage = getStorage();
       const templates = await storage.getAllQuotationTemplates();
-      res.json(templates);
+      const user = req.user as any;
+      const filtered = user.role === 'superuser' ? templates : templates.filter(t => t.companyId === user.companyId);
+      res.json(filtered);
     } catch (e) {
       res.status(500).json({ message: "Failed to fetch quotation templates" });
     }
@@ -1205,7 +1292,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const storage = getStorage();
-      const created = await storage.createQuotationTemplate(req.body);
+      const user = req.user as any;
+      const templateData = { ...req.body, companyId: user.companyId };
+      // Use the storage method if available, otherwise handle manually
+      const created = await (storage as any).createQuotationTemplate(templateData);
       res.status(201).json(created);
     } catch (e) {
       res.status(500).json({ message: "Failed to create quotation template" });
@@ -1352,13 +1442,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/dashboard/stats", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const storage = getStorage();
-      const customers = await storage.getAllCustomers();
-      const leads = await storage.getAllLeads();
-      const orders = await storage.getAllOrders();
-      const quotations = await storage.getAllQuotations();
-      
+      const user = req.user as any;
+
+      // Filter data by company for non-superusers
+      const allCustomers = await storage.getAllCustomers();
+      const customers = user.role === 'superuser' ? allCustomers : allCustomers.filter(c => c.companyId === user.companyId);
+
+      const allLeads = await storage.getAllLeads();
+      const leads = user.role === 'superuser' ? allLeads : allLeads.filter(l => l.companyId === user.companyId);
+
+      const allOrders = await storage.getAllOrders();
+      const orders = user.role === 'superuser' ? allOrders : allOrders.filter(o => o.companyId === user.companyId);
+
+      const allQuotations = await storage.getAllQuotations();
+      const quotations = user.role === 'superuser' ? allQuotations : allQuotations.filter(q => q.companyId === user.companyId);
+
           const now = new Date();
       const isSameDay = (d: any) => {
         const dt = new Date(d);
@@ -1434,12 +1534,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { entity } = req.params as { entity: string };
       const storage = getStorage();
       const XLSX = (await import("xlsx")).default;
+      const user = req.user as any;
       let rows: any[] = [];
-      if (entity === "leads") rows = await storage.getAllLeads();
-      else if (entity === "customers") rows = await storage.getAllCustomers();
-      else if (entity === "inventory") rows = await storage.getAllInventoryItems();
-      else if (entity === "quotations") rows = await storage.getAllQuotations();
-      else return res.status(400).json({ message: "Unknown entity" });
+      if (entity === "leads") {
+        const allLeads = await storage.getAllLeads();
+        rows = user.role === 'superuser' ? allLeads : allLeads.filter(l => l.companyId === user.companyId);
+      } else if (entity === "customers") {
+        const allCustomers = await storage.getAllCustomers();
+        rows = user.role === 'superuser' ? allCustomers : allCustomers.filter(c => c.companyId === user.companyId);
+      } else if (entity === "inventory") {
+        const allInventory = await storage.getAllInventoryItems();
+        rows = user.role === 'superuser' ? allInventory : allInventory.filter(i => i.companyId === user.companyId);
+      } else if (entity === "quotations") {
+        const allQuotations = await storage.getAllQuotations();
+        rows = user.role === 'superuser' ? allQuotations : allQuotations.filter(q => q.companyId === user.companyId);
+      } else return res.status(400).json({ message: "Unknown entity" });
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, entity);
