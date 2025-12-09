@@ -977,62 +977,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Check if quotation number is unique and generate new if needed
-  app.post("/api/quotations/check-number", async (req, res, next) => {
-    try {
-      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
-      const storage = getStorage();
-      const { quotationNumber, excludeId } = req.body;
-      const user = req.user as any;
-      
-      // Get all existing quotations for this company
-      const allQuotations = await storage.getAllQuotations();
-      const companyQuotations = user.role === 'superuser' 
-        ? allQuotations 
-        : allQuotations.filter(q => q.companyId === user.companyId);
-      
-      // Check if provided quotation number exists (excluding the current one if editing)
-      const isDuplicate = companyQuotations.some(q => 
-        q.quotationNumber === quotationNumber && 
-        (!excludeId || q.id !== excludeId)
-      );
-      
-      // Generate a new unique quotation number
-      const generateUniqueNumber = (): string => {
-        const today = new Date().toISOString().split('T')[0];
-        const quotationsToday = companyQuotations.filter(q => {
-          const qDate = typeof q.quotationDate === 'string' 
-            ? q.quotationDate 
-            : (q.quotationDate as any)?.toISOString?.()?.split('T')[0];
-          return qDate === today;
-        });
-        
-        const d = new Date();
-        const pad = (n: number) => String(n).padStart(2, '0');
-        const datePrefix = `RX-VQ${String(d.getFullYear()).slice(-2)}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-        let sequenceNum = quotationsToday.length + 1000;
-        let newNumber = `${datePrefix}-${String(sequenceNum).padStart(4, '0')}`;
-        
-        // Ensure the generated number is unique
-        while (companyQuotations.some(q => q.quotationNumber === newNumber)) {
-          sequenceNum++;
-          newNumber = `${datePrefix}-${String(sequenceNum).padStart(4, '0')}`;
-        }
-        
-        return newNumber;
-      };
-      
-      res.json({
-        isDuplicate,
-        isValid: !isDuplicate,
-        suggestedNumber: generateUniqueNumber()
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
-
   app.post("/api/quotations", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });

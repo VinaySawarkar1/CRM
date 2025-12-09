@@ -17,12 +17,6 @@ export default function QuotationFormPage() {
   const [, setLocation] = useLocation();
   const params = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [quotationNumberStatus, setQuotationNumberStatus] = useState<{
-    isValid: boolean;
-    isDuplicate: boolean;
-    suggested?: string;
-    checked?: string;
-  }>({ isValid: true, isDuplicate: false });
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : "");
   const leadIdFromQuery = searchParams.get('leadId');
   const copyFromId = searchParams.get('copyFrom');
@@ -126,29 +120,6 @@ export default function QuotationFormPage() {
     staleTime: 0,  // Data is immediately stale - always refetch on mount
     gcTime: 0,     // Don't keep data in garbage collection - remove immediately when unused
   });
-
-  // Function to check and validate quotation number uniqueness
-  const checkQuotationNumberUniqueness = async (quotationNumber: string, excludeId?: number) => {
-    try {
-      console.log(`🔍 Checking quotation number: ${quotationNumber}`);
-      const res = await fetch("/api/quotations/check-number", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quotationNumber, excludeId }),
-        credentials: "include",
-      });
-      
-      if (!res.ok) throw new Error("Failed to check quotation number");
-      
-      const result = await res.json();
-      console.log(`📊 Quotation number check result:`, result);
-      setQuotationNumberStatus(result);
-      return result;
-    } catch (error) {
-      console.error('Error checking quotation number:', error);
-      return { isValid: false, isDuplicate: true };
-    }
-  };
 
   // Force refetch and invalidate cache when quotation ID changes
   useEffect(() => {
@@ -346,9 +317,6 @@ export default function QuotationFormPage() {
               mode={isEditMode ? "edit" : "create"}
               // Only pass quotation data when it's actually loaded in edit mode
               defaultValues={quotation || processedCopySource || prefillFromLead}
-              quotationNumberStatus={quotationNumberStatus}
-              onCheckQuotationNumber={checkQuotationNumberUniqueness}
-              editingQuotationId={quotationId}
             />
           </div>
         )}
