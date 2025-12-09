@@ -198,7 +198,7 @@ export interface IStorage {
 }
 
 export class MongoDBStorage implements IStorage {
-  private collections: {
+  private collections!: {
     users: Collection;
     customers: Collection;
     suppliers: Collection;
@@ -299,6 +299,18 @@ export class MongoDBStorage implements IStorage {
     }
   }
 
+  // Helper to get the next sequential ID for a collection
+  private async getNextSequenceValue(sequenceName: string): Promise<number> {
+    const db = getDatabase();
+    const sequenceCollection = db.collection('counters');
+    const sequenceDocument = await sequenceCollection.findOneAndUpdate(
+      { _id: sequenceName },
+      { $inc: { sequence_value: 1 } },
+      { returnDocument: 'after', upsert: true }
+    );
+    return sequenceDocument?.sequence_value ?? 1;
+  }
+
   // Helper method to convert MongoDB ObjectId to number ID
   private convertToNumberId(id: any): number {
     if (typeof id === 'string') {
@@ -393,7 +405,7 @@ export class MongoDBStorage implements IStorage {
 
   async updateCustomer(id: number, customerUpdate: Partial<InsertCustomer>): Promise<Customer | undefined> {
     const result = await this.collections.customers.findOneAndUpdate(
-      { _id: this.convertToObjectId(id) },
+      { id },
       { 
         $set: { 
           ...customerUpdate, 
@@ -403,7 +415,7 @@ export class MongoDBStorage implements IStorage {
       { returnDocument: 'after' }
     );
     
-    return result ? { ...result, id: this.convertToNumberId(result._id) } as Customer : undefined;
+    return result ? { ...result, id: result.id } as Customer : undefined;
   }
 
   async getAllCustomers(): Promise<Customer[]> {
@@ -415,7 +427,7 @@ export class MongoDBStorage implements IStorage {
   }
 
   async deleteCustomer(id: number): Promise<boolean> {
-    const result = await this.collections.customers.deleteOne({ _id: this.convertToObjectId(id) });
+    const result = await this.collections.customers.deleteOne({ id });
     return result.deletedCount > 0;
   }
 
@@ -608,7 +620,44 @@ export class MongoDBStorage implements IStorage {
 
   // Quotation operations
   async getQuotation(id: number): Promise<Quotation | undefined> {
-    const result = await this.collections.quotations.findOne({ id });
+    const pipeline = [
+      { $match: { id: id } },
+      {
+        $lookup: {
+          from: 'customers',
+          localField: 'customerId',
+          foreignField: 'id',
+          as: 'customerDetails'
+        }
+      },
+      {
+        $unwind: {
+          path: '$customerDetails',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $addFields: {
+          customerName: '$customerDetails.name',
+          customerCompany: '$customerDetails.company',
+          customerEmail: '$customerDetails.email',
+          customerPhone: '$customerDetails.phone'
+        }
+      },
+      {
+        $project: {
+          customerDetails: 0 // Remove the joined customerDetails object
+        }
+      }
+    ];
+
+    const results = await this.collections.quotations.aggregate(pipeline).toArray();
+    
+    if (results.length === 0) {
+      return undefined;
+    }
+
+    const result = results[0];
     return result ? { ...result, id: result.id } as Quotation : undefined;
   }
 
@@ -633,17 +682,18 @@ export class MongoDBStorage implements IStorage {
   }
 
   async createQuotation(quotation: InsertQuotation): Promise<Quotation> {
-    const result = await this.collections.quotations.insertOne({
+    const nextId = await this.getNextSequenceValue('quotationId');
+    const quotationData = {
       ...quotation,
+      id: nextId, // Add the numeric ID
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    };
+    const result = await this.collections.quotations.insertOne(quotationData);
     
     return {
-      ...quotation,
-      id: this.convertToNumberId(result.insertedId),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      ...quotationData,
+      _id: result.insertedId,
     } as Quotation;
   }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Quotation } from "@shared/schema";
 import Layout from "@/components/layout";
@@ -14,8 +14,15 @@ import { Save, ArrowLeft } from "lucide-react";
 export default function QuotationFormPage() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
+  const params = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [quotationNumberStatus, setQuotationNumberStatus] = useState<{
+    isValid: boolean;
+    isDuplicate: boolean;
+    suggested?: string;
+    checked?: string;
+  }>({ isValid: true, isDuplicate: false });
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : "");
   const leadIdFromQuery = searchParams.get('leadId');
   const copyFromId = searchParams.get('copyFrom');
@@ -40,7 +47,7 @@ export default function QuotationFormPage() {
   const prefillFromLead = linkedLead ? (() => {
     const address = matchedCustomer?.address || linkedLead.address || "";
     const { line1, line2 } = splitAddress(address);
-    
+
     return {
     quotationNumber: `RX-VQ25-25-07-${Date.now()}`,
     leadId: linkedLead.id,
@@ -96,24 +103,63 @@ export default function QuotationFormPage() {
     updatedAt: undefined, // Remove update date
     status: 'draft' // Reset status to draft
   } : null;
-  
-  // Check if we're in edit mode by looking at the URL
-  const isEditMode = location.includes('/edit/');
-  const quotationId = isEditMode ? parseInt(location.split('/edit/')[1]) : null;
+
+  // Check if we're in edit mode by checking route params or URL
+  const isEditMode = !!params?.id || window.location.pathname.includes('/edit/');
+  const quotationId = params?.id ? parseInt(params.id) : (isEditMode ? parseInt(window.location.pathname.split('/edit/')[1]) : null);
   
   // Fetch quotation data if in edit mode
-  const { data: quotation, isLoading: isLoadingQuotation } = useQuery<Quotation>({
+  const { data: quotation, isLoading: isLoadingQuotation, refetch: refetchQuotation } = useQuery<Quotation>({
     queryKey: ["/api/quotations", quotationId],
     queryFn: async () => {
       if (!quotationId) return null;
+      console.log(`📥 Fetching quotation ID: ${quotationId}`);
       const res = await fetch(`/api/quotations/${quotationId}`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch quotation");
-      return res.json();
+      const data = await res.json();
+      console.log(`✅ Received quotation data for ID ${quotationId}:`, data);
+      return data;
     },
     enabled: !!quotationId,
+    staleTime: 0,  // Data is immediately stale - always refetch on mount
+    gcTime: 0,     // Don't keep data in garbage collection - remove immediately when unused
   });
+
+  // Function to check and validate quotation number uniqueness
+  const checkQuotationNumberUniqueness = async (quotationNumber: string, excludeId?: number) => {
+    try {
+      console.log(`🔍 Checking quotation number: ${quotationNumber}`);
+      const res = await fetch("/api/quotations/check-number", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quotationNumber, excludeId }),
+        credentials: "include",
+      });
+      
+      if (!res.ok) throw new Error("Failed to check quotation number");
+      
+      const result = await res.json();
+      console.log(`📊 Quotation number check result:`, result);
+      setQuotationNumberStatus(result);
+      return result;
+    } catch (error) {
+      console.error('Error checking quotation number:', error);
+      return { isValid: false, isDuplicate: true };
+    }
+  };
+
+  // Force refetch and invalidate cache when quotation ID changes
+  useEffect(() => {
+    if (quotationId && isEditMode) {
+      console.log(`🔄 Quotation ID changed to ${quotationId}, invalidating cache and refetching...`);
+      // Invalidate old cache entries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["/api/quotations"] });
+      // Then refetch this specific quotation
+      refetchQuotation();
+    }
+  }, [quotationId, isEditMode, refetchQuotation]);
 
   // Create quotation mutation
   const createQuotation = useMutation({
@@ -181,18 +227,8 @@ export default function QuotationFormPage() {
   // Update quotation mutation
   const updateQuotation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const res = await fetch(`/api/quotations/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ message: res.statusText }));
-        throw new Error(JSON.stringify(errorData));
-      }
-      
+      const res = await apiRequest("PUT", `/api/quotations/${id}`, data);
+
       return res.json();
     },
     onSuccess: () => {
@@ -300,14 +336,19 @@ export default function QuotationFormPage() {
         )}
 
         {/* Quotation Form */}
-        {(!isEditMode || !isLoadingQuotation) && (
+        {(!isEditMode || (!isLoadingQuotation && quotation)) && (
           <div className="bg-white rounded-lg border">
             <QuotationForm
-              key={leadId ? `lead-${leadId}` : (isEditMode ? `edit-${quotationId}` : 'new')}
+              // Force full remount when quotationId changes with timestamp to ensure complete reset
+              key={leadId ? `lead-${leadId}` : (isEditMode ? `edit-${quotationId}-${quotation?.id}-${Date.now()}` : `new-${Date.now()}`)}
               onSubmit={handleSubmit}
               isSubmitting={createQuotation.isPending || updateQuotation.isPending}
               mode={isEditMode ? "edit" : "create"}
+              // Only pass quotation data when it's actually loaded in edit mode
               defaultValues={quotation || processedCopySource || prefillFromLead}
+              quotationNumberStatus={quotationNumberStatus}
+              onCheckQuotationNumber={checkQuotationNumberUniqueness}
+              editingQuotationId={quotationId}
             />
           </div>
         )}

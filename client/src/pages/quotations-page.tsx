@@ -174,8 +174,13 @@ export default function QuotationsPage() {
   };
 
   const handleEdit = (quotation: any) => {
-    // Navigate to edit quotation page with the quotation data
-    setLocation(`/quotations/edit/${quotation.id}`);
+    // Navigate using a robust identifier to support records without numeric id
+    const flexibleId = quotation?.id ?? quotation?._id ?? quotation?.quotationNumber ?? quotation?.quoteNumber;
+    if (!flexibleId) {
+      toast({ title: "Error", description: "Quotation identifier missing", variant: "destructive" });
+      return;
+    }
+    setLocation(`/quotations/edit/${flexibleId}`);
   };
 
   const handleDelete = (id: number) => {

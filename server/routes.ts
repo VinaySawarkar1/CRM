@@ -566,15 +566,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/leads/:id", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const id = parseInt(req.params.id);
       const storage = getStorage();
       const lead = await storage.getLead(id);
-      
+
       if (!lead) {
         return res.status(404).json({ message: "Lead not found" });
       }
-      
+
+      // Check if lead belongs to user's company (for non-superusers)
+      const user = req.user as any;
+      if (user.role !== 'superuser' && lead.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Lead belongs to different company" });
+      }
+
       res.json(lead);
     } catch (error) {
       next(error);
@@ -584,17 +590,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/leads/:id", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const id = parseInt(req.params.id);
       const leadData = insertLeadSchema.partial().parse(req.body);
-      
+
       const storage = getStorage();
+      const user = req.user as any;
+
+      // Check if lead belongs to user's company (for non-superusers)
+      if (user.role !== 'superuser') {
+        const existingLead = await storage.getLead(id);
+        if (!existingLead) {
+          return res.status(404).json({ message: "Lead not found" });
+        }
+        if (existingLead.companyId !== user.companyId) {
+          return res.status(403).json({ message: "Forbidden: Lead belongs to different company" });
+        }
+      }
+
       const updatedLead = await storage.updateLead(id, leadData);
-      
+
       if (!updatedLead) {
         return res.status(404).json({ message: "Lead not found" });
       }
-      
+
       res.json(updatedLead);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -607,15 +626,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/leads/:id", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const id = parseInt(req.params.id);
       const storage = getStorage();
+      const user = req.user as any;
+
+      // Check if lead belongs to user's company (for non-superusers)
+      if (user.role !== 'superuser') {
+        const existingLead = await storage.getLead(id);
+        if (!existingLead) {
+          return res.status(404).json({ message: "Lead not found" });
+        }
+        if (existingLead.companyId !== user.companyId) {
+          return res.status(403).json({ message: "Forbidden: Lead belongs to different company" });
+        }
+      }
+
       const deleted = await storage.deleteLead(id);
-      
+
       if (!deleted) {
         return res.status(404).json({ message: "Lead not found" });
       }
-      
+
       res.status(204).send();
     } catch (error) {
       next(error);
@@ -629,8 +661,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const id = parseInt(req.params.id);
       if (isNaN(id)) return res.status(400).json({ message: "Invalid lead ID" });
       const storage = getStorage();
+      const user = req.user as any;
       const lead = await storage.getLead(id);
       if (!lead) return res.status(404).json({ message: "Lead not found" });
+
+      // Check if lead belongs to user's company (for non-superusers)
+      if (user.role !== 'superuser' && lead.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Lead belongs to different company" });
+      }
+
       // Create customer using lead data
       const customer = await storage.createCustomer({
         name: lead.name,
@@ -920,12 +959,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const resolvedId = await resolveQuotationIdParam(req.params.id);
       if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
       const quotation = await storage.getQuotation(resolvedId);
-      
+
       if (!quotation) {
         return res.status(404).json({ message: "Quotation not found" });
       }
-      
+
+      // Check if quotation belongs to user's company (for non-superusers)
+      const user = req.user as any;
+      if (user.role !== 'superuser' && quotation.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Quotation belongs to different company" });
+      }
+
       res.json(quotation);
+    } catch (error) {
+      console.error('Error fetching quotation:', error);
+      next(error);
+    }
+  });
+
+  // Check if quotation number is unique and generate new if needed
+  app.post("/api/quotations/check-number", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      
+      const storage = getStorage();
+      const { quotationNumber, excludeId } = req.body;
+      const user = req.user as any;
+      
+      // Get all existing quotations for this company
+      const allQuotations = await storage.getAllQuotations();
+      const companyQuotations = user.role === 'superuser' 
+        ? allQuotations 
+        : allQuotations.filter(q => q.companyId === user.companyId);
+      
+      // Check if provided quotation number exists (excluding the current one if editing)
+      const isDuplicate = companyQuotations.some(q => 
+        q.quotationNumber === quotationNumber && 
+        (!excludeId || q.id !== excludeId)
+      );
+      
+      // Generate a new unique quotation number
+      const generateUniqueNumber = (): string => {
+        const today = new Date().toISOString().split('T')[0];
+        const quotationsToday = companyQuotations.filter(q => {
+          const qDate = typeof q.quotationDate === 'string' 
+            ? q.quotationDate 
+            : (q.quotationDate as any)?.toISOString?.()?.split('T')[0];
+          return qDate === today;
+        });
+        
+        const d = new Date();
+        const pad = (n: number) => String(n).padStart(2, '0');
+        const datePrefix = `RX-VQ${String(d.getFullYear()).slice(-2)}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+        let sequenceNum = quotationsToday.length + 1000;
+        let newNumber = `${datePrefix}-${String(sequenceNum).padStart(4, '0')}`;
+        
+        // Ensure the generated number is unique
+        while (companyQuotations.some(q => q.quotationNumber === newNumber)) {
+          sequenceNum++;
+          newNumber = `${datePrefix}-${String(sequenceNum).padStart(4, '0')}`;
+        }
+        
+        return newNumber;
+      };
+      
+      res.json({
+        isDuplicate,
+        isValid: !isDuplicate,
+        suggestedNumber: generateUniqueNumber()
+      });
     } catch (error) {
       next(error);
     }
@@ -937,14 +1039,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!hasPermission(req, 'quotations:create', 'quotations')) return res.status(403).json({ message: 'Forbidden' });
 
       const user = req.user as any;
+      const storage = getStorage();
+      
       // Auto generate quotation number if missing
       if (!req.body?.quotationNumber) {
+        // Get all existing quotations to generate next sequence
+        const allQuotations = await storage.getAllQuotations();
+        
+        // Filter quotations created today and count them
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const quotationsToday = allQuotations.filter(q => {
+          const qDate = typeof q.quotationDate === 'string' ? q.quotationDate : (q.quotationDate as any)?.toISOString?.()?.split('T')[0];
+          return qDate === today;
+        });
+        
         const d = new Date();
         const pad = (n: number) => String(n).padStart(2, '0');
-        req.body.quotationNumber = `RX-VQ${String(d.getFullYear()).slice(-2)}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${Date.now()}`;
+        const datePrefix = `RX-VQ${String(d.getFullYear()).slice(-2)}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+        const sequenceNum = String(quotationsToday.length + 1000).padStart(4, '0');
+        
+        req.body.quotationNumber = `${datePrefix}-${sequenceNum}`;
       }
+      
       const quotationData = insertQuotationSchema.parse({ ...req.body, companyId: user.companyId });
-      const storage = getStorage();
       const quotation = await storage.createQuotation(quotationData);
       res.status(201).json(quotation);
     } catch (error) {
@@ -962,13 +1079,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const storage = getStorage();
       const resolvedId = await resolveQuotationIdParam(req.params.id);
       if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+
+      // Check if quotation belongs to user's company (for non-superusers)
+      const user = req.user as any;
+      if (user.role !== 'superuser') {
+        const existingQuotation = await storage.getQuotation(resolvedId);
+        if (!existingQuotation) {
+          return res.status(404).json({ message: "Quotation not found" });
+        }
+        if (existingQuotation.companyId !== user.companyId) {
+          return res.status(403).json({ message: "Forbidden: Quotation belongs to different company" });
+        }
+      }
+
       const quotationData = insertQuotationSchema.partial().parse(req.body);
       const updatedQuotation = await storage.updateQuotation(resolvedId, quotationData);
-      
+
       if (!updatedQuotation) {
         return res.status(404).json({ message: "Quotation not found" });
       }
-      
+
       res.json(updatedQuotation);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -1227,13 +1357,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       if (!hasPermission(req, 'quotations:delete', 'quotations')) return res.status(403).json({ message: 'Forbidden' });
-      
+
       const storage = getStorage();
       const sAny: any = storage as any;
       let deleted = false;
+      let quotationToDelete = null;
 
       const resolvedId = await resolveQuotationIdParam(req.params.id);
       if (resolvedId) {
+        quotationToDelete = await storage.getQuotation(resolvedId);
         deleted = await storage.deleteQuotation(resolvedId);
       } else {
         // Try to find the quotation object and delete by object id if possible
@@ -1241,6 +1373,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!found) {
           return res.status(400).json({ message: "Invalid quotation ID" });
         }
+
+        quotationToDelete = found;
 
         if (found.id !== undefined && found.id !== null) {
           deleted = await storage.deleteQuotation(found.id);
@@ -1262,6 +1396,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             deleted = false;
           }
         }
+      }
+
+      // Check if quotation belongs to user's company (for non-superusers)
+      const user = req.user as any;
+      if (user.role !== 'superuser' && quotationToDelete && quotationToDelete.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Quotation belongs to different company" });
       }
 
       if (!deleted) {
@@ -1882,19 +2022,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/invoices/:id", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid invoice ID" });
       }
-      
+
       const storage = getStorage();
       const invoice = await storage.getInvoice(id);
-      
+
       if (!invoice) {
         return res.status(404).json({ message: "Invoice not found" });
       }
-      
+
+      // Check if invoice belongs to user's company (for non-superusers)
+      const user = req.user as any;
+      if (user.role !== 'superuser' && invoice.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Invoice belongs to different company" });
+      }
+
       res.json(invoice);
     } catch (error) {
       next(error);
@@ -2035,19 +2181,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/payments/:id", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid payment ID" });
       }
-      
+
       const storage = getStorage();
       const payment = await storage.getPayment(id);
-      
+
       if (!payment) {
         return res.status(404).json({ message: "Payment not found" });
       }
-      
+
+      // Check if payment belongs to user's company (for non-superusers)
+      const user = req.user as any;
+      if (user.role !== 'superuser' && payment.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Payment belongs to different company" });
+      }
+
       res.json(payment);
     } catch (error) {
       next(error);
@@ -2154,19 +2306,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/sales-targets/:id", async (req, res, next) => {
     try {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-      
+
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid sales target ID" });
       }
-      
+
       const storage = getStorage();
       const target = await storage.getSalesTarget(id);
-      
+
       if (!target) {
         return res.status(404).json({ message: "Sales target not found" });
       }
-      
+
+      // Check if sales target belongs to user's company (for non-superusers)
+      const user = req.user as any;
+      if (user.role !== 'superuser' && target.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Sales target belongs to different company" });
+      }
+
       res.json(target);
     } catch (error) {
       next(error);
@@ -2327,10 +2485,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/purchase-orders/:id", async (req, res, next) => {
     try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const id = parseInt(req.params.id);
       const storage = getStorage();
       const purchaseOrder = await storage.getPurchaseOrder(id);
       if (!purchaseOrder) return res.status(404).json({ message: "Purchase order not found" });
+
+      // Check if purchase order belongs to user's company (for non-superusers)
+      const user = req.user as any;
+      if (user.role !== 'superuser' && purchaseOrder.companyId !== user.companyId) {
+        return res.status(403).json({ message: "Forbidden: Purchase order belongs to different company" });
+      }
+
       res.json(purchaseOrder);
     } catch (error) {
       next(error);

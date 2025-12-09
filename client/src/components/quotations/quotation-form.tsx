@@ -191,6 +191,14 @@ interface QuotationFormProps {
   defaultValues?: Quotation;
   submitLabel?: string;
   documentType?: "quotation" | "proforma" | "invoice"; // Add document type prop
+  quotationNumberStatus?: {
+    isValid: boolean;
+    isDuplicate: boolean;
+    suggested?: string;
+    checked?: string;
+  };
+  onCheckQuotationNumber?: (quotationNumber: string, excludeId?: number) => Promise<any>;
+  editingQuotationId?: number | null;
 }
 
 export default function QuotationForm({
@@ -198,6 +206,9 @@ export default function QuotationForm({
   isSubmitting,
   mode,
   defaultValues,
+  quotationNumberStatus,
+  onCheckQuotationNumber,
+  editingQuotationId,
   submitLabel,
   documentType = "quotation",
 }: QuotationFormProps) {
@@ -504,20 +515,28 @@ export default function QuotationForm({
   // Populate form when defaultValues change (for editing mode)
   useEffect(() => {
     if (defaultValues && mode === "edit") {
+      console.log(`🔄 Quotation form updating with new defaultValues:`, defaultValues);
+      
       // Set customer if exists
       if (defaultValues.customerId) {
         const customer = customers.find(c => c.id === defaultValues.customerId);
         if (customer) {
+          console.log(`📍 Setting customer:`, customer);
           setSelectedCustomer(customer);
         }
+      } else {
+        setSelectedCustomer(null);
       }
       
       // Set lead if exists
       if (defaultValues.leadId) {
         const lead = leads.find(l => l.id === defaultValues.leadId);
         if (lead) {
+          console.log(`📍 Setting lead:`, lead);
           setSelectedLead(lead);
         }
+      } else {
+        setSelectedLead(null);
       }
 
       // Update form fields with default values
@@ -609,8 +628,10 @@ export default function QuotationForm({
         setValue("bankDetails.accountNo", defaultValues.bankDetails.accountNo || "10120052061");
         setValue("bankDetails.ifsc", defaultValues.bankDetails.ifsc || "IDFB0041434");
       }
+      
+      console.log(`✅ Quotation form fully populated with defaultValues ID: ${defaultValues.id}`);
     }
-  }, [defaultValues, mode, customers, leads]);
+  }, [defaultValues, mode, customers, leads, setValue]);
 
   // Populate form when defaultValues change (for create mode, e.g., coming from a Lead)
   useEffect(() => {
@@ -1239,6 +1260,34 @@ export default function QuotationForm({
       console.log('Form submission - Items state:', items);
       setHasAttemptedSubmit(true);
 
+      // Validate quotation number uniqueness before submission
+      if (data.quotationNumber) {
+        if (quotationNumberStatus?.isDuplicate) {
+          toast({
+            title: "Duplicate Quotation Number",
+            description: `The quotation number "${data.quotationNumber}" already exists. Please use a different number or click the suggestion.`,
+            variant: "destructive",
+          });
+          console.error('❌ Quotation number is duplicate, blocking submission');
+          return;
+        }
+        
+        // If not yet checked or invalid, validate now
+        if (!quotationNumberStatus?.isValid) {
+          console.log('⏳ Checking quotation number validity...');
+          const result = await onCheckQuotationNumber?.(data.quotationNumber, editingQuotationId || undefined);
+          if (result?.isDuplicate) {
+            toast({
+              title: "Duplicate Quotation Number",
+              description: `The quotation number "${data.quotationNumber}" already exists. Please use a different number.`,
+              variant: "destructive",
+            });
+            console.error('❌ Quotation number is duplicate, blocking submission');
+            return;
+          }
+        }
+      }
+
       // First, validate that we have items
       if (!items || items.length === 0) {
         toast({
@@ -1483,6 +1532,21 @@ export default function QuotationForm({
 
   // Calculate progress using watched values
   const formValues = watch();
+  const quotationNumber = watch('quotationNumber');
+  
+  // Watch quotation number and validate uniqueness
+  useEffect(() => {
+    if (quotationNumber && onCheckQuotationNumber && quotationNumber.trim()) {
+      const delayCheck = setTimeout(async () => {
+        console.log(`🔍 Validating quotation number: ${quotationNumber}`);
+        await onCheckQuotationNumber(quotationNumber, editingQuotationId || undefined);
+      }, 800); // Debounce for 800ms
+      
+      return () => clearTimeout(delayCheck);
+    }
+  }, [quotationNumber, onCheckQuotationNumber, editingQuotationId]);
+
+  // Calculate progress using watched values
   const progress = React.useMemo(() => {
     const required = ['quotationNumber', 'quotationDate', 'validUntil', 'contactPerson', 'addressLine1', 'city', 'state', 'country', 'pincode'];
     const filled = required.filter(f => {
@@ -2441,16 +2505,39 @@ export default function QuotationForm({
                       {documentType === "proforma" ? "Proforma No." : documentType === "invoice" ? "Invoice No." : "Quotation No."} 
                       <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="quotationNumber"
-                      {...register("quotationNumber")}
-                      placeholder="Auto-generated"
-                      className={errors.quotationNumber ? "border-red-500" : ""}
-                    />
-                    {errors.quotationNumber && hasAttemptedSubmit && (
-                      <div className="text-xs text-red-500 mt-1">{errors.quotationNumber.message}</div>
-                    )}
-                    <div className="text-xs text-gray-500 mt-1">Prev.: RX-VQ25-25-07-143</div>
+                    <div className="space-y-2">
+                      <Input
+                        id="quotationNumber"
+                        {...register("quotationNumber")}
+                        placeholder="Auto-generated"
+                        className={quotationNumberStatus?.isDuplicate ? "border-red-500 bg-red-50" : quotationNumberStatus?.isValid ? "border-green-500 bg-green-50" : ""}
+                      />
+                      {quotationNumber && (
+                        <div className="text-xs space-y-1">
+                          {quotationNumberStatus?.isDuplicate && (
+                            <div className="text-red-600 font-semibold flex items-center gap-1">
+                              <span>❌ This quotation number already exists!</span>
+                              {quotationNumberStatus?.suggested && (
+                                <button
+                                  type="button"
+                                  onClick={() => setValue('quotationNumber', quotationNumberStatus.suggested || '')}
+                                  className="text-blue-600 underline hover:text-blue-800 ml-1"
+                                >
+                                  Use {quotationNumberStatus.suggested}
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          {quotationNumberStatus?.isValid && !quotationNumberStatus?.isDuplicate && (
+                            <div className="text-green-600 font-semibold">✅ Quotation number is unique!</div>
+                          )}
+                        </div>
+                      )}
+                      {errors.quotationNumber && hasAttemptedSubmit && (
+                        <div className="text-xs text-red-500">{errors.quotationNumber.message}</div>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500">Prev.: RX-VQ25-25-07-143</div>
                   </div>
 
                   <div>

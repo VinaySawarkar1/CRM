@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
@@ -155,9 +155,9 @@ export default function QuotationTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {quotations.length > 0 ? (
-            quotations.map((quotation) => (
-              <TableRow key={quotation.id ?? quotation.quotationNumber} className="hover:bg-gray-50 border-b border-gray-100 cursor-pointer" onClick={() => setActive(quotation)}>
+           {quotations.length > 0 ? (
+             quotations.map((quotation, index) => (
+               <TableRow key={quotation.id || quotation._id || index} className="hover:bg-gray-50 border-b border-gray-100 cursor-pointer" onClick={() => setActive(quotation)}>
                 <TableCell>
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -230,6 +230,7 @@ export default function QuotationTable({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Quotation Actions</DialogTitle>
+            <DialogDescription>Select an action for this quotation.</DialogDescription>
           </DialogHeader>
           {active && (
             <div className="grid grid-cols-2 gap-3">

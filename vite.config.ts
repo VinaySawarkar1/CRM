@@ -27,7 +27,7 @@ export default defineConfig(async () => {
     ];
     
     const loadedPlugins = await Promise.all(pluginPromises);
-    const validPlugins = loadedPlugins.filter(p => p !== null);
+    const validPlugins = loadedPlugins.filter(p => p !== null) as any[];
     plugins.push(...validPlugins);
     
     if (validPlugins.length > 0) {
@@ -46,12 +46,18 @@ export default defineConfig(async () => {
       },
     },
     root: path.resolve(__dirname, "client"),
+    base: './',
     build: {
       outDir: path.resolve(__dirname, "dist/public"),
       emptyOutDir: true,
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, "client", "index.html")
+        }
+      }
     },
     server: {
-      host: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
+      host: 'localhost',
       port: 3001,
       strictPort: true,
       hmr: false, // Temporarily disable HMR to stop continuous refresh
@@ -69,6 +75,7 @@ export default defineConfig(async () => {
       },
       fs: {
         strict: false,
+        allow: ['..', '..'],
       },
     },
   };

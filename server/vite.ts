@@ -26,16 +26,16 @@ export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     middlewareMode: true,
     hmr: false, // Disable HMR to prevent continuous refresh loop
-    allowedHosts: true,
+    allowedHosts: ['localhost', '.ngrok.io', '.ngrok-free.app'],
     host: isProduction ? '0.0.0.0' : 'localhost',
   };
 
   // Resolve vite config (it's a function that needs to be awaited)
-  const resolvedViteConfig = typeof viteConfigFn === 'function' ? await viteConfigFn() : viteConfigFn;
+  const resolvedViteConfig = typeof viteConfigFn === 'function' ? await viteConfigFn({ mode: 'development', command: 'serve' }) : viteConfigFn;
   
   const vite = await createViteServer({
     ...resolvedViteConfig,
-    root: resolvedViteConfig.root || path.resolve(__dirname, "..", "client"),
+    root: path.resolve(__dirname, "..", "client"),
     configFile: false,
     customLogger: {
       ...viteLogger,
@@ -46,6 +46,9 @@ export async function setupVite(app: Express, server: Server) {
     },
     server: serverOptions,
     appType: "custom",
+    optimizeDeps: {
+      include: ['react', 'react-dom']
+    }
   });
 
   app.use(vite.middlewares);
