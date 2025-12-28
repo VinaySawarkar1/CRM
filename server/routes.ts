@@ -57,10 +57,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[resolveQuotationIdParam] incoming idParam is not numeric');
     }
 
-    // Fallback: search all quotations by string match on id or quotationNumber
+    // Try MongoDB ObjectId lookup if storage supports it
+    const sAny: any = storage as any;
+    if (typeof sAny.getQuotationByObjectId === 'function') {
+      try {
+        const q = await sAny.getQuotationByObjectId(idParam);
+        if (q) {
+          console.log(`[resolveQuotationIdParam] objectId lookup for ${idParam} -> found`);
+          // Return the numeric id if available, otherwise return the objectId
+          return q.id || idParam;
+        }
+      } catch (err) {
+        console.warn('[resolveQuotationIdParam] objectId lookup error', err);
+      }
+    }
+
+    // Fallback: search all quotations by string match on id, _id, or quotationNumber
     try {
       const all = await storage.getAllQuotations();
-      const found = all.find((x: any) => String(x.id) === idParam || String(x.quotationNumber) === idParam || String(x.quoteNumber) === idParam);
+      const found = all.find((x: any) => 
+        String(x.id) === idParam || 
+        String(x._id) === idParam || 
+        String(x.quotationNumber) === idParam || 
+        String(x.quoteNumber) === idParam
+      );
       if (found && found.id !== undefined && found.id !== null) {
         console.log(`[resolveQuotationIdParam] fallback search for ${idParam} -> found id=${found.id}`);
         return found.id;
@@ -332,6 +352,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Regular users cannot create sub-users (removed for multi-tenant)
       return res.status(403).json({ message: "Only company admins can create users" });
+    } catch (err) { next(err); }
+  });
+
+  // Superuser: delete user
+  app.delete("/api/users/:id", async (req, res, next) => {
+    try {
+      if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+      const id = parseInt(req.params.id);
+      const storage = getStorage();
+      const me = await storage.getUser((req.user as any).id);
+      if (!me) return res.status(401).json({ message: "Unauthorized" });
+      
+      // Only superuser can delete users
+      if (me.role !== 'superuser') {
+        return res.status(403).json({ message: "Forbidden: Only superuser can delete users" });
+      }
+      
+      const existing = await storage.getUser(id);
+      if (!existing) return res.status(404).json({ message: "User not found" });
+      
+      // Prevent superuser from deleting themselves
+      if (id === me.id) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+      
+      const deleted = await storage.deleteUser(id);
+      if (deleted) {
+        res.json({ message: "User deleted successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to delete user" });
+      }
     } catch (err) { next(err); }
   });
 
@@ -957,7 +1008,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
       const storage = getStorage();
       const resolvedId = await resolveQuotationIdParam(req.params.id);
-      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      if (!resolvedId) return res.status(404).json({ message: "Quotation not found" });
       const quotation = await storage.getQuotation(resolvedId);
 
       if (!quotation) {
@@ -985,6 +1036,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = req.user as any;
       const storage = getStorage();
       
+      // Check for duplicate quotation number if provided
+      if (req.body?.quotationNumber) {
+        const allQuotations = await storage.getAllQuotations();
+        const duplicate = allQuotations.find(q => q.quotationNumber === req.body.quotationNumber);
+        if (duplicate) {
+          return res.status(400).json({ message: "Quotation number must be unique" });
+        }
+      }
+      
       // Auto generate quotation number if missing
       if (!req.body?.quotationNumber) {
         // Get all existing quotations to generate next sequence
@@ -1000,7 +1060,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const d = new Date();
         const pad = (n: number) => String(n).padStart(2, '0');
         const datePrefix = `RX-VQ${String(d.getFullYear()).slice(-2)}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-        const sequenceNum = String(quotationsToday.length + 1000).padStart(4, '0');
+        const sequenceNum = String(quotationsToday.length + 500).padStart(4, '0');
         
         req.body.quotationNumber = `${datePrefix}-${sequenceNum}`;
       }
@@ -1022,7 +1082,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!hasPermission(req, 'quotations:update', 'quotations')) return res.status(403).json({ message: 'Forbidden' });
       const storage = getStorage();
       const resolvedId = await resolveQuotationIdParam(req.params.id);
-      if (!resolvedId) return res.status(400).json({ message: "Invalid quotation ID" });
+      if (!resolvedId) return res.status(404).json({ message: "Quotation not found" });
 
       // Check if quotation belongs to user's company (for non-superusers)
       const user = req.user as any;
@@ -1037,7 +1097,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const quotationData = insertQuotationSchema.partial().parse(req.body);
-      const updatedQuotation = await storage.updateQuotation(resolvedId, quotationData);
+      
+      // Handle both numeric IDs and ObjectId strings
+      let updatedQuotation;
+      if (typeof resolvedId === 'string' && resolvedId.length === 24) {
+        // It's a MongoDB ObjectId string, use the ObjectId update method
+        const sAny: any = storage as any;
+        if (typeof sAny.updateQuotationByObjectId === 'function') {
+          updatedQuotation = await sAny.updateQuotationByObjectId(resolvedId, quotationData);
+        } else {
+          return res.status(400).json({ message: "Storage does not support ObjectId updates" });
+        }
+      } else {
+        // It's a numeric ID, use the regular update method
+        updatedQuotation = await storage.updateQuotation(resolvedId, quotationData);
+      }
 
       if (!updatedQuotation) {
         return res.status(404).json({ message: "Quotation not found" });
@@ -1308,43 +1382,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let quotationToDelete = null;
 
       const resolvedId = await resolveQuotationIdParam(req.params.id);
-      if (resolvedId) {
-        quotationToDelete = await storage.getQuotation(resolvedId);
-        deleted = await storage.deleteQuotation(resolvedId);
-      } else {
-        // Try to find the quotation object and delete by object id if possible
-        const found = await findQuotationObjectByParam(req.params.id);
-        if (!found) {
-          return res.status(400).json({ message: "Invalid quotation ID" });
-        }
-
-        quotationToDelete = found;
-
-        if (found.id !== undefined && found.id !== null) {
-          deleted = await storage.deleteQuotation(found.id);
-        } else if (found._id && typeof sAny.deleteQuotationByObjectId === 'function') {
-          try {
-            deleted = await sAny.deleteQuotationByObjectId(String(found._id));
-          } catch (err) {
-            console.warn('[deleteQuotation] deleteQuotationByObjectId error', err);
-            deleted = false;
-          }
-        } else if (found._id && typeof sAny.convertToNumberId === 'function') {
-          try {
-            const numId = sAny.convertToNumberId(found._id);
-            if (!isNaN(Number(numId))) {
-              deleted = await storage.deleteQuotation(Number(numId));
-            }
-          } catch (err) {
-            console.warn('[deleteQuotation] convertToNumberId error', err);
-            deleted = false;
-          }
-        }
+      if (!resolvedId) {
+        return res.status(404).json({ message: "Quotation not found" });
       }
+
+      quotationToDelete = await storage.getQuotation(resolvedId);
+      if (!quotationToDelete) {
+        return res.status(404).json({ message: "Quotation not found" });
+      }
+
+      deleted = await storage.deleteQuotation(resolvedId);
 
       // Check if quotation belongs to user's company (for non-superusers)
       const user = req.user as any;
-      if (user.role !== 'superuser' && quotationToDelete && quotationToDelete.companyId !== user.companyId) {
+      if (user.role !== 'superuser' && quotationToDelete.companyId !== user.companyId) {
         return res.status(403).json({ message: "Forbidden: Quotation belongs to different company" });
       }
 

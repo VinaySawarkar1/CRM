@@ -310,13 +310,17 @@ export default function QuotationFormPage() {
         {(!isEditMode || (!isLoadingQuotation && quotation)) && (
           <div className="bg-white rounded-lg border">
             <QuotationForm
-              // Force full remount when quotationId changes with timestamp to ensure complete reset
-              key={leadId ? `lead-${leadId}` : (isEditMode ? `edit-${quotationId}-${quotation?.id}-${Date.now()}` : `new-${Date.now()}`)}
+              // Use stable key that doesn't change on every render
+              key={leadId ? `lead-${leadId}` : (isEditMode ? `edit-${quotationId}` : `new-${Date.now()}`)}
               onSubmit={handleSubmit}
               isSubmitting={createQuotation.isPending || updateQuotation.isPending}
               mode={isEditMode ? "edit" : "create"}
-              // Only pass quotation data when it's actually loaded in edit mode
-              defaultValues={quotation || processedCopySource || prefillFromLead}
+              // Pass appropriate default values based on mode
+              defaultValues={
+                isEditMode && quotation ? quotation :
+                copySource ? processedCopySource :
+                prefillFromLead || {}
+              }
             />
           </div>
         )}

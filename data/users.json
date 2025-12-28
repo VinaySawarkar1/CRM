@@ -25,7 +25,7 @@
     "name": "Vinay sawarkar",
     "email": "vinaysawarkar0@gmail.com",
     "phone": "09175240313",
-    "role": "admin",
+    "role": "superuser",
     "companyId": 1,
     "isActive": true,
     "department": "",

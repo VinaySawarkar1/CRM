@@ -27,6 +27,12 @@ export default function UsersPage() {
   const maxUsers = 20;
   const canCreateUser = currentUser?.role === 'superuser' || (currentUser?.role === 'admin' && userCount < maxUsers);
 
+  const displayedUsers = currentUser?.role === 'superuser'
+    ? users
+    : currentUser?.role === 'admin' && currentUser?.companyId
+      ? users.filter((u: any) => u.companyId === currentUser.companyId)
+      : users.filter((u: any) => u.id === currentUser?.id || (u as any).parentUserId === currentUser?.id);
+
   const createUser = useMutation({
     mutationFn: async (payload: any) => {
       const res = await apiRequest("POST", "/api/users", payload);
@@ -48,6 +54,18 @@ export default function UsersPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       toast({ title: "Updated" });
+    },
+    onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" })
+  });
+
+  const deleteUser = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("DELETE", `/api/users/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+      toast({ title: "User Deleted" });
     },
     onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" })
   });
@@ -174,7 +192,7 @@ export default function UsersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u) => (
+                  {displayedUsers.map((u: any) => (
                     <tr key={u.id} className="border-t">
                       <td className="p-2">{u.name}</td>
                       <td className="p-2">{u.username}</td>
@@ -201,6 +219,25 @@ export default function UsersPage() {
                         >
                           {u.isActive ? 'Deactivate' : 'Activate'}
                         </Button>
+                        {currentUser?.role === 'superuser' && (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="ml-2"
+                            onClick={() => {
+                              if (u.id === currentUser.id) {
+                                toast({ title: 'Error', description: 'Cannot delete your own account', variant: 'destructive' });
+                                return;
+                              }
+                              if (window.confirm(`Delete user ${u.username || u.name}? This cannot be undone.`)) {
+                                deleteUser.mutate(u.id);
+                              }
+                            }}
+                            disabled={u.id === currentUser.id}
+                          >
+                            Delete
+                          </Button>
+                        )}
                       </td>
                     </tr>
                   ))}

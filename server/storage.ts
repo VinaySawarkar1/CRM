@@ -86,6 +86,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
+  deleteUser(id: number): Promise<boolean>;
 
   // Customer operations
   getCustomer(id: number): Promise<Customer | undefined>;
@@ -331,7 +332,7 @@ export class JSONFileStorage implements IStorage {
     this.leadDiscussionIdCounter = 1;
     this.leadCategoryIdCounter = 1;
     this.leadSourceIdCounter = 1;
-    this.quotationIdCounter = 1;
+    this.quotationIdCounter = 500;
     this.orderIdCounter = 1;
     this.invoiceIdCounter = 1;
     this.paymentIdCounter = 1;
@@ -480,26 +481,28 @@ export class JSONFileStorage implements IStorage {
     } catch (error) {
       console.log('No quotations file found, starting with empty quotations');
       this.quotations.clear();
-      this.quotationIdCounter = 1;
+      this.quotationIdCounter = 500;
     }
   }
 
   private convertQuotationData(data: any[]): void {
     this.quotations.clear();
+    let startId = 500;
     data.forEach((item, index) => {
-      const numericId = index + 1;
+      const numericId = startId + index;
       const convertedItem = {
         ...item,
         id: numericId,
-        quotationNumber: item.quoteNumber || item.quotationNumber,
+        quotationNumber: item.quotationNumber || item.quoteNumber,
         customerId: item.customerId ? parseInt(item.customerId.toString().replace(/\D/g, '')) || null : null,
         leadId: item.leadId ? parseInt(item.leadId.toString().replace(/\D/g, '')) || null : null,
-        createdAt: item.issueDate || item.createdAt || new Date().toISOString(),
-        createdBy: item.assignedTo ? parseInt(item.assignedTo.toString().replace(/\D/g, '')) || null : null,
+        createdAt: item.createdAt || item.issueDate || new Date().toISOString(),
+        createdBy: item.createdBy || item.assignedTo || null,
       };
       this.quotations.set(numericId, convertedItem as any);
     });
-    this.quotationIdCounter = data.length + 1;
+    this.quotationIdCounter = startId + data.length;
+    console.log(`Loaded ${data.length} quotations with IDs starting from ${startId}. Next ID will be ${this.quotationIdCounter}`);
   }
 
   private async loadOrders() {
@@ -758,6 +761,14 @@ export class JSONFileStorage implements IStorage {
     this.users.set(id, updated);
     await this.saveUsers();
     return updated;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const existing = this.users.get(id);
+    if (!existing) return false;
+    this.users.delete(id);
+    await this.saveUsers();
+    return true;
   }
 
   // Company methods

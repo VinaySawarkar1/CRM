@@ -414,7 +414,7 @@ export default function QuotationForm({
     resolver: zodResolver(quotationSchema),
     mode: "onChange", // Change from "onSubmit" to "onChange" for better validation
     defaultValues: defaultValues ? {
-      quotationNumber: defaultValues.quotationNumber || `RX-VQ25-25-07-${Date.now()}`,
+      quotationNumber: defaultValues.quotationNumber || '',
       customerId: defaultValues.customerId || undefined,
       leadId: defaultValues.leadId || undefined,
       validUntil: defaultValues.validUntil || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -461,7 +461,7 @@ export default function QuotationForm({
       igstTotal: defaultValues.igstTotal || 0,
       taxableTotal: defaultValues.taxableTotal || 0,
     } : {
-      quotationNumber: `RX-VQ25-25-07-${Date.now()}`,
+      quotationNumber: '',
       customerId: undefined,
       leadId: undefined,
       validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],

@@ -36,6 +36,8 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
+  updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
+  deleteUser(id: number): Promise<boolean>;
 
   // Customer operations
   getCustomer(id: number): Promise<Customer | undefined>;
@@ -380,6 +382,11 @@ export class MongoDBStorage implements IStorage {
     );
 
     return result ? { ...result, id: result.id } as User : undefined;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const result = await this.collections.users.deleteOne({ id });
+    return result.deletedCount > 0;
   }
 
   // Customer operations
